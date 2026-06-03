@@ -1,61 +1,137 @@
-import { FiMenu, FiBell, FiSearch } from 'react-icons/fi';
-import { useLocation } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { FiMenu, FiSearch } from 'react-icons/fi';
 import useAuthStore from '../utils/authStore';
+import SearchModal from './SearchModal';
+import NotificationPanel from './NotificationPanel';
 
-const pageTitles = {
-  '/dashboard': 'Dashboard',
-  '/clients': 'Clients',
-  '/deals': 'Deals Pipeline',
-  '/tasks': 'Tasks',
-  '/interactions': 'Interactions',
-  '/users': 'User Management',
+const titles = {
+  '/dashboard':     'Dashboard',
+  '/clients':       'Clients',
+  '/leads':         'Leads',
+  '/deals':         'Deals',
+  '/tasks':         'Tasks',
+  '/interactions':  'Interactions',
+  '/users':         'Users',
   '/activity-logs': 'Activity Logs',
-  '/profile': 'My Profile',
+  '/reports':       'Reports',
+  '/profile':       'Profile',
 };
 
-const Header = ({ onMenuClick }) => {
+export default function Header({ onMenuClick }) {
   const location = useLocation();
-  const { user } = useAuthStore();
+  const navigate  = useNavigate();
+  const { user }  = useAuthStore();
+  const [searchOpen, setSearchOpen] = useState(false);
 
-  const getTitle = () => {
-    const exact = pageTitles[location.pathname];
-    if (exact) return exact;
-    for (const [key, val] of Object.entries(pageTitles)) {
-      if (location.pathname.startsWith(key + '/')) return val;
-    }
-    return 'CRM';
-  };
+  const title = (() => {
+    const ex = titles[location.pathname];
+    if (ex) return ex;
+    for (const [k, v] of Object.entries(titles))
+      if (location.pathname.startsWith(k + '/')) return v;
+    return 'CMS';
+  })();
+
+  // Global Ctrl+K / ⌘+K shortcut
+  useEffect(() => {
+    const handler = (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        setSearchOpen(v => !v);
+      }
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, []);
 
   return (
-    <header
-      className="flex items-center justify-between px-6 py-4 glass-panel border-x-0 border-t-0 z-10"
-      style={{ minHeight: '70px' }}
-    >
-      <div className="flex items-center gap-4">
-        <button
-          onClick={onMenuClick}
-          className="lg:hidden text-gray-400 hover:text-white transition-colors"
-        >
-          <FiMenu size={22} />
-        </button>
-        <h2 className="text-xl font-bold text-white tracking-wide">{getTitle()}</h2>
-      </div>
-
-      <div className="flex items-center gap-4">
-        <button className="p-2.5 rounded-xl text-gray-400 hover:text-white hover:bg-white/10 transition-all duration-300">
-          <FiBell size={20} />
-        </button>
-        <div className="flex items-center gap-3 pl-4 border-l border-white/10">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-cyan-500 flex items-center justify-center text-sm font-bold text-white shadow-[0_0_15px_rgba(99,102,241,0.4)]">
-            {user?.firstName?.[0] || user?.username?.[0] || 'U'}
-          </div>
-          <span className="text-sm font-medium text-gray-200 hidden sm:block">
-            {user?.firstName || user?.username}
-          </span>
+    <>
+      <header className="topbar">
+        {/* Left */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <button className="btn-icon" onClick={onMenuClick} style={{ display: 'flex' }}>
+            <FiMenu size={17} />
+          </button>
+          <span className="topbar-title">{title}</span>
         </div>
-      </div>
-    </header>
-  );
-};
 
-export default Header;
+        {/* Right */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+          {/* Search pill — opens modal */}
+          <button
+            onClick={() => setSearchOpen(true)}
+            style={{
+              display: 'flex', alignItems: 'center', gap: '6px',
+              background: 'var(--surface-2)',
+              border: '1px solid var(--border)',
+              borderRadius: '7px',
+              padding: '5px 12px',
+              color: 'var(--text-3)',
+              fontSize: '12.5px',
+              cursor: 'pointer',
+              transition: 'all 0.15s',
+              fontFamily: 'inherit',
+            }}
+            onMouseEnter={e => {
+              e.currentTarget.style.background = 'var(--surface)';
+              e.currentTarget.style.borderColor = 'var(--border-2)';
+              e.currentTarget.style.color = 'var(--text-2)';
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.style.background = 'var(--surface-2)';
+              e.currentTarget.style.borderColor = 'var(--border)';
+              e.currentTarget.style.color = 'var(--text-3)';
+            }}
+            title="Search (Ctrl+K)"
+          >
+            <FiSearch size={13} />
+            <span>Search…</span>
+            <kbd style={{
+              marginLeft: '6px',
+              background: 'var(--surface)',
+              border: '1px solid var(--border)',
+              borderRadius: '4px',
+              padding: '1px 5px',
+              fontSize: '10px',
+              color: 'var(--text-3)',
+              fontFamily: 'inherit',
+            }}>⌘K</kbd>
+          </button>
+
+          {/* Notification bell */}
+          <NotificationPanel />
+
+          {/* Avatar */}
+          <div
+            style={{
+              width: '30px', height: '30px',
+              borderRadius: '8px',
+              background: 'var(--accent)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              fontSize: '11px', fontWeight: 700, color: '#fff',
+              boxShadow: '0 2px 6px rgba(79,70,229,0.3)',
+              cursor: 'pointer',
+              flexShrink: 0,
+              transition: 'transform 0.15s, box-shadow 0.15s',
+            }}
+            title={user?.firstName || user?.username}
+            onClick={() => navigate('/profile')}
+            onMouseEnter={e => {
+              e.currentTarget.style.transform = 'scale(1.08)';
+              e.currentTarget.style.boxShadow = '0 4px 12px rgba(79,70,229,0.4)';
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.style.transform = 'scale(1)';
+              e.currentTarget.style.boxShadow = '0 2px 6px rgba(79,70,229,0.3)';
+            }}
+          >
+            {(user?.firstName?.[0] || user?.username?.[0] || 'U').toUpperCase()}
+          </div>
+        </div>
+      </header>
+
+      {/* Global search modal */}
+      <SearchModal isOpen={searchOpen} onClose={() => setSearchOpen(false)} />
+    </>
+  );
+}

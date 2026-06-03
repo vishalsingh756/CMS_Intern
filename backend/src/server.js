@@ -16,6 +16,8 @@ import userRoutes from './routes/userRoutes.js';
 import activityRoutes from './routes/activityRoutes.js';
 import reportRoutes from './routes/reportRoutes.js';
 import importExportRoutes from './routes/importExportRoutes.js';
+import leadRoutes from './routes/leadRoutes.js';
+import noteRoutes from './routes/noteRoutes.js';
 
 dotenv.config();
 
@@ -52,6 +54,8 @@ app.use('/api/users', userRoutes);
 app.use('/api/activity', activityRoutes);
 app.use('/api/reports', reportRoutes);
 app.use('/api/data', importExportRoutes);
+app.use('/api/leads', leadRoutes);
+app.use('/api/notes', noteRoutes);
 
 // 404 handler
 app.use((req, res) => {

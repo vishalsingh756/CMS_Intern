@@ -1,122 +1,136 @@
 import { useState, useEffect } from 'react';
-import { FiActivity, FiFilter } from 'react-icons/fi';
+import { FiActivity, FiChevronLeft, FiChevronRight } from 'react-icons/fi';
 import Layout from '../components/Layout';
 import apiClient from '../services/api';
 import { toast } from 'react-toastify';
 
 const ACTION_ICONS = {
-  login: '🔐',
-  logout: '🚪',
-  create_client: '👤',
-  edit_client: '✏️',
-  delete_client: '🗑️',
-  create_deal: '💰',
-  edit_deal: '✏️',
-  delete_deal: '🗑️',
-  win_deal: '🏆',
-  lose_deal: '😞',
-  create_task: '✅',
-  update_task: '🔄',
-  complete_task: '✅',
-  delete_task: '🗑️',
-  create_interaction: '💬',
-  edit_interaction: '✏️',
-  delete_interaction: '🗑️',
-  create_user: '👤',
-  edit_user: '✏️',
+  login:'🔐', logout:'🚪',
+  create_client:'👤', edit_client:'✏️', delete_client:'🗑️',
+  create_deal:'💰', edit_deal:'✏️', delete_deal:'🗑️', win_deal:'🏆', lose_deal:'😞',
+  create_task:'✅', update_task:'🔄', complete_task:'✅', delete_task:'🗑️',
+  create_interaction:'💬', edit_interaction:'✏️', delete_interaction:'🗑️',
+  create_user:'👤', edit_user:'✏️',
+};
+const ACTION_COLOR = {
+  login:'var(--green)', logout:'var(--text-3)',
+  create_client:'var(--accent)', edit_client:'var(--blue)', delete_client:'var(--red)',
+  create_deal:'var(--green)', win_deal:'var(--green)', lose_deal:'var(--red)',
+  create_task:'var(--yellow)', complete_task:'var(--green)', delete_task:'var(--red)',
 };
 
-const ActivityLogs = () => {
-  const [logs, setLogs] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
+export default function ActivityLogs() {
+  const [logs, setLogs]         = useState([]);
+  const [loading, setLoading]   = useState(true);
+  const [page, setPage]         = useState(1);
+  const [totalPages, setTP]     = useState(1);
 
   useEffect(() => {
-    const fetchLogs = async () => {
+    const load = async () => {
       setLoading(true);
       try {
-        const res = await apiClient.get('/activity', { params: { page, limit: 20 } });
-        setLogs(res.data.data.logs || res.data.data || []);
-        setTotalPages(res.data.data.pagination?.pages || 1);
-      } catch (err) {
-        // Fallback: try different endpoint
+        const r = await apiClient.get('/activity', { params:{ page, limit:25 } });
+        setLogs(r.data.data.logs || r.data.data || []);
+        setTP(r.data.data.pagination?.pages || 1);
+      } catch {
         try {
-          const res2 = await apiClient.get('/auth/activity', { params: { page, limit: 20 } });
-          setLogs(res2.data.data || []);
-        } catch (err2) {
-          toast.error('Failed to load activity logs');
-        }
-      } finally {
-        setLoading(false);
-      }
+          const r2 = await apiClient.get('/auth/activity', { params:{ page, limit:25 } });
+          setLogs(r2.data.data || []);
+        } catch { toast.error('Failed to load activity logs'); }
+      } finally { setLoading(false); }
     };
-    fetchLogs();
+    load();
   }, [page]);
 
   return (
     <Layout>
-      <div className="p-6 lg:p-8 space-y-6">
-        <div>
-          <h1 className="text-2xl font-bold text-white">Activity Logs</h1>
-          <p className="text-gray-500 text-sm mt-1">System-wide activity history</p>
+      <div className="page">
+        <div className="page-header">
+          <div>
+            <h1 className="page-title">Activity Logs</h1>
+            <p className="page-sub">System-wide audit trail</p>
+          </div>
         </div>
 
-        <div className="bg-gray-900 border border-gray-800 rounded-2xl overflow-hidden">
+        <div className="card" style={{ overflow:'hidden' }}>
           {loading ? (
-            <div className="flex items-center justify-center py-20">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-cyan-400"></div>
-            </div>
+            <div className="empty"><div className="spinner" /></div>
           ) : logs.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-20 text-gray-600">
-              <FiActivity size={48} className="mb-3 opacity-30" />
-              <p>No activity logs found</p>
+            <div className="empty">
+              <FiActivity size={32} className="empty-icon" />
+              <p className="empty-title">No activity yet</p>
+              <p className="empty-sub">Actions will appear here as the system is used</p>
             </div>
           ) : (
-            <div className="divide-y divide-gray-800/60">
-              {logs.map((log, i) => (
-                <div key={log._id || i} className="flex items-start gap-4 px-6 py-4 hover:bg-gray-800/30 transition-colors">
-                  <div className="w-10 h-10 rounded-xl bg-gray-800 flex items-center justify-center text-xl flex-shrink-0 mt-0.5">
-                    {ACTION_ICONS[log.action] || '📌'}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <p className="text-white text-sm font-medium">
-                        {log.action?.replace(/_/g, ' ') || 'Action'}
-                      </p>
-                      <span className="text-gray-600 text-xs">·</span>
-                      <span className="text-gray-500 text-xs capitalize">{log.entityType}</span>
+            <div>
+              {logs.map((log, i) => {
+                const color = ACTION_COLOR[log.action] || 'var(--accent)';
+                return (
+                  <div key={log._id||i} style={{
+                    display:'flex', alignItems:'flex-start', gap:'13px',
+                    padding:'13px 18px',
+                    borderBottom:'1px solid #f3f4f6',
+                    transition:'background 0.12s',
+                  }}
+                    onMouseEnter={e => e.currentTarget.style.background='#fafafa'}
+                    onMouseLeave={e => e.currentTarget.style.background='#fff'}
+                  >
+                    {/* Icon bubble */}
+                    <div style={{
+                      width:'36px', height:'36px', borderRadius:'9px', flexShrink:0,
+                      background: color+'12', border:`1px solid ${color}25`,
+                      display:'flex', alignItems:'center', justifyContent:'center',
+                      fontSize:'16px',
+                    }}>
+                      {ACTION_ICONS[log.action] || '📌'}
                     </div>
-                    <p className="text-gray-500 text-xs mt-0.5">
-                      by {log.user?.username || log.userId?.username || 'Unknown'} ·{' '}
-                      {log.createdAt ? new Date(log.createdAt).toLocaleString() : 'Unknown time'}
-                    </p>
+
+                    {/* Info */}
+                    <div style={{ flex:1, minWidth:0 }}>
+                      <div style={{ display:'flex', alignItems:'center', gap:'6px', flexWrap:'wrap' }}>
+                        <span style={{ fontSize:'13.5px', fontWeight:600, color:'var(--text-1)', textTransform:'capitalize' }}>
+                          {log.action?.replace(/_/g,' ') || 'Action'}
+                        </span>
+                        {log.entityType && (
+                          <>
+                            <span style={{ color:'var(--border-2)' }}>·</span>
+                            <span style={{ fontSize:'11.5px', color:'var(--text-3)', textTransform:'capitalize' }}>
+                              {log.entityType}
+                            </span>
+                          </>
+                        )}
+                      </div>
+                      <p style={{ fontSize:'11.5px', color:'var(--text-3)', marginTop:'2px' }}>
+                        by <strong style={{ color:'var(--text-2)', fontWeight:600 }}>
+                          {log.user?.username || log.userId?.username || 'Unknown'}
+                        </strong>
+                        {' · '}
+                        {log.createdAt ? new Date(log.createdAt).toLocaleString() : '—'}
+                      </p>
+                    </div>
+
+                    {/* Time chip */}
+                    <div style={{ fontSize:'11px', color:'var(--text-3)', flexShrink:0, paddingTop:'2px' }}>
+                      {log.createdAt ? new Date(log.createdAt).toLocaleDateString() : ''}
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>
 
         {/* Pagination */}
         {totalPages > 1 && (
-          <div className="flex justify-center gap-2">
-            {Array.from({ length: totalPages }, (_, i) => (
-              <button
-                key={i + 1}
-                onClick={() => setPage(i + 1)}
-                className={`w-9 h-9 rounded-lg text-sm font-medium transition-all ${
-                  page === i + 1 ? 'bg-cyan-500 text-white' : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
-                }`}
-              >
-                {i + 1}
-              </button>
-            ))}
+          <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginTop:'14px' }}>
+            <span style={{ fontSize:'12.5px', color:'var(--text-3)' }}>Page {page} of {totalPages}</span>
+            <div style={{ display:'flex', gap:'6px' }}>
+              <button className="btn btn-ghost" onClick={() => setPage(p => Math.max(1,p-1))} disabled={page===1} style={{ padding:'6px 10px' }}><FiChevronLeft size={14} /></button>
+              <button className="btn btn-ghost" onClick={() => setPage(p => Math.min(totalPages,p+1))} disabled={page===totalPages} style={{ padding:'6px 10px' }}><FiChevronRight size={14} /></button>
+            </div>
           </div>
         )}
       </div>
     </Layout>
   );
-};
-
-export default ActivityLogs;
+}

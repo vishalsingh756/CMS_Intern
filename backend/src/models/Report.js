@@ -42,11 +42,11 @@ const reportSchema = new mongoose.Schema(
       default: null,
     },
     aggregateBy: {
-      field: String, // Field to aggregate (e.g., 'amount')
+      field: { type: String, default: null },
       function: {
         type: String,
-        enum: ['sum', 'avg', 'count', 'min', 'max'],
-        default: 'count'
+        enum: ['sum', 'avg', 'count', 'min', 'max', null],
+        default: 'count',
       }
     },
     sortBy: {

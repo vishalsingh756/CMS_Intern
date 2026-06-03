@@ -5,13 +5,17 @@ import { sendResponse } from '../utils/helpers.js';
 
 const router = express.Router();
 
-router.get('/', protect, authorize('admin'), async (req, res) => {
+router.get('/', protect, async (req, res) => {
   try {
     const { page = 1, limit = 20, action, entityType, userId } = req.query;
     const skip = (parseInt(page) - 1) * parseInt(limit);
 
+    // Non-admins see team activity (all logs) but cannot filter by userId;
+    // Admins can filter by any userId.
+    const resolvedUserId = req.user.role === 'admin' ? userId : undefined;
+
     const result = await getActivityLogs(
-      { userId, action, entityType },
+      { userId: resolvedUserId, action, entityType },
       parseInt(limit),
       skip
     );

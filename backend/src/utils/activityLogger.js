@@ -26,7 +26,7 @@ export const getActivityLogs = async (filters = {}, limit = 50, skip = 0) => {
   if (filters.entityType) query.entityType = filters.entityType;
 
   const logs = await ActivityLog.find(query)
-    .populate('user', 'username email')
+    .populate('user', 'username email firstName lastName')
     .sort({ createdAt: -1 })
     .limit(limit)
     .skip(skip);

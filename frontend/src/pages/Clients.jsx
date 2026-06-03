@@ -2,386 +2,275 @@ import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   FiPlus, FiEdit2, FiTrash2, FiSearch, FiMail, FiPhone,
-  FiGlobe, FiX, FiChevronLeft, FiChevronRight, FiEye,
+  FiX, FiChevronLeft, FiChevronRight, FiEye,
 } from 'react-icons/fi';
 import { MdBusiness } from 'react-icons/md';
 import Layout from '../components/Layout';
-import { clientService, userService } from '../services/api';
+import { clientService } from '../services/api';
 import { toast } from 'react-toastify';
 import useAuthStore from '../utils/authStore';
 
-const STATUS_COLORS = {
-  prospect: 'bg-yellow-500/10 text-yellow-400 border-yellow-500/30',
-  active: 'bg-green-500/10 text-green-400 border-green-500/30',
-  inactive: 'bg-gray-500/10 text-gray-400 border-gray-500/30',
-  lost: 'bg-red-500/10 text-red-400 border-red-500/30',
+const STATUS_BADGE = {
+  prospect: 'badge badge-yellow',
+  active:   'badge badge-green',
+  inactive: 'badge badge-gray',
+  lost:     'badge badge-red',
 };
 
-const INDUSTRIES = ['Technology', 'Finance', 'Healthcare', 'Retail', 'Manufacturing', 'Education', 'Other'];
-const SOURCES = ['Website', 'Referral', 'Cold Call', 'Email', 'Social Media', 'Other'];
+const INDUSTRIES = ['Technology','Finance','Healthcare','Retail','Manufacturing','Education','Other'];
+const SOURCES    = ['Website','Referral','Cold Call','Email','Social Media','Other'];
 
-const emptyForm = {
-  companyName: '', contactName: '', email: '', phone: '',
-  address: { street: '', city: '', state: '', country: '', postalCode: '' },
-  industry: '', status: 'prospect', source: '', website: '', notes: '',
+const EMPTY = {
+  companyName:'', contactName:'', email:'', phone:'',
+  address:{ street:'', city:'', state:'', country:'', postalCode:'' },
+  industry:'', status:'prospect', source:'', website:'', notes:'',
 };
 
-const Modal = ({ open, onClose, title, children }) => {
+/* ── Modal shell ───────────────────────────────────── */
+function Modal({ open, onClose, title, mw=580, children }) {
   if (!open) return null;
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-      <div className="bg-gray-900 border border-gray-700 rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl">
-        <div className="flex items-center justify-between p-6 border-b border-gray-800">
-          <h3 className="text-lg font-semibold text-white">{title}</h3>
-          <button onClick={onClose} className="text-gray-400 hover:text-white transition-colors">
-            <FiX size={20} />
-          </button>
+    <div className="modal-overlay" onClick={e => e.target === e.currentTarget && onClose()}>
+      <div className="modal-box" style={{ maxWidth: mw }}>
+        <div className="modal-header">
+          <span className="modal-title">{title}</span>
+          <button className="btn-icon" onClick={onClose}><FiX size={15} /></button>
         </div>
-        <div className="p-6">{children}</div>
+        <div className="modal-body">{children}</div>
       </div>
     </div>
   );
-};
+}
 
-const InputField = ({ label, ...props }) => (
+/* ── Form atoms ────────────────────────────────────── */
+const Lbl = ({ children }) => <label className="label">{children}</label>;
+const Inp = ({ label, ...p }) => (
   <div>
-    <label className="block text-xs font-medium text-gray-400 mb-1.5">{label}</label>
-    <input
-      {...props}
-      className="w-full bg-gray-800 border border-gray-700 text-white rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-transparent outline-none placeholder-gray-600 transition-all"
-    />
+    {label && <Lbl>{label}</Lbl>}
+    <input {...p} className="input" />
   </div>
 );
-
-const SelectField = ({ label, options, ...props }) => (
+const Sel = ({ label, opts, ...p }) => (
   <div>
-    <label className="block text-xs font-medium text-gray-400 mb-1.5">{label}</label>
-    <select
-      {...props}
-      className="w-full bg-gray-800 border border-gray-700 text-white rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-transparent outline-none transition-all"
-    >
-      {options.map(o => (
-        <option key={o.value} value={o.value}>{o.label}</option>
-      ))}
+    {label && <Lbl>{label}</Lbl>}
+    <select {...p} className="input">
+      {opts.map(o => <option key={o.v} value={o.v}>{o.l}</option>)}
     </select>
   </div>
 );
 
-const ClientForm = ({ form, setForm, onSubmit, loading, onClose }) => {
-  const handleChange = (e) => {
+/* ── Client form ────────────────────────────────────── */
+function ClientForm({ form, setForm, onSubmit, loading, onClose }) {
+  const ch = e => {
     const { name, value } = e.target;
-    if (name.startsWith('address.')) {
-      const key = name.split('.')[1];
-      setForm(f => ({ ...f, address: { ...f.address, [key]: value } }));
-    } else {
-      setForm(f => ({ ...f, [name]: value }));
-    }
+    name.startsWith('a.')
+      ? setForm(f => ({ ...f, address: { ...f.address, [name.slice(2)]: value } }))
+      : setForm(f => ({ ...f, [name]: value }));
   };
+  // alias
+  const a = (field) => ({ name: `a.${field}`, value: form.address?.[field] || '', onChange: ch });
 
   return (
-    <form onSubmit={onSubmit} className="space-y-5">
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <InputField label="Company Name *" name="companyName" value={form.companyName} onChange={handleChange} required placeholder="Acme Corp" />
-        <InputField label="Contact Name *" name="contactName" value={form.contactName} onChange={handleChange} required placeholder="John Doe" />
-        <InputField label="Email *" type="email" name="email" value={form.email} onChange={handleChange} required placeholder="john@acme.com" />
-        <InputField label="Phone *" name="phone" value={form.phone} onChange={handleChange} required placeholder="+1 234 567 8900" />
-        <InputField label="Website" name="website" value={form.website} onChange={handleChange} placeholder="https://acme.com" />
-        <SelectField
-          label="Industry"
-          name="industry"
-          value={form.industry}
-          onChange={handleChange}
-          options={[{ value: '', label: 'Select Industry' }, ...INDUSTRIES.map(i => ({ value: i, label: i }))]}
-        />
-        <SelectField
-          label="Status"
-          name="status"
-          value={form.status}
-          onChange={handleChange}
-          options={[
-            { value: 'prospect', label: 'Prospect' },
-            { value: 'active', label: 'Active' },
-            { value: 'inactive', label: 'Inactive' },
-            { value: 'lost', label: 'Lost' },
-          ]}
-        />
-        <SelectField
-          label="Lead Source"
-          name="source"
-          value={form.source}
-          onChange={handleChange}
-          options={[{ value: '', label: 'Select Source' }, ...SOURCES.map(s => ({ value: s, label: s }))]}
-        />
+    <form onSubmit={onSubmit} style={{ display:'flex', flexDirection:'column', gap:'14px' }}>
+      <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'12px' }}>
+        <Inp label="Company Name *" name="companyName" value={form.companyName} onChange={ch} required placeholder="Acme Corp" />
+        <Inp label="Contact Name *" name="contactName" value={form.contactName} onChange={ch} required placeholder="John Doe" />
+        <Inp label="Email *" type="email" name="email" value={form.email} onChange={ch} required placeholder="john@acme.com" />
+        <Inp label="Phone *" name="phone" value={form.phone} onChange={ch} required placeholder="+1 234 567 8900" />
+        <Inp label="Website" name="website" value={form.website} onChange={ch} placeholder="https://acme.com" />
+        <Sel label="Industry" name="industry" value={form.industry} onChange={ch}
+          opts={[{v:'',l:'Select…'}, ...INDUSTRIES.map(i => ({v:i,l:i}))]} />
+        <Sel label="Status" name="status" value={form.status} onChange={ch}
+          opts={[{v:'prospect',l:'Prospect'},{v:'active',l:'Active'},{v:'inactive',l:'Inactive'},{v:'lost',l:'Lost'}]} />
+        <Sel label="Source" name="source" value={form.source} onChange={ch}
+          opts={[{v:'',l:'Select…'}, ...SOURCES.map(s => ({v:s,l:s}))]} />
       </div>
 
-      <div className="border-t border-gray-800 pt-4">
-        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Address</p>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <InputField label="Street" name="address.street" value={form.address?.street || ''} onChange={handleChange} placeholder="123 Main St" />
-          <InputField label="City" name="address.city" value={form.address?.city || ''} onChange={handleChange} placeholder="New York" />
-          <InputField label="State" name="address.state" value={form.address?.state || ''} onChange={handleChange} placeholder="NY" />
-          <InputField label="Country" name="address.country" value={form.address?.country || ''} onChange={handleChange} placeholder="USA" />
-          <InputField label="Postal Code" name="address.postalCode" value={form.address?.postalCode || ''} onChange={handleChange} placeholder="10001" />
+      <div>
+        <p style={{ fontSize:'10.5px', fontWeight:700, color:'var(--text-3)', textTransform:'uppercase', letterSpacing:'0.08em', marginBottom:'10px' }}>Address</p>
+        <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'10px' }}>
+          <Inp label="Street"  {...a('street')}     placeholder="123 Main St" />
+          <Inp label="City"    {...a('city')}        placeholder="New York" />
+          <Inp label="State"   {...a('state')}       placeholder="NY" />
+          <Inp label="Country" {...a('country')}     placeholder="USA" />
+          <Inp label="Postal"  {...a('postalCode')}  placeholder="10001" />
         </div>
       </div>
 
       <div>
-        <label className="block text-xs font-medium text-gray-400 mb-1.5">Notes</label>
-        <textarea
-          name="notes"
-          value={form.notes}
-          onChange={handleChange}
-          rows={3}
-          placeholder="Additional notes about this client..."
-          className="w-full bg-gray-800 border border-gray-700 text-white rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-cyan-500 outline-none placeholder-gray-600 resize-none transition-all"
-        />
+        <Lbl>Notes</Lbl>
+        <textarea name="notes" value={form.notes} onChange={ch} rows={3}
+          placeholder="Additional notes…"
+          className="input" style={{ resize:'none' }} />
       </div>
 
-      <div className="flex gap-3 pt-2">
-        <button type="button" onClick={onClose} className="flex-1 px-5 py-2.5 text-sm bg-gray-800 text-gray-300 rounded-xl hover:bg-gray-700 transition-all">
-          Cancel
-        </button>
-        <button
-          type="submit"
-          disabled={loading}
-          className="flex-1 px-5 py-2.5 text-sm bg-cyan-500 text-white rounded-xl hover:bg-cyan-400 transition-all disabled:opacity-50"
-        >
-          {loading ? 'Saving...' : 'Save Client'}
+      <div style={{ display:'flex', gap:'10px', marginTop:'2px' }}>
+        <button type="button" onClick={onClose} className="btn btn-ghost" style={{ flex:1 }}>Cancel</button>
+        <button type="submit" disabled={loading} className="btn btn-primary" style={{ flex:1 }}>
+          {loading ? <span className="spinner spinner-sm spinner-white" /> : 'Save Client'}
         </button>
       </div>
     </form>
   );
-};
+}
 
-const Clients = () => {
+/* ── Main ───────────────────────────────────────────── */
+export default function Clients() {
   const navigate = useNavigate();
   const { user } = useAuthStore();
-  const [clients, setClients] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [total, setTotal] = useState(0);
-  const [search, setSearch] = useState('');
-  const [status, setStatus] = useState('');
-  const [modalOpen, setModalOpen] = useState(false);
-  const [editClient, setEditClient] = useState(null);
-  const [form, setForm] = useState(emptyForm);
-  const [formLoading, setFormLoading] = useState(false);
-  const [deleteId, setDeleteId] = useState(null);
+  const [clients, setClients]   = useState([]);
+  const [loading, setLoading]   = useState(true);
+  const [page, setPage]         = useState(1);
+  const [totalPages, setTP]     = useState(1);
+  const [total, setTotal]       = useState(0);
+  const [search, setSearch]     = useState('');
+  const [status, setStatus]     = useState('');
+  const [modal, setModal]       = useState(false);
+  const [editC, setEditC]       = useState(null);
+  const [form, setForm]         = useState(EMPTY);
+  const [fLoad, setFLoad]       = useState(false);
+  const [delId, setDelId]       = useState(null);
 
-  const fetchClients = useCallback(async () => {
+  const fetch = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await clientService.getClients({
-        page, limit: 10,
-        status: status || undefined,
-        search: search || undefined,
-      });
-      setClients(res.data.data.clients);
-      setTotalPages(res.data.data.pagination.pages);
-      setTotal(res.data.data.pagination.total);
-    } catch (err) {
-      toast.error('Failed to fetch clients');
-    } finally {
-      setLoading(false);
-    }
+      const r = await clientService.getClients({ page, limit:10, status: status||undefined, search: search||undefined });
+      setClients(r.data.data.clients);
+      setTP(r.data.data.pagination.pages);
+      setTotal(r.data.data.pagination.total);
+    } catch { toast.error('Failed to load clients'); }
+    finally { setLoading(false); }
   }, [page, status, search]);
 
-  useEffect(() => { fetchClients(); }, [fetchClients]);
+  useEffect(() => { fetch(); }, [fetch]);
 
-  const openCreate = () => {
-    setEditClient(null);
-    setForm(emptyForm);
-    setModalOpen(true);
+  const openCreate = () => { setEditC(null); setForm(EMPTY); setModal(true); };
+  const openEdit   = c  => {
+    setEditC(c);
+    setForm({ companyName:c.companyName||'', contactName:c.contactName||'', email:c.email||'', phone:c.phone||'',
+      address: c.address||{street:'',city:'',state:'',country:'',postalCode:''},
+      industry:c.industry||'', status:c.status||'prospect', source:c.source||'', website:c.website||'', notes:c.notes||'' });
+    setModal(true);
   };
 
-  const openEdit = (client) => {
-    setEditClient(client);
-    setForm({
-      companyName: client.companyName || '',
-      contactName: client.contactName || '',
-      email: client.email || '',
-      phone: client.phone || '',
-      address: client.address || { street: '', city: '', state: '', country: '', postalCode: '' },
-      industry: client.industry || '',
-      status: client.status || 'prospect',
-      source: client.source || '',
-      website: client.website || '',
-      notes: client.notes || '',
-    });
-    setModalOpen(true);
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setFormLoading(true);
+  const save = async e => {
+    e.preventDefault(); setFLoad(true);
     try {
-      // Strip empty strings for optional enum fields so Mongoose doesn't reject them
-      const cleanForm = { ...form };
-      if (!cleanForm.industry) delete cleanForm.industry;
-      if (!cleanForm.source) delete cleanForm.source;
-      if (!cleanForm.website) delete cleanForm.website;
-      if (!cleanForm.notes) delete cleanForm.notes;
-
-      if (editClient) {
-        await clientService.updateClient(editClient._id, cleanForm);
-        toast.success('Client updated successfully');
-      } else {
-        await clientService.createClient(cleanForm);
-        toast.success('Client created successfully');
-      }
-      setModalOpen(false);
-      fetchClients();
-    } catch (err) {
-      toast.error(err.response?.data?.message || 'Failed to save client');
-    } finally {
-      setFormLoading(false);
-    }
+      const clean = { ...form };
+      if (!clean.industry) delete clean.industry;
+      if (!clean.source)   delete clean.source;
+      if (!clean.website)  delete clean.website;
+      if (!clean.notes)    delete clean.notes;
+      editC
+        ? (await clientService.updateClient(editC._id, clean), toast.success('Client updated'))
+        : (await clientService.createClient(clean),            toast.success('Client created'));
+      setModal(false); fetch();
+    } catch (err) { toast.error(err.response?.data?.message || 'Failed to save'); }
+    finally { setFLoad(false); }
   };
 
-  const handleDelete = async (id) => {
-    try {
-      await clientService.deleteClient(id);
-      toast.success('Client deleted');
-      setDeleteId(null);
-      fetchClients();
-    } catch (err) {
-      toast.error('Failed to delete client');
-    }
+  const del = async id => {
+    try { await clientService.deleteClient(id); toast.success('Deleted'); setDelId(null); fetch(); }
+    catch { toast.error('Failed to delete'); }
   };
 
   return (
     <Layout>
-      <div className="p-6 lg:p-8 space-y-6">
+      <div className="page">
         {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="page-header">
           <div>
-            <h1 className="text-2xl font-bold text-white">Clients</h1>
-            <p className="text-gray-500 text-sm mt-1">{total} clients total</p>
+            <h1 className="page-title">Clients</h1>
+            <p className="page-sub">{total} total clients</p>
           </div>
-          <button
-            onClick={openCreate}
-            className="flex items-center gap-2 bg-cyan-500 hover:bg-cyan-400 text-white px-5 py-2.5 rounded-xl text-sm font-medium transition-all"
-          >
-            <FiPlus size={16} /> Add Client
+          <button onClick={openCreate} className="btn btn-primary">
+            <FiPlus size={14} /> Add Client
           </button>
         </div>
 
-        {/* Filters */}
-        <div className="bg-gray-900 border border-gray-800 rounded-2xl p-4">
-          <div className="flex flex-col sm:flex-row gap-3">
-            <div className="flex-1 relative">
-              <FiSearch className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500" size={16} />
-              <input
-                type="text"
-                placeholder="Search clients, contacts, emails..."
-                value={search}
-                onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-                className="w-full bg-gray-800 border border-gray-700 text-white rounded-xl pl-10 pr-4 py-2.5 text-sm focus:ring-2 focus:ring-cyan-500 outline-none placeholder-gray-600"
-              />
-            </div>
-            <select
-              value={status}
-              onChange={(e) => { setStatus(e.target.value); setPage(1); }}
-              className="bg-gray-800 border border-gray-700 text-white rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-cyan-500 outline-none"
-            >
-              <option value="">All Status</option>
-              <option value="prospect">Prospect</option>
-              <option value="active">Active</option>
-              <option value="inactive">Inactive</option>
-              <option value="lost">Lost</option>
-            </select>
+        {/* Filter bar */}
+        <div className="filter-bar">
+          <div className="search-wrap">
+            <FiSearch size={14} className="search-icon" />
+            <input
+              type="text" placeholder="Search clients…"
+              value={search} onChange={e => { setSearch(e.target.value); setPage(1); }}
+              className="input input-icon-left"
+              style={{ minHeight:'36px' }}
+            />
           </div>
+          <select value={status} onChange={e => { setStatus(e.target.value); setPage(1); }}
+            className="input" style={{ width:'auto', minWidth:'130px', minHeight:'36px' }}>
+            <option value="">All Status</option>
+            <option value="prospect">Prospect</option>
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
+            <option value="lost">Lost</option>
+          </select>
         </div>
 
         {/* Table */}
-        <div className="bg-gray-900 border border-gray-800 rounded-2xl overflow-hidden">
+        <div className="card" style={{ overflow:'hidden' }}>
           {loading ? (
-            <div className="flex items-center justify-center py-20">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-cyan-400"></div>
-            </div>
+            <div className="empty"><div className="spinner" /></div>
           ) : clients.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-20 text-gray-600">
-              <MdBusiness size={48} className="mb-3 opacity-30" />
-              <p className="text-base font-medium">No clients found</p>
-              <p className="text-sm mt-1">Create your first client to get started</p>
-              <button
-                onClick={openCreate}
-                className="mt-4 flex items-center gap-2 bg-cyan-500 text-white px-5 py-2 rounded-xl text-sm"
-              >
-                <FiPlus size={14} /> Add Client
+            <div className="empty">
+              <MdBusiness size={36} className="empty-icon" />
+              <p className="empty-title">No clients yet</p>
+              <p className="empty-sub">Add your first client to get started</p>
+              <button onClick={openCreate} className="btn btn-primary" style={{ marginTop:'14px' }}>
+                <FiPlus size={13} /> Add Client
               </button>
             </div>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full">
+            <div style={{ overflowX:'auto' }}>
+              <table className="data-table">
                 <thead>
-                  <tr className="border-b border-gray-800">
-                    <th className="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Company</th>
-                    <th className="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider hidden md:table-cell">Contact</th>
-                    <th className="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider hidden lg:table-cell">Industry</th>
-                    <th className="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
-                    <th className="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider hidden lg:table-cell">Added</th>
-                    <th className="text-right px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Actions</th>
+                  <tr>
+                    <th>Company</th>
+                    <th>Contact</th>
+                    <th>Status</th>
+                    <th>Industry</th>
+                    <th>Added</th>
+                    <th style={{ textAlign:'right' }}>Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-800/60">
-                  {clients.map((client) => (
-                    <tr key={client._id} className="hover:bg-gray-800/40 transition-colors">
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-3">
-                          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-cyan-500/20 to-blue-500/20 border border-cyan-500/20 flex items-center justify-center text-cyan-400 font-bold text-sm flex-shrink-0">
-                            {client.companyName?.[0]?.toUpperCase()}
+                <tbody>
+                  {clients.map(c => (
+                    <tr key={c._id}>
+                      <td>
+                        <div style={{ display:'flex', alignItems:'center', gap:'10px' }}>
+                          <div style={{
+                            width:'34px', height:'34px', borderRadius:'9px', flexShrink:0,
+                            background:'var(--accent-s)', border:'1px solid #c7d2fe',
+                            display:'flex', alignItems:'center', justifyContent:'center',
+                            fontSize:'13px', fontWeight:800, color:'var(--accent)',
+                          }}>
+                            {c.companyName?.[0]?.toUpperCase()}
                           </div>
                           <div>
-                            <p className="font-medium text-white text-sm">{client.companyName}</p>
-                            <p className="text-gray-500 text-xs flex items-center gap-1 mt-0.5">
-                              <FiMail size={10} /> {client.email}
-                            </p>
+                            <div style={{ fontWeight:600, fontSize:'13.5px', color:'var(--text-1)' }}>{c.companyName}</div>
+                            <div style={{ display:'flex', alignItems:'center', gap:'4px', fontSize:'11.5px', color:'var(--text-3)', marginTop:'1px' }}>
+                              <FiMail size={10} /> {c.email}
+                            </div>
                           </div>
                         </div>
                       </td>
-                      <td className="px-6 py-4 hidden md:table-cell">
-                        <p className="text-gray-300 text-sm">{client.contactName}</p>
-                        <p className="text-gray-500 text-xs flex items-center gap-1 mt-0.5">
-                          <FiPhone size={10} /> {client.phone}
-                        </p>
+                      <td>
+                        <div style={{ fontSize:'13px', fontWeight:500 }}>{c.contactName}</div>
+                        <div style={{ display:'flex', alignItems:'center', gap:'4px', fontSize:'11.5px', color:'var(--text-3)', marginTop:'1px' }}>
+                          <FiPhone size={10} /> {c.phone}
+                        </div>
                       </td>
-                      <td className="px-6 py-4 hidden lg:table-cell">
-                        <span className="text-gray-400 text-sm">{client.industry || '—'}</span>
-                      </td>
-                      <td className="px-6 py-4">
-                        <span className={`inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-medium border ${STATUS_COLORS[client.status]}`}>
-                          {client.status}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 hidden lg:table-cell">
-                        <span className="text-gray-500 text-xs">{new Date(client.createdAt).toLocaleDateString()}</span>
-                      </td>
-                      <td className="px-6 py-4 text-right">
-                        <div className="flex items-center justify-end gap-2">
-                          <button
-                            onClick={() => navigate(`/clients/${client._id}`)}
-                            className="p-2 text-gray-500 hover:text-cyan-400 hover:bg-cyan-400/10 rounded-lg transition-all"
-                            title="View"
-                          >
-                            <FiEye size={15} />
-                          </button>
-                          <button
-                            onClick={() => openEdit(client)}
-                            className="p-2 text-gray-500 hover:text-blue-400 hover:bg-blue-400/10 rounded-lg transition-all"
-                            title="Edit"
-                          >
-                            <FiEdit2 size={15} />
-                          </button>
+                      <td><span className={STATUS_BADGE[c.status] || 'badge badge-gray'}>{c.status}</span></td>
+                      <td style={{ color:'var(--text-2)', fontSize:'13px' }}>{c.industry || '—'}</td>
+                      <td style={{ color:'var(--text-3)', fontSize:'12px' }}>{new Date(c.createdAt).toLocaleDateString()}</td>
+                      <td>
+                        <div style={{ display:'flex', alignItems:'center', justifyContent:'flex-end', gap:'4px' }}>
+                          <button className="btn-icon" onClick={() => navigate(`/clients/${c._id}`)} title="View"><FiEye size={14} /></button>
+                          <button className="btn-icon" onClick={() => openEdit(c)} title="Edit"><FiEdit2 size={14} /></button>
                           {user?.role === 'admin' && (
-                            <button
-                              onClick={() => setDeleteId(client._id)}
-                              className="p-2 text-gray-500 hover:text-red-400 hover:bg-red-400/10 rounded-lg transition-all"
-                              title="Delete"
-                            >
-                              <FiTrash2 size={15} />
-                            </button>
+                            <button className="btn-icon danger" onClick={() => setDelId(c._id)} title="Delete"><FiTrash2 size={14} /></button>
                           )}
                         </div>
                       </td>
@@ -395,52 +284,32 @@ const Clients = () => {
 
         {/* Pagination */}
         {totalPages > 1 && (
-          <div className="flex items-center justify-between">
-            <p className="text-gray-500 text-sm">Page {page} of {totalPages}</p>
-            <div className="flex gap-2">
-              <button
-                onClick={() => setPage(p => Math.max(1, p - 1))}
-                disabled={page === 1}
-                className="p-2 bg-gray-800 text-gray-400 rounded-lg hover:bg-gray-700 disabled:opacity-40 transition-all"
-              >
-                <FiChevronLeft size={16} />
-              </button>
-              <button
-                onClick={() => setPage(p => Math.min(totalPages, p + 1))}
-                disabled={page === totalPages}
-                className="p-2 bg-gray-800 text-gray-400 rounded-lg hover:bg-gray-700 disabled:opacity-40 transition-all"
-              >
-                <FiChevronRight size={16} />
-              </button>
+          <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginTop:'14px' }}>
+            <span style={{ fontSize:'12.5px', color:'var(--text-3)' }}>Page {page} of {totalPages}</span>
+            <div style={{ display:'flex', gap:'6px' }}>
+              <button className="btn btn-ghost" onClick={() => setPage(p => Math.max(1,p-1))} disabled={page===1} style={{ padding:'6px 10px' }}><FiChevronLeft size={14} /></button>
+              <button className="btn btn-ghost" onClick={() => setPage(p => Math.min(totalPages,p+1))} disabled={page===totalPages} style={{ padding:'6px 10px' }}><FiChevronRight size={14} /></button>
             </div>
           </div>
         )}
       </div>
 
-      {/* Create/Edit Modal */}
-      <Modal open={modalOpen} onClose={() => setModalOpen(false)} title={editClient ? 'Edit Client' : 'Add New Client'}>
-        <ClientForm form={form} setForm={setForm} onSubmit={handleSubmit} loading={formLoading} onClose={() => setModalOpen(false)} />
+      <Modal open={modal} onClose={() => setModal(false)} title={editC ? 'Edit Client' : 'New Client'}>
+        <ClientForm form={form} setForm={setForm} onSubmit={save} loading={fLoad} onClose={() => setModal(false)} />
       </Modal>
 
-      {/* Delete Confirmation */}
-      <Modal open={!!deleteId} onClose={() => setDeleteId(null)} title="Delete Client">
-        <div className="text-center space-y-4">
-          <div className="w-14 h-14 bg-red-500/10 rounded-full flex items-center justify-center mx-auto">
-            <FiTrash2 size={24} className="text-red-400" />
+      <Modal open={!!delId} onClose={() => setDelId(null)} title="Delete Client" mw={380}>
+        <div style={{ textAlign:'center' }}>
+          <div style={{ width:'46px', height:'46px', borderRadius:'50%', background:'var(--red-s)', border:'1px solid #fecaca', display:'flex', alignItems:'center', justifyContent:'center', margin:'0 auto 14px' }}>
+            <FiTrash2 size={20} color="var(--red)" />
           </div>
-          <p className="text-gray-300">Are you sure you want to delete this client? This action cannot be undone.</p>
-          <div className="flex gap-3">
-            <button onClick={() => setDeleteId(null)} className="flex-1 px-4 py-2.5 bg-gray-800 text-gray-300 rounded-xl hover:bg-gray-700 text-sm transition-all">
-              Cancel
-            </button>
-            <button onClick={() => handleDelete(deleteId)} className="flex-1 px-4 py-2.5 bg-red-500 text-white rounded-xl hover:bg-red-400 text-sm transition-all">
-              Delete
-            </button>
+          <p style={{ fontSize:'14px', color:'var(--text-2)', marginBottom:'20px' }}>Delete this client? This action cannot be undone.</p>
+          <div style={{ display:'flex', gap:'10px' }}>
+            <button onClick={() => setDelId(null)} className="btn btn-ghost" style={{ flex:1 }}>Cancel</button>
+            <button onClick={() => del(delId)} className="btn btn-danger" style={{ flex:1 }}>Delete</button>
           </div>
         </div>
       </Modal>
     </Layout>
   );
-};
-
-export default Clients;
+}

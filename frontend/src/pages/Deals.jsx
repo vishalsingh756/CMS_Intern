@@ -1,364 +1,433 @@
 import { useState, useEffect, useCallback } from 'react';
 import {
-  FiPlus, FiEdit2, FiTrash2, FiSearch, FiX, FiChevronLeft, FiChevronRight,
-  FiTrendingUp, FiDollarSign,
+  FiPlus, FiEdit2, FiTrash2, FiSearch, FiX,
+  FiChevronLeft, FiChevronRight, FiTrendingUp, FiDollarSign,
 } from 'react-icons/fi';
+import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import Layout from '../components/Layout';
 import { dealService, clientService } from '../services/api';
 import { toast } from 'react-toastify';
-import useAuthStore from '../utils/authStore';
 
-const STAGE_COLORS = {
-  prospect: 'bg-yellow-500/10 text-yellow-400 border-yellow-500/30',
-  negotiation: 'bg-blue-500/10 text-blue-400 border-blue-500/30',
-  proposal: 'bg-purple-500/10 text-purple-400 border-purple-500/30',
-  won: 'bg-green-500/10 text-green-400 border-green-500/30',
-  lost: 'bg-red-500/10 text-red-400 border-red-500/30',
+const STAGE_BADGE = {
+  prospect:    'badge badge-yellow',
+  negotiation: 'badge badge-blue',
+  proposal:    'badge badge-purple',
+  won:         'badge badge-green',
+  lost:        'badge badge-red',
+};
+const PRI_COLOR = { low:'var(--text-3)', medium:'var(--yellow)', high:'var(--red)' };
+
+const STAGE_CONFIG = [
+  { key:'prospect',    label:'Prospect',    color:'var(--yellow)' },
+  { key:'negotiation', label:'Negotiation', color:'var(--blue)'   },
+  { key:'proposal',    label:'Proposal',    color:'var(--purple)' },
+  { key:'won',         label:'Won',         color:'var(--green)'  },
+  { key:'lost',        label:'Lost',        color:'var(--red)'    },
+];
+
+const EMPTY = {
+  title:'', client:'', amount:'', probability:50,
+  stage:'prospect', priority:'medium', expectedCloseDate:'', description:'',
 };
 
-const PRIORITY_COLORS = {
-  low: 'text-gray-400', medium: 'text-yellow-400', high: 'text-red-400',
-};
-
-const Modal = ({ open, onClose, title, children }) => {
+function Modal({ open, onClose, title, mw=520, children }) {
   if (!open) return null;
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-      <div className="bg-gray-900 border border-gray-700 rounded-2xl w-full max-w-xl max-h-[90vh] overflow-y-auto shadow-2xl">
-        <div className="flex items-center justify-between p-6 border-b border-gray-800">
-          <h3 className="text-lg font-semibold text-white">{title}</h3>
-          <button onClick={onClose} className="text-gray-400 hover:text-white"><FiX size={20} /></button>
+    <div className="modal-overlay" onClick={e => e.target===e.currentTarget && onClose()}>
+      <div className="modal-box" style={{ maxWidth:mw }}>
+        <div className="modal-header">
+          <span className="modal-title">{title}</span>
+          <button className="btn-icon" onClick={onClose}><FiX size={15} /></button>
         </div>
-        <div className="p-6">{children}</div>
+        <div className="modal-body">{children}</div>
       </div>
     </div>
   );
-};
+}
 
-const emptyForm = {
-  title: '', client: '', amount: '', probability: 50, stage: 'prospect',
-  priority: 'medium', expectedCloseDate: '', description: '',
-};
-
-const Deals = () => {
-  const { user } = useAuthStore();
-  const [deals, setDeals] = useState([]);
+export default function Deals() {
+  const [view, setView]       = useState('kanban'); // 'list' or 'kanban'
+  const [deals, setDeals]     = useState([]);
   const [clients, setClients] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [total, setTotal] = useState(0);
-  const [search, setSearch] = useState('');
-  const [stage, setStage] = useState('');
-  const [stats, setStats] = useState(null);
-  const [modalOpen, setModalOpen] = useState(false);
-  const [editDeal, setEditDeal] = useState(null);
-  const [form, setForm] = useState(emptyForm);
-  const [formLoading, setFormLoading] = useState(false);
-  const [deleteId, setDeleteId] = useState(null);
+  const [page, setPage]       = useState(1);
+  const [totalPages, setTP]   = useState(1);
+  const [total, setTotal]     = useState(0);
+  const [search, setSearch]   = useState('');
+  const [stage, setStage]     = useState('');
+  const [stats, setStats]     = useState(null);
+  const [modal, setModal]     = useState(false);
+  const [editD, setEditD]     = useState(null);
+  const [form, setForm]       = useState(EMPTY);
+  const [fLoad, setFLoad]     = useState(false);
+  const [delId, setDelId]     = useState(null);
 
-  const fetchDeals = useCallback(async () => {
+  const fetch = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await dealService.getDeals({
-        page, limit: 10,
-        stage: stage || undefined,
-        search: search || undefined,
-      });
-      setDeals(res.data.data.deals);
-      setTotalPages(res.data.data.pagination.pages);
-      setTotal(res.data.data.pagination.total);
-    } catch (err) {
-      toast.error('Failed to fetch deals');
-    } finally {
-      setLoading(false);
-    }
-  }, [page, stage, search]);
+      const limit = view === 'kanban' ? 200 : 10;
+      const r = await dealService.getDeals({ page: view === 'kanban' ? 1 : page, limit, stage: stage||undefined, search: search||undefined });
+      setDeals(r.data.data.deals);
+      setTP(r.data.data.pagination.pages);
+      setTotal(r.data.data.pagination.total);
+    } catch { toast.error('Failed to load deals'); }
+    finally { setLoading(false); }
+  }, [page, stage, search, view]);
 
-  useEffect(() => { fetchDeals(); }, [fetchDeals]);
-
+  useEffect(() => { fetch(); }, [fetch]);
   useEffect(() => {
     dealService.getDealStats().then(r => setStats(r.data.data)).catch(() => {});
-    clientService.getClients({ limit: 200 }).then(r => setClients(r.data.data.clients || [])).catch(() => {});
+    clientService.getClients({ limit:200 }).then(r => setClients(r.data.data.clients||[])).catch(() => {});
   }, []);
 
-  const openCreate = () => { setEditDeal(null); setForm(emptyForm); setModalOpen(true); };
-  const openEdit = (deal) => {
-    setEditDeal(deal);
-    setForm({
-      title: deal.title, client: deal.client?._id || '', amount: deal.amount,
-      probability: deal.probability, stage: deal.stage, priority: deal.priority,
-      expectedCloseDate: deal.expectedCloseDate ? deal.expectedCloseDate.slice(0, 10) : '',
-      description: deal.description || '',
-    });
-    setModalOpen(true);
-  };
+  const handleDragEnd = async (result) => {
+    const { destination, source, draggableId } = result;
+    if (!destination) return;
+    if (destination.droppableId === source.droppableId) return;
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setFormLoading(true);
     try {
-      if (editDeal) {
-        await dealService.updateDeal(editDeal._id, form);
-        toast.success('Deal updated');
-      } else {
-        await dealService.createDeal(form);
-        toast.success('Deal created');
-      }
-      setModalOpen(false);
-      fetchDeals();
+      setDeals(prev => prev.map(d => d._id === draggableId ? { ...d, stage: destination.droppableId } : d));
+      await dealService.updateDeal(draggableId, { stage: destination.droppableId });
+      toast.success('Deal stage updated');
       dealService.getDealStats().then(r => setStats(r.data.data)).catch(() => {});
-    } catch (err) {
-      toast.error(err.response?.data?.message || 'Failed to save deal');
-    } finally {
-      setFormLoading(false);
+    } catch {
+      toast.error('Failed to update stage');
+      fetch();
     }
   };
 
-  const handleDelete = async (id) => {
+  const openCreate = () => { setEditD(null); setForm(EMPTY); setModal(true); };
+  const openEdit   = d => {
+    setEditD(d);
+    setForm({ title:d.title, client:d.client?._id||'', amount:d.amount,
+      probability:d.probability, stage:d.stage, priority:d.priority,
+      expectedCloseDate: d.expectedCloseDate ? d.expectedCloseDate.slice(0,10) : '',
+      description:d.description||'' });
+    setModal(true);
+  };
+
+  const save = async e => {
+    e.preventDefault(); setFLoad(true);
     try {
-      await dealService.deleteDeal(id);
-      toast.success('Deal deleted');
-      setDeleteId(null);
-      fetchDeals();
-    } catch (err) {
-      toast.error('Failed to delete deal');
-    }
+      editD
+        ? (await dealService.updateDeal(editD._id, form), toast.success('Deal updated'))
+        : (await dealService.createDeal(form),            toast.success('Deal created'));
+      setModal(false); fetch();
+      dealService.getDealStats().then(r => setStats(r.data.data)).catch(() => {});
+    } catch (err) { toast.error(err.response?.data?.message || 'Failed to save'); }
+    finally { setFLoad(false); }
   };
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setForm(f => ({ ...f, [name]: value }));
+  const del = async id => {
+    try { await dealService.deleteDeal(id); toast.success('Deleted'); setDelId(null); fetch(); }
+    catch { toast.error('Failed to delete'); }
   };
+
+  const ch = e => setForm(f => ({ ...f, [e.target.name]: e.target.value }));
 
   return (
     <Layout>
-      <div className="p-6 lg:p-8 space-y-6">
+      <div className="page">
         {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="page-header">
           <div>
-            <h1 className="text-2xl font-bold text-white">Deals Pipeline</h1>
-            <p className="text-gray-500 text-sm mt-1">{total} deals · ${stats?.totalAmount?.toLocaleString() || 0} total value</p>
+            <h1 className="page-title">Deals Pipeline</h1>
+            <p className="page-sub">
+              {total} deals
+              {stats?.totalAmount > 0 && <span style={{ marginLeft:'8px' }}>· <strong>${stats.totalAmount.toLocaleString()}</strong> total value</span>}
+            </p>
           </div>
-          <button onClick={openCreate} className="flex items-center gap-2 bg-green-500 hover:bg-green-400 text-white px-5 py-2.5 rounded-xl text-sm font-medium transition-all">
-            <FiPlus size={16} /> New Deal
-          </button>
+          <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+            <div style={{ display: 'flex', background: 'var(--surface-2)', borderRadius: '8px', padding: '3px', border: '1px solid var(--border)' }}>
+              <button
+                className="btn btn-ghost"
+                style={{ padding: '4px 10px', fontSize: '12px', background: view === 'list' ? '#fff' : 'transparent', border: view === 'list' ? '1px solid var(--border)' : 'none', boxShadow: view === 'list' ? 'var(--shadow-xs)' : 'none', color: view === 'list' ? 'var(--text-1)' : 'var(--text-3)', fontWeight: 600 }}
+                onClick={() => setView('list')}
+              >
+                List View
+              </button>
+              <button
+                className="btn btn-ghost"
+                style={{ padding: '4px 10px', fontSize: '12px', background: view === 'kanban' ? '#fff' : 'transparent', border: view === 'kanban' ? '1px solid var(--border)' : 'none', boxShadow: view === 'kanban' ? 'var(--shadow-xs)' : 'none', color: view === 'kanban' ? 'var(--text-1)' : 'var(--text-3)', fontWeight: 600 }}
+                onClick={() => setView('kanban')}
+              >
+                Kanban Board
+              </button>
+            </div>
+            <button onClick={openCreate} className="btn btn-primary">
+              <FiPlus size={14} /> New Deal
+            </button>
+          </div>
         </div>
 
-        {/* Stats */}
+        {/* Stage pills */}
         {stats && (
-          <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
-            {[
-              { label: 'Prospect', count: stats.byStage.prospect, color: 'text-yellow-400' },
-              { label: 'Negotiation', count: stats.byStage.negotiation, color: 'text-blue-400' },
-              { label: 'Proposal', count: stats.byStage.proposal, color: 'text-purple-400' },
-              { label: 'Won', count: stats.byStage.won, color: 'text-green-400' },
-              { label: 'Lost', count: stats.byStage.lost, color: 'text-red-400' },
-            ].map(s => (
-              <button
-                key={s.label}
-                onClick={() => setStage(stage === s.label.toLowerCase() ? '' : s.label.toLowerCase())}
-                className={`bg-gray-900 border rounded-xl p-4 text-center transition-all hover:border-gray-600 ${
-                  stage === s.label.toLowerCase() ? 'border-gray-500 bg-gray-800' : 'border-gray-800'
-                }`}
-              >
-                <p className={`text-2xl font-bold ${s.color}`}>{s.count}</p>
-                <p className="text-gray-500 text-xs mt-1">{s.label}</p>
+          <div style={{ display:'flex', gap:'8px', marginBottom:'16px', flexWrap:'wrap' }}>
+            {STAGE_CONFIG.map(s => (
+              <button key={s.key}
+                onClick={() => setStage(stage===s.key ? '' : s.key)}
+                style={{
+                  display:'flex', alignItems:'center', gap:'7px',
+                  padding:'5px 13px', borderRadius:'99px',
+                  background: stage===s.key ? s.color+'18' : '#fff',
+                  border:`1px solid ${stage===s.key ? s.color+'60' : 'var(--border)'}`,
+                  boxShadow:'var(--shadow-xs)', cursor:'pointer', transition:'all 0.15s',
+                }}>
+                <span style={{ width:'7px', height:'7px', borderRadius:'50%', background:s.color }} />
+                <span style={{ fontSize:'12.5px', fontWeight:700, color:s.color }}>{stats.byStage?.[s.key]||0}</span>
+                <span style={{ fontSize:'12px', color:'var(--text-3)', fontWeight:500 }}>{s.label}</span>
               </button>
             ))}
           </div>
         )}
 
-        {/* Filters */}
-        <div className="bg-gray-900 border border-gray-800 rounded-2xl p-4 flex flex-col sm:flex-row gap-3">
-          <div className="flex-1 relative">
-            <FiSearch className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500" size={16} />
-            <input
-              type="text"
-              placeholder="Search deals..."
-              value={search}
-              onChange={e => { setSearch(e.target.value); setPage(1); }}
-              className="w-full bg-gray-800 border border-gray-700 text-white rounded-xl pl-10 pr-4 py-2.5 text-sm focus:ring-2 focus:ring-green-500 outline-none placeholder-gray-600"
-            />
-          </div>
-          <select
-            value={stage}
-            onChange={e => { setStage(e.target.value); setPage(1); }}
-            className="bg-gray-800 border border-gray-700 text-white rounded-xl px-4 py-2.5 text-sm outline-none"
-          >
-            <option value="">All Stages</option>
-            <option value="prospect">Prospect</option>
-            <option value="negotiation">Negotiation</option>
-            <option value="proposal">Proposal</option>
-            <option value="won">Won</option>
-            <option value="lost">Lost</option>
-          </select>
-        </div>
-
-        {/* Table */}
-        <div className="bg-gray-900 border border-gray-800 rounded-2xl overflow-hidden">
-          {loading ? (
-            <div className="flex items-center justify-center py-20">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-400"></div>
-            </div>
-          ) : deals.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-20 text-gray-600">
-              <FiTrendingUp size={48} className="mb-3 opacity-30" />
-              <p className="text-base font-medium">No deals found</p>
-              <button onClick={openCreate} className="mt-4 flex items-center gap-2 bg-green-500 text-white px-5 py-2 rounded-xl text-sm">
-                <FiPlus size={14} /> Create Deal
-              </button>
-            </div>
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b border-gray-800">
-                    <th className="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Deal</th>
-                    <th className="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider hidden md:table-cell">Client</th>
-                    <th className="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Amount</th>
-                    <th className="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Stage</th>
-                    <th className="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider hidden lg:table-cell">Probability</th>
-                    <th className="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider hidden lg:table-cell">Close Date</th>
-                    <th className="text-right px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-800/60">
-                  {deals.map(deal => (
-                    <tr key={deal._id} className="hover:bg-gray-800/40 transition-colors">
-                      <td className="px-6 py-4">
-                        <p className="font-medium text-white text-sm">{deal.title}</p>
-                        <p className={`text-xs mt-0.5 ${PRIORITY_COLORS[deal.priority]}`}>{deal.priority} priority</p>
-                      </td>
-                      <td className="px-6 py-4 hidden md:table-cell">
-                        <p className="text-gray-300 text-sm">{deal.client?.companyName || '—'}</p>
-                      </td>
-                      <td className="px-6 py-4">
-                        <p className="text-white font-semibold text-sm">${deal.amount?.toLocaleString()}</p>
-                      </td>
-                      <td className="px-6 py-4">
-                        <span className={`inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-medium border ${STAGE_COLORS[deal.stage]}`}>
-                          {deal.stage}
+        {view === 'kanban' ? (
+          <DragDropContext onDragEnd={handleDragEnd}>
+            <div style={{ display: 'flex', gap: '16px', overflowX: 'auto', paddingBottom: '16px', minHeight: 'calc(100vh - 250px)' }}>
+              {STAGE_CONFIG.map(s => {
+                const stageDeals = deals.filter(d => d.stage === s.key);
+                const totalAmt = stageDeals.reduce((sum, d) => sum + (d.amount || 0), 0);
+                return (
+                  <div key={s.key} style={{ flex: '1', minWidth: '270px', background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '12px', padding: '12px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1.5px solid var(--border)', paddingBottom: '8px', marginBottom: '4px' }}>
+                      <div>
+                        <span style={{ fontSize: '13px', fontWeight: 700, color: s.color, display: 'flex', alignItems: 'center', gap: '6px' }}>
+                          <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: s.color }} />
+                          {s.label}
                         </span>
-                      </td>
-                      <td className="px-6 py-4 hidden lg:table-cell">
-                        <div className="flex items-center gap-2">
-                          <div className="flex-1 bg-gray-800 rounded-full h-1.5">
-                            <div
-                              className="bg-green-400 rounded-full h-1.5"
-                              style={{ width: `${deal.probability}%` }}
-                            />
-                          </div>
-                          <span className="text-gray-400 text-xs w-8">{deal.probability}%</span>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 hidden lg:table-cell">
-                        <span className="text-gray-500 text-xs">
-                          {deal.expectedCloseDate ? new Date(deal.expectedCloseDate).toLocaleDateString() : '—'}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 text-right">
-                        <div className="flex items-center justify-end gap-2">
-                          <button onClick={() => openEdit(deal)} className="p-2 text-gray-500 hover:text-blue-400 hover:bg-blue-400/10 rounded-lg transition-all">
-                            <FiEdit2 size={15} />
-                          </button>
-                          <button onClick={() => setDeleteId(deal._id)} className="p-2 text-gray-500 hover:text-red-400 hover:bg-red-400/10 rounded-lg transition-all">
-                            <FiTrash2 size={15} />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </div>
+                        <span style={{ fontSize: '11px', color: 'var(--text-3)' }}>{stageDeals.length} deals</span>
+                      </div>
+                      <span style={{ fontSize: '13px', fontWeight: 700, color: 'var(--text-2)' }}>
+                        ${totalAmt.toLocaleString()}
+                      </span>
+                    </div>
 
-        {/* Pagination */}
-        {totalPages > 1 && (
-          <div className="flex items-center justify-between">
-            <p className="text-gray-500 text-sm">Page {page} of {totalPages}</p>
-            <div className="flex gap-2">
-              <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1} className="p-2 bg-gray-800 text-gray-400 rounded-lg hover:bg-gray-700 disabled:opacity-40">
-                <FiChevronLeft size={16} />
-              </button>
-              <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages} className="p-2 bg-gray-800 text-gray-400 rounded-lg hover:bg-gray-700 disabled:opacity-40">
-                <FiChevronRight size={16} />
-              </button>
+                    <Droppable droppableId={s.key}>
+                      {(provided, snapshot) => (
+                        <div
+                          ref={provided.innerRef}
+                          {...provided.droppableProps}
+                          style={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            gap: '8px',
+                            minHeight: '200px',
+                            background: snapshot.isDraggingOver ? 'var(--surface-2)' : 'transparent',
+                            borderRadius: '8px',
+                            padding: '4px',
+                            transition: 'background 0.15s ease',
+                          }}
+                        >
+                          {stageDeals.map((d, index) => (
+                            <Draggable key={d._id} draggableId={d._id} index={index}>
+                              {(provided, snapshot) => (
+                                <div
+                                  ref={provided.innerRef}
+                                  {...provided.draggableProps}
+                                  {...provided.dragHandleProps}
+                                  style={{
+                                    userSelect: 'none',
+                                    padding: '12px',
+                                    borderRadius: '8px',
+                                    background: '#fff',
+                                    border: '1.5px solid var(--border)',
+                                    boxShadow: snapshot.isDragging ? 'var(--shadow-md)' : 'var(--shadow-sm)',
+                                    transition: 'box-shadow 0.15s ease',
+                                    ...provided.draggableProps.style,
+                                  }}
+                                >
+                                  <div style={{ fontWeight: 600, fontSize: '13.5px', color: 'var(--text-1)', marginBottom: '4px' }}>{d.title}</div>
+                                  <div style={{ fontSize: '11.5px', color: 'var(--text-3)', marginBottom: '6px' }}>{d.client?.companyName || '—'}</div>
+                                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                    <div style={{ fontSize: '13px', fontWeight: 700, color: 'var(--green)', display: 'flex', alignItems: 'center', gap: '2px' }}>
+                                      <FiDollarSign size={12} />
+                                      {d.amount?.toLocaleString()}
+                                    </div>
+                                    <span className="badge badge-gray" style={{ fontSize: '10px' }}>{d.priority}</span>
+                                  </div>
+                                  <div style={{ display: 'flex', gap: '4px', justifyContent: 'flex-end', marginTop: '8px', borderTop: '1px solid var(--border)', paddingTop: '6px' }}>
+                                    <button className="btn-icon" style={{ width: '22px', height: '22px' }} onClick={() => openEdit(d)}><FiEdit2 size={11} /></button>
+                                    <button className="btn-icon danger" style={{ width: '22px', height: '22px' }} onClick={() => setDelId(d._id)}><FiTrash2 size={11} /></button>
+                                  </div>
+                                </div>
+                              )}
+                            </Draggable>
+                          ))}
+                          {provided.placeholder}
+                        </div>
+                      )}
+                    </Droppable>
+                  </div>
+                );
+              })}
             </div>
-          </div>
+          </DragDropContext>
+        ) : (
+          <>
+            {/* Filter */}
+            <div className="filter-bar">
+              <div className="search-wrap">
+                <FiSearch size={14} className="search-icon" />
+                <input type="text" placeholder="Search deals…" value={search}
+                  onChange={e => { setSearch(e.target.value); setPage(1); }}
+                  className="input input-icon-left" style={{ minHeight:'36px' }} />
+              </div>
+              <select value={stage} onChange={e => { setStage(e.target.value); setPage(1); }}
+                className="input" style={{ width:'auto', minWidth:'130px', minHeight:'36px' }}>
+                <option value="">All Stages</option>
+                {STAGE_CONFIG.map(s => <option key={s.key} value={s.key}>{s.label}</option>)}
+              </select>
+            </div>
+
+            {/* Table */}
+            <div className="card" style={{ overflow:'hidden' }}>
+              {loading ? (
+                <div className="empty"><div className="spinner" /></div>
+              ) : deals.length === 0 ? (
+                <div className="empty">
+                  <FiTrendingUp size={32} className="empty-icon" />
+                  <p className="empty-title">No deals yet</p>
+                  <p className="empty-sub">Create your first deal to start tracking</p>
+                  <button onClick={openCreate} className="btn btn-primary" style={{ marginTop:'14px' }}>
+                    <FiPlus size={13} /> New Deal
+                  </button>
+                </div>
+              ) : (
+                <div style={{ overflowX:'auto' }}>
+                  <table className="data-table">
+                    <thead>
+                      <tr>
+                        <th>Deal</th>
+                        <th>Client</th>
+                        <th>Amount</th>
+                        <th>Stage</th>
+                        <th>Probability</th>
+                        <th>Close Date</th>
+                        <th style={{ textAlign:'right' }}>Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {deals.map(d => (
+                        <tr key={d._id}>
+                          <td>
+                            <div style={{ fontWeight:600, fontSize:'13.5px' }}>{d.title}</div>
+                            <div style={{ fontSize:'11.5px', color:PRI_COLOR[d.priority], marginTop:'2px', fontWeight:600 }}>
+                              {d.priority} priority
+                            </div>
+                          </td>
+                          <td style={{ color:'var(--text-2)', fontSize:'13px' }}>{d.client?.companyName || '—'}</td>
+                          <td>
+                            <div style={{ display:'flex', alignItems:'center', gap:'4px', fontWeight:700, fontSize:'14px', color:'var(--text-1)' }}>
+                              <FiDollarSign size={13} color="var(--green)" />
+                              {d.amount?.toLocaleString()}
+                            </div>
+                          </td>
+                          <td><span className={STAGE_BADGE[d.stage]||'badge badge-gray'}>{d.stage}</span></td>
+                          <td>
+                            <div style={{ display:'flex', alignItems:'center', gap:'8px' }}>
+                              <div style={{ flex:1, height:'5px', background:'#f3f4f6', borderRadius:'99px', maxWidth:'80px' }}>
+                                <div style={{ height:'5px', background:'var(--green)', borderRadius:'99px', width:`${d.probability}%`, transition:'width 0.3s' }} />
+                              </div>
+                              <span style={{ fontSize:'11.5px', color:'var(--text-3)', fontWeight:600, minWidth:'28px' }}>{d.probability}%</span>
+                            </div>
+                          </td>
+                          <td style={{ color:'var(--text-3)', fontSize:'12px' }}>
+                            {d.expectedCloseDate ? new Date(d.expectedCloseDate).toLocaleDateString() : '—'}
+                          </td>
+                          <td>
+                            <div style={{ display:'flex', alignItems:'center', justifyContent:'flex-end', gap:'4px' }}>
+                              <button className="btn-icon" onClick={() => openEdit(d)}><FiEdit2 size={14} /></button>
+                              <button className="btn-icon danger" onClick={() => setDelId(d._id)}><FiTrash2 size={14} /></button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+
+            {/* Pagination */}
+            {totalPages > 1 && (
+              <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginTop:'14px' }}>
+                <span style={{ fontSize:'12.5px', color:'var(--text-3)' }}>Page {page} of {totalPages}</span>
+                <div style={{ display:'flex', gap:'6px' }}>
+                  <button className="btn btn-ghost" onClick={() => setPage(p => Math.max(1,p-1))} disabled={page===1} style={{ padding:'6px 10px' }}><FiChevronLeft size={14} /></button>
+                  <button className="btn btn-ghost" onClick={() => setPage(p => Math.min(totalPages,p+1))} disabled={page===totalPages} style={{ padding:'6px 10px' }}><FiChevronRight size={14} /></button>
+                </div>
+              </div>
+            )}
+          </>
         )}
       </div>
 
       {/* Deal Modal */}
-      <Modal open={modalOpen} onClose={() => setModalOpen(false)} title={editDeal ? 'Edit Deal' : 'New Deal'}>
-        <form onSubmit={handleSubmit} className="space-y-4">
+      <Modal open={modal} onClose={() => setModal(false)} title={editD ? 'Edit Deal' : 'New Deal'}>
+        <form onSubmit={save} style={{ display:'flex', flexDirection:'column', gap:'13px' }}>
           <div>
-            <label className="block text-xs text-gray-400 mb-1.5">Deal Title *</label>
-            <input name="title" value={form.title} onChange={handleChange} required placeholder="Enterprise License" className="w-full bg-gray-800 border border-gray-700 text-white rounded-xl px-4 py-2.5 text-sm outline-none" />
+            <label className="label">Deal Title *</label>
+            <input name="title" value={form.title} onChange={ch} required placeholder="Enterprise License" className="input" />
           </div>
-          <div className="grid grid-cols-2 gap-4">
+          <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'10px' }}>
             <div>
-              <label className="block text-xs text-gray-400 mb-1.5">Client *</label>
-              <select name="client" value={form.client} onChange={handleChange} required className="w-full bg-gray-800 border border-gray-700 text-white rounded-xl px-4 py-2.5 text-sm outline-none">
+              <label className="label">Client *</label>
+              <select name="client" value={form.client} onChange={ch} required className="input">
                 <option value="">Select Client</option>
                 {clients.map(c => <option key={c._id} value={c._id}>{c.companyName}</option>)}
               </select>
             </div>
             <div>
-              <label className="block text-xs text-gray-400 mb-1.5">Amount ($) *</label>
-              <input type="number" name="amount" value={form.amount} onChange={handleChange} required min="0" placeholder="50000" className="w-full bg-gray-800 border border-gray-700 text-white rounded-xl px-4 py-2.5 text-sm outline-none" />
+              <label className="label">Amount ($) *</label>
+              <input type="number" name="amount" value={form.amount} onChange={ch} required min="0" placeholder="50000" className="input" />
             </div>
             <div>
-              <label className="block text-xs text-gray-400 mb-1.5">Stage</label>
-              <select name="stage" value={form.stage} onChange={handleChange} className="w-full bg-gray-800 border border-gray-700 text-white rounded-xl px-4 py-2.5 text-sm outline-none">
-                {['prospect', 'negotiation', 'proposal', 'won', 'lost'].map(s => <option key={s} value={s}>{s}</option>)}
+              <label className="label">Stage</label>
+              <select name="stage" value={form.stage} onChange={ch} className="input">
+                {STAGE_CONFIG.map(s => <option key={s.key} value={s.key}>{s.label}</option>)}
               </select>
             </div>
             <div>
-              <label className="block text-xs text-gray-400 mb-1.5">Priority</label>
-              <select name="priority" value={form.priority} onChange={handleChange} className="w-full bg-gray-800 border border-gray-700 text-white rounded-xl px-4 py-2.5 text-sm outline-none">
-                {['low', 'medium', 'high'].map(p => <option key={p} value={p}>{p}</option>)}
+              <label className="label">Priority</label>
+              <select name="priority" value={form.priority} onChange={ch} className="input">
+                {['low','medium','high'].map(p => <option key={p} value={p}>{p}</option>)}
               </select>
             </div>
             <div>
-              <label className="block text-xs text-gray-400 mb-1.5">Probability (%)</label>
-              <input type="number" name="probability" value={form.probability} onChange={handleChange} min="0" max="100" className="w-full bg-gray-800 border border-gray-700 text-white rounded-xl px-4 py-2.5 text-sm outline-none" />
+              <label className="label">Probability (%)</label>
+              <input type="number" name="probability" value={form.probability} onChange={ch} min="0" max="100" className="input" />
             </div>
             <div>
-              <label className="block text-xs text-gray-400 mb-1.5">Expected Close Date</label>
-              <input type="date" name="expectedCloseDate" value={form.expectedCloseDate} onChange={handleChange} className="w-full bg-gray-800 border border-gray-700 text-white rounded-xl px-4 py-2.5 text-sm outline-none" />
+              <label className="label">Expected Close</label>
+              <input type="date" name="expectedCloseDate" value={form.expectedCloseDate} onChange={ch} className="input" />
             </div>
           </div>
           <div>
-            <label className="block text-xs text-gray-400 mb-1.5">Description</label>
-            <textarea name="description" value={form.description} onChange={handleChange} rows={3} className="w-full bg-gray-800 border border-gray-700 text-white rounded-xl px-4 py-2.5 text-sm outline-none resize-none" />
+            <label className="label">Description</label>
+            <textarea name="description" value={form.description} onChange={ch} rows={3} className="input" style={{ resize:'none' }} />
           </div>
-          <div className="flex gap-3 pt-2">
-            <button type="button" onClick={() => setModalOpen(false)} className="flex-1 px-4 py-2.5 bg-gray-800 text-gray-300 rounded-xl text-sm hover:bg-gray-700">Cancel</button>
-            <button type="submit" disabled={formLoading} className="flex-1 px-4 py-2.5 bg-green-500 text-white rounded-xl text-sm hover:bg-green-400 disabled:opacity-50">
-              {formLoading ? 'Saving...' : 'Save Deal'}
+          <div style={{ display:'flex', gap:'10px', marginTop:'2px' }}>
+            <button type="button" onClick={() => setModal(false)} className="btn btn-ghost" style={{ flex:1 }}>Cancel</button>
+            <button type="submit" disabled={fLoad} className="btn btn-primary" style={{ flex:1 }}>
+              {fLoad ? <span className="spinner spinner-sm spinner-white" /> : 'Save Deal'}
             </button>
           </div>
         </form>
       </Modal>
 
-      {/* Delete Confirmation */}
-      <Modal open={!!deleteId} onClose={() => setDeleteId(null)} title="Delete Deal">
-        <div className="text-center space-y-4">
-          <div className="w-14 h-14 bg-red-500/10 rounded-full flex items-center justify-center mx-auto">
-            <FiTrash2 size={24} className="text-red-400" />
+      {/* Delete */}
+      <Modal open={!!delId} onClose={() => setDelId(null)} title="Delete Deal" mw={360}>
+        <div style={{ textAlign:'center' }}>
+          <div style={{ width:'46px', height:'46px', borderRadius:'50%', background:'var(--red-s)', border:'1px solid #fecaca', display:'flex', alignItems:'center', justifyContent:'center', margin:'0 auto 14px' }}>
+            <FiTrash2 size={20} color="var(--red)" />
           </div>
-          <p className="text-gray-300">Are you sure you want to delete this deal?</p>
-          <div className="flex gap-3">
-            <button onClick={() => setDeleteId(null)} className="flex-1 px-4 py-2.5 bg-gray-800 text-gray-300 rounded-xl text-sm">Cancel</button>
-            <button onClick={() => handleDelete(deleteId)} className="flex-1 px-4 py-2.5 bg-red-500 text-white rounded-xl text-sm hover:bg-red-400">Delete</button>
+          <p style={{ fontSize:'14px', color:'var(--text-2)', marginBottom:'20px' }}>Delete this deal? Cannot be undone.</p>
+          <div style={{ display:'flex', gap:'10px' }}>
+            <button onClick={() => setDelId(null)} className="btn btn-ghost" style={{ flex:1 }}>Cancel</button>
+            <button onClick={() => del(delId)} className="btn btn-danger" style={{ flex:1 }}>Delete</button>
           </div>
         </div>
       </Modal>
     </Layout>
   );
-};
-
-export default Deals;
+}

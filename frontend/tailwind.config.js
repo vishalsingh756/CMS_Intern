@@ -3,10 +3,19 @@ export default {
   content: ['./index.html', './src/**/*.{js,jsx,ts,tsx}'],
   theme: {
     extend: {
+      fontFamily: {
+        sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+      },
       colors: {
-        primary: '#0f172a',
-        secondary: '#64748b',
-        accent: '#06b6d4',
+        accent:  '#6366f1',
+        accent2: '#818cf8',
+        surface: '#111118',
+        border:  'rgba(255,255,255,0.07)',
+      },
+      borderRadius: {
+        DEFAULT: '12px',
+        lg: '16px',
+        xl: '20px',
       },
     },
   },

@@ -1,128 +1,130 @@
 import { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { FiMail, FiLock, FiUser, FiEye, FiEyeOff } from 'react-icons/fi';
-import { MdBusinessCenter } from 'react-icons/md';
+import { Link, useNavigate } from 'react-router-dom';
+import { FiMail, FiLock, FiUser, FiEye, FiEyeOff, FiLayers } from 'react-icons/fi';
 import useAuthStore from '../utils/authStore';
 import { toast } from 'react-toastify';
 
-const Register = () => {
-  const navigate = useNavigate();
-  const register = useAuthStore((state) => state.register);
-  const [formData, setFormData] = useState({
-    username: '', email: '', password: '', firstName: '', lastName: '',
-  });
-  const [loading, setLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
+export default function Register() {
+  const navigate  = useNavigate();
+  const register  = useAuthStore((s) => s.register);
+  const [form, setForm]     = useState({ username:'', email:'', password:'', firstName:'', lastName:'' });
   const [errors, setErrors] = useState({});
+  const [loading, setLoading] = useState(false);
+  const [show, setShow]     = useState(false);
 
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+  const ch = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
     if (errors[e.target.name]) setErrors({ ...errors, [e.target.name]: '' });
   };
 
-  const validateForm = () => {
-    const newErrors = {};
-    if (!formData.username || formData.username.length < 3)
-      newErrors.username = 'Username must be at least 3 characters';
-    if (!formData.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email))
-      newErrors.email = 'Please provide a valid email';
-    if (!formData.password || formData.password.length < 6)
-      newErrors.password = 'Password must be at least 6 characters';
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+  const validate = () => {
+    const e = {};
+    if (!form.username || form.username.length < 3) e.username = 'Min 3 characters';
+    if (!form.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) e.email = 'Enter a valid email';
+    if (!form.password || form.password.length < 6) e.password = 'Min 6 characters';
+    setErrors(e);
+    return !Object.keys(e).length;
   };
 
-  const handleSubmit = async (e) => {
+  const submit = async (e) => {
     e.preventDefault();
-    if (!validateForm()) return;
+    if (!validate()) return;
     setLoading(true);
     try {
-      await register(formData);
-      toast.success('Account created successfully!');
+      await register(form);
+      toast.success('Account created!');
       navigate('/dashboard');
-    } catch (error) {
-      toast.error(error.response?.data?.message || 'Registration failed');
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Registration failed');
     } finally {
       setLoading(false);
     }
   };
 
-  const inp = (name, type = 'text', placeholder, icon) => (
+  const Field = ({ name, type='text', placeholder, icon: Icon, req }) => (
     <div>
-      <label className="block text-xs font-medium text-gray-400 mb-1.5">
+      <label className="label">
         {name.charAt(0).toUpperCase() + name.slice(1).replace(/([A-Z])/g, ' $1')}
-        {['username', 'email', 'password'].includes(name) ? ' *' : ''}
+        {req ? ' *' : ''}
       </label>
-      <div className="relative">
-        {icon && <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none">{icon}</span>}
+      <div style={{ position: 'relative' }}>
+        {Icon && <Icon size={14} style={{ position:'absolute', left:'11px', top:'50%', transform:'translateY(-50%)', color:'var(--text-3)' }} />}
         <input
-          type={name === 'password' ? (showPassword ? 'text' : 'password') : type}
-          name={name}
-          value={formData[name]}
-          onChange={handleChange}
+          name={name} value={form[name]} onChange={ch}
+          type={name === 'password' ? (show ? 'text' : 'password') : type}
           placeholder={placeholder}
-          className={`w-full bg-gray-800 border ${errors[name] ? 'border-red-500' : 'border-gray-700'} text-white rounded-xl ${icon ? 'pl-10' : 'pl-4'} ${name === 'password' ? 'pr-12' : 'pr-4'} py-3 text-sm focus:ring-2 focus:ring-cyan-500 outline-none placeholder-gray-600`}
+          className={`input ${Icon ? 'input-icon-left' : ''} ${errors[name] ? 'error' : ''}`}
+          style={{ paddingRight: name === 'password' ? '38px' : undefined }}
         />
         {name === 'password' && (
-          <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300">
-            {showPassword ? <FiEyeOff size={16} /> : <FiEye size={16} />}
+          <button type="button" onClick={() => setShow(!show)} style={{
+            position:'absolute', right:'10px', top:'50%', transform:'translateY(-50%)',
+            background:'none', border:'none', cursor:'pointer', color:'var(--text-3)', display:'flex',
+          }}>
+            {show ? <FiEyeOff size={14} /> : <FiEye size={14} />}
           </button>
         )}
       </div>
-      {errors[name] && <p className="text-red-400 text-xs mt-1">{errors[name]}</p>}
+      {errors[name] && <p style={{ fontSize:'11.5px', color:'var(--red)', marginTop:'4px' }}>{errors[name]}</p>}
     </div>
   );
 
   return (
-    <div className="min-h-screen bg-gray-950 flex items-center justify-center p-4">
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-cyan-500/10 rounded-full blur-3xl" />
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-purple-500/10 rounded-full blur-3xl" />
+    <div className="auth-wrap">
+      <div style={{ position:'fixed', inset:0, overflow:'hidden', pointerEvents:'none', zIndex:0 }}>
+        <div style={{
+          position:'absolute', top:'-10%', right:'-5%',
+          width:'400px', height:'400px', borderRadius:'50%',
+          background:'radial-gradient(circle, rgba(79,70,229,0.07) 0%, transparent 70%)',
+        }} />
       </div>
 
-      <div className="w-full max-w-md relative">
-        <div className="text-center mb-8">
-          <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center mx-auto mb-4 shadow-lg shadow-cyan-500/20">
-            <MdBusinessCenter className="text-white text-3xl" />
+      <div style={{ position:'relative', zIndex:1, width:'100%', maxWidth:'410px' }}>
+        <div style={{ textAlign:'center', marginBottom:'24px' }}>
+          <div style={{
+            width:'44px', height:'44px', borderRadius:'11px', background:'var(--accent)',
+            display:'inline-flex', alignItems:'center', justifyContent:'center',
+            marginBottom:'14px', boxShadow:'0 4px 14px rgba(79,70,229,0.4)',
+          }}>
+            <FiLayers size={20} color="#fff" />
           </div>
-          <h1 className="text-3xl font-bold text-white">Create Account</h1>
-          <p className="text-gray-500 mt-1 text-sm">Join ClientCRM today</p>
+          <h1 style={{ fontSize:'22px', fontWeight:900, color:'var(--text-1)', letterSpacing:'-0.04em' }}>
+            Create account
+          </h1>
+          <p style={{ fontSize:'13px', color:'var(--text-3)', marginTop:'4px' }}>
+            Join your team's workspace
+          </p>
         </div>
 
-        <div className="bg-gray-900 border border-gray-800 rounded-2xl p-8 shadow-2xl">
-          <form onSubmit={handleSubmit} className="space-y-4">
-            {inp('username', 'text', 'johndoe', <FiUser size={16} />)}
-            {inp('email', 'email', 'john@company.com', <FiMail size={16} />)}
-            {inp('password', 'password', '••••••••', <FiLock size={16} />)}
-            <div className="grid grid-cols-2 gap-3">
-              {inp('firstName', 'text', 'John')}
-              {inp('lastName', 'text', 'Doe')}
+        <div className="auth-card">
+          <form onSubmit={submit} style={{ display:'flex', flexDirection:'column', gap:'13px' }}>
+            <Field name="username"  placeholder="johndoe"         icon={FiUser} req />
+            <Field name="email"     type="email" placeholder="john@company.com" icon={FiMail} req />
+            <Field name="password"  placeholder="••••••••"         icon={FiLock} req />
+            <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'10px' }}>
+              <Field name="firstName" placeholder="John" />
+              <Field name="lastName"  placeholder="Doe" />
             </div>
 
             <button
-              type="submit"
-              disabled={loading}
-              className="w-full bg-gradient-to-r from-cyan-500 to-blue-600 text-white py-3 rounded-xl font-medium text-sm hover:opacity-90 disabled:opacity-50 transition-all mt-2 shadow-lg shadow-cyan-500/20"
+              type="submit" disabled={loading}
+              className="btn btn-primary"
+              style={{ width:'100%', height:'40px', fontSize:'14px', fontWeight:700, marginTop:'4px' }}
             >
-              {loading ? (
-                <span className="flex items-center justify-center gap-2">
-                  <span className="animate-spin rounded-full h-4 w-4 border-b-2 border-white" />
-                  Creating Account...
-                </span>
-              ) : 'Create Account'}
+              {loading
+                ? <span className="spinner spinner-sm spinner-white" />
+                : 'Create account'}
             </button>
           </form>
 
-          <p className="text-center text-gray-500 text-sm mt-6">
-            Already have an account?{' '}
-            <Link to="/login" className="text-cyan-400 hover:text-cyan-300 font-medium">
+          <div style={{ marginTop:'18px', textAlign:'center' }}>
+            <span style={{ fontSize:'12.5px', color:'var(--text-3)' }}>Already have an account? </span>
+            <Link to="/login" style={{ fontSize:'12.5px', color:'var(--accent)', fontWeight:600 }}>
               Sign in
             </Link>
-          </p>
+          </div>
         </div>
       </div>
     </div>
   );
-};
-
-export default Register;
+}

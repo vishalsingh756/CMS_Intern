@@ -1,137 +1,143 @@
 import { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { FiMail, FiLock, FiEye, FiEyeOff } from 'react-icons/fi';
-import { MdBusinessCenter } from 'react-icons/md';
+import { Link, useNavigate } from 'react-router-dom';
+import { FiMail, FiLock, FiEye, FiEyeOff, FiLayers } from 'react-icons/fi';
 import useAuthStore from '../utils/authStore';
 import { toast } from 'react-toastify';
 
-const Login = () => {
+export default function Login() {
   const navigate = useNavigate();
-  const login = useAuthStore((state) => state.login);
-  const [formData, setFormData] = useState({ email: '', password: '' });
-  const [loading, setLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
+  const login    = useAuthStore((s) => s.login);
+  const [form, setForm]   = useState({ email: '', password: '' });
   const [errors, setErrors] = useState({});
+  const [loading, setLoading] = useState(false);
+  const [show, setShow]   = useState(false);
 
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+  const ch = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
     if (errors[e.target.name]) setErrors({ ...errors, [e.target.name]: '' });
   };
 
-  const validateForm = () => {
-    const newErrors = {};
-    if (!formData.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      newErrors.email = 'Please provide a valid email';
-    }
-    if (!formData.password) newErrors.password = 'Password is required';
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+  const validate = () => {
+    const e = {};
+    if (!form.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) e.email = 'Enter a valid email';
+    if (!form.password) e.password = 'Password is required';
+    setErrors(e);
+    return !Object.keys(e).length;
   };
 
-  const handleSubmit = async (e) => {
+  const submit = async (e) => {
     e.preventDefault();
-    if (!validateForm()) return;
+    if (!validate()) return;
     setLoading(true);
     try {
-      await login(formData);
+      await login(form);
       toast.success('Welcome back!');
       navigate('/dashboard');
-    } catch (error) {
-      toast.error(error.response?.data?.message || 'Login failed');
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Login failed');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-950 flex items-center justify-center p-4">
-      {/* Background gradient blobs */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-cyan-500/10 rounded-full blur-3xl" />
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-blue-500/10 rounded-full blur-3xl" />
+    <div className="auth-wrap">
+      {/* Decorative shapes */}
+      <div style={{ position: 'fixed', inset: 0, overflow: 'hidden', pointerEvents: 'none', zIndex: 0 }}>
+        <div style={{
+          position: 'absolute', top: '-10%', right: '-5%',
+          width: '420px', height: '420px', borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(79,70,229,0.08) 0%, transparent 70%)',
+        }} />
+        <div style={{
+          position: 'absolute', bottom: '-10%', left: '-5%',
+          width: '320px', height: '320px', borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(5,150,105,0.06) 0%, transparent 70%)',
+        }} />
       </div>
 
-      <div className="w-full max-w-md relative">
-        {/* Logo */}
-        <div className="text-center mb-8">
-          <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center mx-auto mb-4 shadow-lg shadow-cyan-500/20">
-            <MdBusinessCenter className="text-white text-3xl" />
+      <div style={{ position: 'relative', zIndex: 1, width: '100%', maxWidth: '390px' }}>
+        {/* Brand */}
+        <div style={{ textAlign: 'center', marginBottom: '24px' }}>
+          <div style={{
+            width: '44px', height: '44px', borderRadius: '11px',
+            background: 'var(--accent)',
+            display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+            marginBottom: '14px',
+            boxShadow: '0 4px 14px rgba(79,70,229,0.4)',
+          }}>
+            <FiLayers size={20} color="#fff" />
           </div>
-          <h1 className="text-3xl font-bold text-white">ClientCRM</h1>
-          <p className="text-gray-500 mt-1 text-sm">Sign in to your account</p>
-        </div>
-
-        {/* Card */}
-        <div className="bg-gray-900 border border-gray-800 rounded-2xl p-8 shadow-2xl">
-          <form onSubmit={handleSubmit} className="space-y-5">
-            <div>
-              <label className="block text-xs font-medium text-gray-400 mb-1.5">Email Address</label>
-              <div className="relative">
-                <FiMail className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500" size={16} />
-                <input
-                  type="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  placeholder="you@company.com"
-                  className={`w-full bg-gray-800 border ${errors.email ? 'border-red-500' : 'border-gray-700'} text-white rounded-xl pl-10 pr-4 py-3 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-transparent outline-none placeholder-gray-600 transition-all`}
-                />
-              </div>
-              {errors.email && <p className="text-red-400 text-xs mt-1">{errors.email}</p>}
-            </div>
-
-            <div>
-              <label className="block text-xs font-medium text-gray-400 mb-1.5">Password</label>
-              <div className="relative">
-                <FiLock className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500" size={16} />
-                <input
-                  type={showPassword ? 'text' : 'password'}
-                  name="password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  placeholder="••••••••"
-                  className={`w-full bg-gray-800 border ${errors.password ? 'border-red-500' : 'border-gray-700'} text-white rounded-xl pl-10 pr-12 py-3 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-transparent outline-none placeholder-gray-600 transition-all`}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300 transition-colors"
-                >
-                  {showPassword ? <FiEyeOff size={16} /> : <FiEye size={16} />}
-                </button>
-              </div>
-              {errors.password && <p className="text-red-400 text-xs mt-1">{errors.password}</p>}
-            </div>
-
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full bg-gradient-to-r from-cyan-500 to-blue-600 text-white py-3 rounded-xl font-medium text-sm hover:opacity-90 disabled:opacity-50 transition-all mt-2 shadow-lg shadow-cyan-500/20"
-            >
-              {loading ? (
-                <span className="flex items-center justify-center gap-2">
-                  <span className="animate-spin rounded-full h-4 w-4 border-b-2 border-white" />
-                  Signing in...
-                </span>
-              ) : 'Sign In'}
-            </button>
-          </form>
-
-          <p className="text-center text-gray-500 text-sm mt-6">
-            Don't have an account?{' '}
-            <Link to="/register" className="text-cyan-400 hover:text-cyan-300 font-medium transition-colors">
-              Create account
-            </Link>
+          <h1 style={{ fontSize: '22px', fontWeight: 900, color: 'var(--text-1)', letterSpacing: '-0.04em' }}>
+            CMS
+          </h1>
+          <p style={{ fontSize: '13px', color: 'var(--text-3)', marginTop: '4px' }}>
+            Sign in to your workspace
           </p>
         </div>
 
-        {/* Demo credentials */}
-        <div className="mt-4 bg-gray-900/50 border border-gray-800 rounded-xl p-4 text-center">
-          <p className="text-gray-600 text-xs">Demo: any email you register with or create an admin account</p>
+        <div className="auth-card">
+          <form onSubmit={submit} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+            {/* Email */}
+            <div>
+              <label className="label">Email address</label>
+              <div style={{ position: 'relative' }}>
+                <FiMail size={14} style={{ position: 'absolute', left: '11px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-3)' }} />
+                <input
+                  name="email" type="email" value={form.email} onChange={ch}
+                  placeholder="you@company.com"
+                  className={`input input-icon-left ${errors.email ? 'error' : ''}`}
+                />
+              </div>
+              {errors.email && <p style={{ fontSize: '11.5px', color: 'var(--red)', marginTop: '4px' }}>{errors.email}</p>}
+            </div>
+
+            {/* Password */}
+            <div>
+              <label className="label">Password</label>
+              <div style={{ position: 'relative' }}>
+                <FiLock size={14} style={{ position: 'absolute', left: '11px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-3)' }} />
+                <input
+                  name="password" type={show ? 'text' : 'password'} value={form.password} onChange={ch}
+                  placeholder="••••••••"
+                  className={`input input-icon-left ${errors.password ? 'error' : ''}`}
+                  style={{ paddingRight: '38px' }}
+                />
+                <button type="button" onClick={() => setShow(!show)} style={{
+                  position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)',
+                  background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-3)',
+                  display: 'flex', padding: '3px',
+                }}>
+                  {show ? <FiEyeOff size={14} /> : <FiEye size={14} />}
+                </button>
+              </div>
+              {errors.password && <p style={{ fontSize: '11.5px', color: 'var(--red)', marginTop: '4px' }}>{errors.password}</p>}
+            </div>
+
+            {/* Submit */}
+            <button
+              type="submit" disabled={loading}
+              className="btn btn-primary"
+              style={{ width: '100%', height: '40px', fontSize: '14px', fontWeight: 700, marginTop: '2px' }}
+            >
+              {loading
+                ? <span className="spinner spinner-sm spinner-white" />
+                : 'Sign in'}
+            </button>
+          </form>
+
+          <div style={{ marginTop: '18px', textAlign: 'center' }}>
+            <span style={{ fontSize: '12.5px', color: 'var(--text-3)' }}>No account? </span>
+            <Link to="/register" style={{ fontSize: '12.5px', color: 'var(--accent)', fontWeight: 600 }}>
+              Create one
+            </Link>
+          </div>
         </div>
+
+        <p style={{ textAlign: 'center', marginTop: '14px', fontSize: '11.5px', color: 'var(--text-3)' }}>
+          Demo: register any account or create an admin
+        </p>
       </div>
     </div>
   );
-};
-
-export default Login;
+}

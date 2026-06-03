@@ -1,317 +1,282 @@
 import { useState, useEffect, useCallback } from 'react';
 import {
-  FiPlus, FiEdit2, FiTrash2, FiSearch, FiX, FiMessageSquare,
-  FiChevronLeft, FiChevronRight,
+  FiPlus, FiEdit2, FiTrash2, FiX,
+  FiChevronLeft, FiChevronRight, FiMessageSquare,
 } from 'react-icons/fi';
 import Layout from '../components/Layout';
 import { interactionService, clientService } from '../services/api';
 import { toast } from 'react-toastify';
-import useAuthStore from '../utils/authStore';
 
-const INTERACTION_ICONS = {
-  email: '📧', phone: '📞', meeting: '🤝', note: '📝', site_visit: '🏢',
+const TYPE_ICON  = { email:'📧', phone:'📞', meeting:'🤝', note:'📝', site_visit:'🏢' };
+const TYPE_COLOR = { email:'var(--blue)', phone:'var(--green)', meeting:'var(--purple)', note:'var(--yellow)', site_visit:'var(--orange)' };
+
+const OUTCOME_BADGE = {
+  positive: 'badge badge-green',
+  negative: 'badge badge-red',
+  neutral:  'badge badge-gray',
+  pending:  'badge badge-yellow',
 };
 
-const OUTCOME_STYLES = {
-  positive: 'bg-green-500/10 text-green-400 border-green-500/30',
-  negative: 'bg-red-500/10 text-red-400 border-red-500/30',
-  neutral: 'bg-gray-500/10 text-gray-400 border-gray-500/30',
-  pending: 'bg-yellow-500/10 text-yellow-400 border-yellow-500/30',
-};
+const EMPTY = { client:'', type:'email', subject:'', description:'', date:'', outcome:'pending', nextFollowUp:'' };
 
-const Modal = ({ open, onClose, title, children }) => {
+function Modal({ open, onClose, title, mw=500, children }) {
   if (!open) return null;
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-      <div className="bg-gray-900 border border-gray-700 rounded-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto shadow-2xl">
-        <div className="flex items-center justify-between p-6 border-b border-gray-800">
-          <h3 className="text-lg font-semibold text-white">{title}</h3>
-          <button onClick={onClose} className="text-gray-400 hover:text-white"><FiX size={20} /></button>
+    <div className="modal-overlay" onClick={e => e.target===e.currentTarget && onClose()}>
+      <div className="modal-box" style={{ maxWidth:mw }}>
+        <div className="modal-header">
+          <span className="modal-title">{title}</span>
+          <button className="btn-icon" onClick={onClose}><FiX size={15} /></button>
         </div>
-        <div className="p-6">{children}</div>
+        <div className="modal-body">{children}</div>
       </div>
     </div>
   );
-};
+}
 
-const emptyForm = {
-  client: '', type: 'email', subject: '', description: '',
-  date: '', outcome: 'pending', nextFollowUp: '',
-};
+export default function Interactions() {
+  const [items, setItems]       = useState([]);
+  const [clients, setClients]   = useState([]);
+  const [loading, setLoading]   = useState(true);
+  const [page, setPage]         = useState(1);
+  const [totalPages, setTP]     = useState(1);
+  const [total, setTotal]       = useState(0);
+  const [filterClient, setFC]   = useState('');
+  const [filterType, setFT]     = useState('');
+  const [modal, setModal]       = useState(false);
+  const [editI, setEditI]       = useState(null);
+  const [form, setForm]         = useState(EMPTY);
+  const [fLoad, setFLoad]       = useState(false);
+  const [delId, setDelId]       = useState(null);
 
-const Interactions = () => {
-  const { user } = useAuthStore();
-  const [interactions, setInteractions] = useState([]);
-  const [clients, setClients] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [total, setTotal] = useState(0);
-  const [filterClient, setFilterClient] = useState('');
-  const [filterType, setFilterType] = useState('');
-  const [modalOpen, setModalOpen] = useState(false);
-  const [editInteraction, setEditInteraction] = useState(null);
-  const [form, setForm] = useState(emptyForm);
-  const [formLoading, setFormLoading] = useState(false);
-  const [deleteId, setDeleteId] = useState(null);
-
-  const fetchInteractions = useCallback(async () => {
+  const fetch = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await interactionService.getInteractions({
-        page, limit: 15,
-        client: filterClient || undefined,
-        type: filterType || undefined,
-      });
-      setInteractions(res.data.data.interactions);
-      setTotalPages(res.data.data.pagination.pages);
-      setTotal(res.data.data.pagination.total);
-    } catch (err) {
-      toast.error('Failed to fetch interactions');
-    } finally {
-      setLoading(false);
-    }
+      const r = await interactionService.getInteractions({ page, limit:15, client:filterClient||undefined, type:filterType||undefined });
+      setItems(r.data.data.interactions);
+      setTP(r.data.data.pagination.pages);
+      setTotal(r.data.data.pagination.total);
+    } catch { toast.error('Failed to load interactions'); }
+    finally { setLoading(false); }
   }, [page, filterClient, filterType]);
 
-  useEffect(() => { fetchInteractions(); }, [fetchInteractions]);
-
+  useEffect(() => { fetch(); }, [fetch]);
   useEffect(() => {
-    clientService.getClients({ limit: 200 }).then(r => setClients(r.data.data.clients || [])).catch(() => {});
+    clientService.getClients({ limit:200 }).then(r => setClients(r.data.data.clients||[])).catch(() => {});
   }, []);
 
-  const openCreate = () => {
-    setEditInteraction(null);
-    setForm({ ...emptyForm, date: new Date().toISOString().slice(0, 16) });
-    setModalOpen(true);
+  const openCreate = () => { setEditI(null); setForm({ ...EMPTY, date: new Date().toISOString().slice(0,16) }); setModal(true); };
+  const openEdit   = i => {
+    setEditI(i);
+    setForm({ client:i.client?._id||'', type:i.type, subject:i.subject, description:i.description,
+      date: i.date ? i.date.slice(0,16) : '', outcome:i.outcome,
+      nextFollowUp: i.nextFollowUp ? i.nextFollowUp.slice(0,10) : '' });
+    setModal(true);
   };
 
-  const openEdit = (interaction) => {
-    setEditInteraction(interaction);
-    setForm({
-      client: interaction.client?._id || '',
-      type: interaction.type,
-      subject: interaction.subject,
-      description: interaction.description,
-      date: interaction.date ? interaction.date.slice(0, 16) : '',
-      outcome: interaction.outcome,
-      nextFollowUp: interaction.nextFollowUp ? interaction.nextFollowUp.slice(0, 10) : '',
-    });
-    setModalOpen(true);
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setFormLoading(true);
+  const save = async e => {
+    e.preventDefault(); setFLoad(true);
     try {
-      if (editInteraction) {
-        await interactionService.updateInteraction(editInteraction._id, form);
-        toast.success('Interaction updated');
-      } else {
-        await interactionService.createInteraction(form);
-        toast.success('Interaction logged');
-      }
-      setModalOpen(false);
-      fetchInteractions();
-    } catch (err) {
-      toast.error(err.response?.data?.message || 'Failed to save interaction');
-    } finally {
-      setFormLoading(false);
-    }
+      editI
+        ? (await interactionService.updateInteraction(editI._id, form), toast.success('Updated'))
+        : (await interactionService.createInteraction(form),            toast.success('Interaction logged'));
+      setModal(false); fetch();
+    } catch (err) { toast.error(err.response?.data?.message || 'Failed to save'); }
+    finally { setFLoad(false); }
   };
 
-  const handleDelete = async (id) => {
-    try {
-      await interactionService.deleteInteraction(id);
-      toast.success('Interaction deleted');
-      setDeleteId(null);
-      fetchInteractions();
-    } catch (err) {
-      toast.error('Failed to delete');
-    }
+  const del = async id => {
+    try { await interactionService.deleteInteraction(id); toast.success('Deleted'); setDelId(null); fetch(); }
+    catch { toast.error('Failed to delete'); }
   };
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setForm(f => ({ ...f, [name]: value }));
-  };
+  const ch = e => setForm(f => ({ ...f, [e.target.name]: e.target.value }));
 
   return (
     <Layout>
-      <div className="p-6 lg:p-8 space-y-6">
+      <div className="page">
         {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="page-header">
           <div>
-            <h1 className="text-2xl font-bold text-white">Interactions</h1>
-            <p className="text-gray-500 text-sm mt-1">{total} interactions logged</p>
+            <h1 className="page-title">Interactions</h1>
+            <p className="page-sub">{total} interactions logged</p>
           </div>
-          <button onClick={openCreate} className="flex items-center gap-2 bg-purple-500 hover:bg-purple-400 text-white px-5 py-2.5 rounded-xl text-sm font-medium transition-all">
-            <FiPlus size={16} /> Log Interaction
+          <button onClick={openCreate} className="btn btn-primary">
+            <FiPlus size={14} /> Log Interaction
           </button>
         </div>
 
         {/* Filters */}
-        <div className="bg-gray-900 border border-gray-800 rounded-2xl p-4 flex flex-col sm:flex-row gap-3">
-          <div className="flex-1">
-            <select
-              value={filterClient}
-              onChange={e => { setFilterClient(e.target.value); setPage(1); }}
-              className="w-full bg-gray-800 border border-gray-700 text-white rounded-xl px-4 py-2.5 text-sm outline-none"
-            >
-              <option value="">All Clients</option>
-              {clients.map(c => <option key={c._id} value={c._id}>{c.companyName}</option>)}
-            </select>
-          </div>
-          <select
-            value={filterType}
-            onChange={e => { setFilterType(e.target.value); setPage(1); }}
-            className="bg-gray-800 border border-gray-700 text-white rounded-xl px-4 py-2.5 text-sm outline-none"
-          >
+        <div className="filter-bar">
+          <select value={filterClient} onChange={e => { setFC(e.target.value); setPage(1); }}
+            className="input" style={{ flex:1, minWidth:'160px', minHeight:'36px' }}>
+            <option value="">All Clients</option>
+            {clients.map(c => <option key={c._id} value={c._id}>{c.companyName}</option>)}
+          </select>
+          <select value={filterType} onChange={e => { setFT(e.target.value); setPage(1); }}
+            className="input" style={{ width:'auto', minWidth:'140px', minHeight:'36px' }}>
             <option value="">All Types</option>
-            {['email', 'phone', 'meeting', 'note', 'site_visit'].map(t => (
-              <option key={t} value={t}>{t.replace('_', ' ')}</option>
-            ))}
+            {['email','phone','meeting','note','site_visit'].map(t =>
+              <option key={t} value={t}>{t.replace('_',' ')}</option>
+            )}
           </select>
         </div>
 
-        {/* Interaction List */}
-        <div className="space-y-3">
-          {loading ? (
-            <div className="flex items-center justify-center py-20">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-400"></div>
-            </div>
-          ) : interactions.length === 0 ? (
-            <div className="bg-gray-900 border border-gray-800 rounded-2xl flex flex-col items-center justify-center py-20 text-gray-600">
-              <FiMessageSquare size={48} className="mb-3 opacity-30" />
-              <p className="text-base font-medium">No interactions yet</p>
-              <button onClick={openCreate} className="mt-4 flex items-center gap-2 bg-purple-500 text-white px-5 py-2 rounded-xl text-sm">
-                <FiPlus size={14} /> Log Interaction
+        {/* Cards */}
+        {loading ? (
+          <div className="empty"><div className="spinner" /></div>
+        ) : items.length === 0 ? (
+          <div className="card">
+            <div className="empty">
+              <FiMessageSquare size={32} className="empty-icon" />
+              <p className="empty-title">No interactions yet</p>
+              <p className="empty-sub">Start logging client interactions to track relationships</p>
+              <button onClick={openCreate} className="btn btn-primary" style={{ marginTop:'14px' }}>
+                <FiPlus size={13} /> Log Interaction
               </button>
             </div>
-          ) : interactions.map((interaction) => (
-            <div key={interaction._id} className="bg-gray-900 border border-gray-800 rounded-2xl p-5 hover:border-gray-700 transition-all">
-              <div className="flex items-start gap-4">
-                <div className="w-11 h-11 rounded-xl bg-gray-800 flex items-center justify-center text-2xl flex-shrink-0">
-                  {INTERACTION_ICONS[interaction.type] || '📌'}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-start justify-between gap-2 flex-wrap">
-                    <div>
-                      <p className="font-semibold text-white">{interaction.subject}</p>
-                      <div className="flex items-center gap-2 mt-1 flex-wrap">
-                        <span className="text-xs text-gray-500 capitalize">{interaction.type.replace('_', ' ')}</span>
-                        <span className="text-gray-700">·</span>
-                        <span className="text-xs text-gray-500">{interaction.client?.companyName}</span>
-                        <span className="text-gray-700">·</span>
-                        <span className="text-xs text-gray-600">{new Date(interaction.date).toLocaleString()}</span>
+          </div>
+        ) : (
+          <div style={{ display:'flex', flexDirection:'column', gap:'10px' }}>
+            {items.map(i => (
+              <div key={i._id} className="card" style={{ padding:'16px 18px' }}>
+                <div style={{ display:'flex', alignItems:'flex-start', gap:'13px' }}>
+                  {/* Icon */}
+                  <div style={{
+                    width:'40px', height:'40px', borderRadius:'10px', flexShrink:0,
+                    background: (TYPE_COLOR[i.type]||'var(--accent)') + '15',
+                    border:`1px solid ${TYPE_COLOR[i.type]||'var(--accent)'}30`,
+                    display:'flex', alignItems:'center', justifyContent:'center',
+                    fontSize:'18px',
+                  }}>
+                    {TYPE_ICON[i.type] || '📌'}
+                  </div>
+
+                  {/* Content */}
+                  <div style={{ flex:1, minWidth:0 }}>
+                    <div style={{ display:'flex', alignItems:'flex-start', justifyContent:'space-between', gap:'10px', flexWrap:'wrap' }}>
+                      <div>
+                        <p style={{ fontWeight:600, fontSize:'14px', color:'var(--text-1)' }}>{i.subject}</p>
+                        <div style={{ display:'flex', alignItems:'center', gap:'6px', marginTop:'3px', flexWrap:'wrap' }}>
+                          <span style={{ fontSize:'11.5px', color:'var(--text-3)', textTransform:'capitalize' }}>
+                            {i.type.replace('_',' ')}
+                          </span>
+                          <span style={{ color:'var(--border-2)' }}>·</span>
+                          <span style={{ fontSize:'11.5px', color:'var(--text-3)' }}>{i.client?.companyName}</span>
+                          <span style={{ color:'var(--border-2)' }}>·</span>
+                          <span style={{ fontSize:'11.5px', color:'var(--text-3)' }}>{new Date(i.date).toLocaleString()}</span>
+                        </div>
+                      </div>
+                      <div style={{ display:'flex', alignItems:'center', gap:'6px' }}>
+                        <span className={OUTCOME_BADGE[i.outcome]||'badge badge-gray'}>{i.outcome}</span>
+                        <button className="btn-icon" onClick={() => openEdit(i)}><FiEdit2 size={13} /></button>
+                        <button className="btn-icon danger" onClick={() => setDelId(i._id)}><FiTrash2 size={13} /></button>
                       </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <span className={`inline-flex px-2.5 py-1 rounded-lg text-xs font-medium border ${OUTCOME_STYLES[interaction.outcome]}`}>
-                        {interaction.outcome}
-                      </span>
-                      <button onClick={() => openEdit(interaction)} className="p-1.5 text-gray-500 hover:text-blue-400 hover:bg-blue-400/10 rounded-lg transition-all">
-                        <FiEdit2 size={14} />
-                      </button>
-                      <button onClick={() => setDeleteId(interaction._id)} className="p-1.5 text-gray-500 hover:text-red-400 hover:bg-red-400/10 rounded-lg transition-all">
-                        <FiTrash2 size={14} />
-                      </button>
-                    </div>
-                  </div>
-                  <p className="text-gray-400 text-sm mt-2 line-clamp-2">{interaction.description}</p>
-                  {interaction.nextFollowUp && (
-                    <p className="text-xs text-cyan-400 mt-2">
-                      📅 Follow-up: {new Date(interaction.nextFollowUp).toLocaleDateString()}
+
+                    {i.description && (
+                      <p style={{ fontSize:'13px', color:'var(--text-2)', marginTop:'8px', lineHeight:1.6 }}
+                        className="truncate-2">{i.description}</p>
+                    )}
+
+                    {i.nextFollowUp && (
+                      <div style={{ display:'flex', alignItems:'center', gap:'5px', marginTop:'8px' }}>
+                        <span style={{ fontSize:'11px', fontWeight:600, color:'var(--accent)',
+                          background:'var(--accent-s)', border:'1px solid #c7d2fe',
+                          padding:'2px 8px', borderRadius:'99px' }}>
+                          📅 Follow-up: {new Date(i.nextFollowUp).toLocaleDateString()}
+                        </span>
+                      </div>
+                    )}
+
+                    <p style={{ fontSize:'11px', color:'var(--text-3)', marginTop:'6px' }}>
+                      by {i.createdBy?.username || '—'}
                     </p>
-                  )}
-                  <p className="text-xs text-gray-600 mt-2">by {interaction.createdBy?.username}</p>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
 
         {/* Pagination */}
         {totalPages > 1 && (
-          <div className="flex items-center justify-between">
-            <p className="text-gray-500 text-sm">Page {page} of {totalPages}</p>
-            <div className="flex gap-2">
-              <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1} className="p-2 bg-gray-800 text-gray-400 rounded-lg hover:bg-gray-700 disabled:opacity-40">
-                <FiChevronLeft size={16} />
-              </button>
-              <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages} className="p-2 bg-gray-800 text-gray-400 rounded-lg hover:bg-gray-700 disabled:opacity-40">
-                <FiChevronRight size={16} />
-              </button>
+          <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginTop:'16px' }}>
+            <span style={{ fontSize:'12.5px', color:'var(--text-3)' }}>Page {page} of {totalPages}</span>
+            <div style={{ display:'flex', gap:'6px' }}>
+              <button className="btn btn-ghost" onClick={() => setPage(p => Math.max(1,p-1))} disabled={page===1} style={{ padding:'6px 10px' }}><FiChevronLeft size={14} /></button>
+              <button className="btn btn-ghost" onClick={() => setPage(p => Math.min(totalPages,p+1))} disabled={page===totalPages} style={{ padding:'6px 10px' }}><FiChevronRight size={14} /></button>
             </div>
           </div>
         )}
       </div>
 
-      {/* Interaction Modal */}
-      <Modal open={modalOpen} onClose={() => setModalOpen(false)} title={editInteraction ? 'Edit Interaction' : 'Log Interaction'}>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="grid grid-cols-2 gap-3">
+      {/* Log/Edit Modal */}
+      <Modal open={modal} onClose={() => setModal(false)} title={editI ? 'Edit Interaction' : 'Log Interaction'}>
+        <form onSubmit={save} style={{ display:'flex', flexDirection:'column', gap:'13px' }}>
+          <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'10px' }}>
             <div>
-              <label className="block text-xs text-gray-400 mb-1.5">Client *</label>
-              <select name="client" value={form.client} onChange={handleChange} required className="w-full bg-gray-800 border border-gray-700 text-white rounded-xl px-3 py-2.5 text-sm outline-none">
+              <label className="label">Client *</label>
+              <select name="client" value={form.client} onChange={ch} required className="input">
                 <option value="">Select Client</option>
                 {clients.map(c => <option key={c._id} value={c._id}>{c.companyName}</option>)}
               </select>
             </div>
             <div>
-              <label className="block text-xs text-gray-400 mb-1.5">Type *</label>
-              <select name="type" value={form.type} onChange={handleChange} className="w-full bg-gray-800 border border-gray-700 text-white rounded-xl px-3 py-2.5 text-sm outline-none">
-                {['email', 'phone', 'meeting', 'note', 'site_visit'].map(t => <option key={t} value={t}>{t.replace('_', ' ')}</option>)}
+              <label className="label">Type *</label>
+              <select name="type" value={form.type} onChange={ch} className="input">
+                {['email','phone','meeting','note','site_visit'].map(t =>
+                  <option key={t} value={t}>{t.replace('_',' ')}</option>
+                )}
               </select>
             </div>
           </div>
           <div>
-            <label className="block text-xs text-gray-400 mb-1.5">Subject *</label>
-            <input name="subject" value={form.subject} onChange={handleChange} required placeholder="Discussed pricing proposal..." className="w-full bg-gray-800 border border-gray-700 text-white rounded-xl px-3 py-2.5 text-sm outline-none" />
+            <label className="label">Subject *</label>
+            <input name="subject" value={form.subject} onChange={ch} required placeholder="Discussed pricing proposal…" className="input" />
           </div>
           <div>
-            <label className="block text-xs text-gray-400 mb-1.5">Description *</label>
-            <textarea name="description" value={form.description} onChange={handleChange} required rows={4} placeholder="Detailed description of the interaction..." className="w-full bg-gray-800 border border-gray-700 text-white rounded-xl px-3 py-2.5 text-sm outline-none resize-none" />
+            <label className="label">Description *</label>
+            <textarea name="description" value={form.description} onChange={ch} required rows={4} placeholder="Details of the interaction…" className="input" style={{ resize:'none' }} />
           </div>
-          <div className="grid grid-cols-2 gap-3">
+          <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'10px' }}>
             <div>
-              <label className="block text-xs text-gray-400 mb-1.5">Date & Time *</label>
-              <input type="datetime-local" name="date" value={form.date} onChange={handleChange} required className="w-full bg-gray-800 border border-gray-700 text-white rounded-xl px-3 py-2.5 text-sm outline-none" />
+              <label className="label">Date & Time *</label>
+              <input type="datetime-local" name="date" value={form.date} onChange={ch} required className="input" />
             </div>
             <div>
-              <label className="block text-xs text-gray-400 mb-1.5">Outcome</label>
-              <select name="outcome" value={form.outcome} onChange={handleChange} className="w-full bg-gray-800 border border-gray-700 text-white rounded-xl px-3 py-2.5 text-sm outline-none">
-                {['positive', 'negative', 'neutral', 'pending'].map(o => <option key={o} value={o}>{o}</option>)}
+              <label className="label">Outcome</label>
+              <select name="outcome" value={form.outcome} onChange={ch} className="input">
+                {['positive','negative','neutral','pending'].map(o => <option key={o} value={o}>{o}</option>)}
               </select>
             </div>
           </div>
           <div>
-            <label className="block text-xs text-gray-400 mb-1.5">Next Follow-up Date</label>
-            <input type="date" name="nextFollowUp" value={form.nextFollowUp} onChange={handleChange} className="w-full bg-gray-800 border border-gray-700 text-white rounded-xl px-3 py-2.5 text-sm outline-none" />
+            <label className="label">Next Follow-up</label>
+            <input type="date" name="nextFollowUp" value={form.nextFollowUp} onChange={ch} className="input" />
           </div>
-          <div className="flex gap-3 pt-2">
-            <button type="button" onClick={() => setModalOpen(false)} className="flex-1 px-4 py-2.5 bg-gray-800 text-gray-300 rounded-xl text-sm hover:bg-gray-700">Cancel</button>
-            <button type="submit" disabled={formLoading} className="flex-1 px-4 py-2.5 bg-purple-500 text-white rounded-xl text-sm hover:bg-purple-400 disabled:opacity-50">
-              {formLoading ? 'Saving...' : 'Save Interaction'}
+          <div style={{ display:'flex', gap:'10px', marginTop:'2px' }}>
+            <button type="button" onClick={() => setModal(false)} className="btn btn-ghost" style={{ flex:1 }}>Cancel</button>
+            <button type="submit" disabled={fLoad} className="btn btn-primary" style={{ flex:1 }}>
+              {fLoad ? <span className="spinner spinner-sm spinner-white" /> : 'Save'}
             </button>
           </div>
         </form>
       </Modal>
 
-      {/* Delete Confirmation */}
-      <Modal open={!!deleteId} onClose={() => setDeleteId(null)} title="Delete Interaction">
-        <div className="text-center space-y-4">
-          <div className="w-14 h-14 bg-red-500/10 rounded-full flex items-center justify-center mx-auto">
-            <FiTrash2 size={24} className="text-red-400" />
+      {/* Delete */}
+      <Modal open={!!delId} onClose={() => setDelId(null)} title="Delete Interaction" mw={360}>
+        <div style={{ textAlign:'center' }}>
+          <div style={{ width:'46px', height:'46px', borderRadius:'50%', background:'var(--red-s)', border:'1px solid #fecaca', display:'flex', alignItems:'center', justifyContent:'center', margin:'0 auto 14px' }}>
+            <FiTrash2 size={20} color="var(--red)" />
           </div>
-          <p className="text-gray-300">Are you sure you want to delete this interaction?</p>
-          <div className="flex gap-3">
-            <button onClick={() => setDeleteId(null)} className="flex-1 px-4 py-2.5 bg-gray-800 text-gray-300 rounded-xl text-sm">Cancel</button>
-            <button onClick={() => handleDelete(deleteId)} className="flex-1 px-4 py-2.5 bg-red-500 text-white rounded-xl text-sm hover:bg-red-400">Delete</button>
+          <p style={{ fontSize:'14px', color:'var(--text-2)', marginBottom:'20px' }}>Delete this interaction? Cannot be undone.</p>
+          <div style={{ display:'flex', gap:'10px' }}>
+            <button onClick={() => setDelId(null)} className="btn btn-ghost" style={{ flex:1 }}>Cancel</button>
+            <button onClick={() => del(delId)} className="btn btn-danger" style={{ flex:1 }}>Delete</button>
           </div>
         </div>
       </Modal>
     </Layout>
   );
-};
-
-export default Interactions;
+}

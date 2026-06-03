@@ -85,8 +85,36 @@ export const userService = {
   deleteUser: (id) => apiClient.delete(`/users/${id}`),
 };
 
+export const reportService = {
+  createReport:  (data)         => apiClient.post('/reports', data),
+  getReports:    ()             => apiClient.get('/reports'),
+  getReport:     (id)           => apiClient.get(`/reports/${id}`),
+  updateReport:  (id, data)     => apiClient.put(`/reports/${id}`, data),
+  deleteReport:  (id)           => apiClient.delete(`/reports/${id}`),
+  runAdHoc:      (config, params) => apiClient.post('/reports/run', config, { params }),
+  runSaved:      (id, params)   => apiClient.post(`/reports/${id}/run`, {}, { params }),
+};
+
 export const activityService = {
   getLogs: (params) => apiClient.get('/activity', { params }),
+};
+
+export const leadService = {
+  createLead:   (data) => apiClient.post('/leads', data),
+  getLeads:     (params) => apiClient.get('/leads', { params }),
+  getLead:      (id) => apiClient.get(`/leads/${id}`),
+  updateLead:   (id, data) => apiClient.put(`/leads/${id}`, data),
+  deleteLead:   (id) => apiClient.delete(`/leads/${id}`),
+  addScore:     (id, data) => apiClient.post(`/leads/${id}/score`, data),
+  convertLead:  (id) => apiClient.post(`/leads/${id}/convert`),
+};
+
+export const noteService = {
+  createNote:   (data) => apiClient.post('/notes', data),
+  getNotes:     (params) => apiClient.get('/notes', { params }),
+  updateNote:   (id, data) => apiClient.put(`/notes/${id}`, data),
+  deleteNote:   (id) => apiClient.delete(`/notes/${id}`),
+  togglePin:    (id) => apiClient.put(`/notes/${id}/pin`),
 };
 
 export default apiClient;

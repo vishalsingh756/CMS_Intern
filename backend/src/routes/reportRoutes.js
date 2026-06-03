@@ -17,8 +17,9 @@ router.route('/')
   .post(createReport)
   .get(getReports);
 
-router.post('/run', runReport); // Ad-hoc run
-router.get('/:id/run', runReport); // Run saved report
+router.post('/run', runReport);        // Ad-hoc run
+router.get('/:id/run', runReport);     // Run saved report (GET)
+router.post('/:id/run', runReport);    // Run saved report (POST)
 
 router.route('/:id')
   .get(getReport)

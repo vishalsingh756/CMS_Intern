@@ -1,34 +1,52 @@
 import { useNavigate } from 'react-router-dom';
-import { FiHome, FiArrowLeft } from 'react-icons/fi';
+import { FiArrowLeft, FiHome } from 'react-icons/fi';
 
-const NotFound = () => {
+export default function NotFound() {
   const navigate = useNavigate();
-
   return (
-    <div className="min-h-screen bg-gray-950 flex items-center justify-center p-4">
-      <div className="text-center">
-        <div className="text-9xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-500 to-blue-600 mb-4">
+    <div style={{
+      minHeight:'100vh', background:'var(--bg)',
+      display:'flex', alignItems:'center', justifyContent:'center', padding:'24px',
+    }}>
+      {/* Blobs */}
+      <div style={{ position:'fixed', inset:0, overflow:'hidden', pointerEvents:'none' }}>
+        <div style={{ position:'absolute', top:'-10%', right:'-5%', width:'400px', height:'400px', borderRadius:'50%', background:'radial-gradient(circle, rgba(79,70,229,0.06) 0%, transparent 70%)' }} />
+        <div style={{ position:'absolute', bottom:'-10%', left:'-5%',  width:'300px', height:'300px', borderRadius:'50%', background:'radial-gradient(circle, rgba(5,150,105,0.05) 0%, transparent 70%)' }} />
+      </div>
+
+      <div style={{ textAlign:'center', position:'relative' }}>
+        {/* 404 number */}
+        <div style={{
+          fontSize:'clamp(80px, 15vw, 140px)',
+          fontWeight:900,
+          letterSpacing:'-0.05em',
+          lineHeight:1,
+          background:'linear-gradient(135deg, var(--accent) 0%, #818cf8 60%, #a5b4fc 100%)',
+          WebkitBackgroundClip:'text',
+          WebkitTextFillColor:'transparent',
+          backgroundClip:'text',
+          marginBottom:'16px',
+          fontFamily:'Inter, sans-serif',
+        }}>
           404
         </div>
-        <h1 className="text-2xl font-bold text-white mb-2">Page Not Found</h1>
-        <p className="text-gray-500 mb-8">The page you're looking for doesn't exist or has been moved.</p>
-        <div className="flex items-center justify-center gap-3">
-          <button
-            onClick={() => navigate(-1)}
-            className="flex items-center gap-2 px-5 py-2.5 bg-gray-800 text-gray-300 rounded-xl hover:bg-gray-700 transition-all text-sm"
-          >
-            <FiArrowLeft size={16} /> Go Back
+
+        <h1 style={{ fontSize:'22px', fontWeight:800, color:'var(--text-1)', letterSpacing:'-0.03em', marginBottom:'10px' }}>
+          Page Not Found
+        </h1>
+        <p style={{ fontSize:'14px', color:'var(--text-3)', maxWidth:'340px', margin:'0 auto 28px', lineHeight:1.7 }}>
+          The page you're looking for doesn't exist or has been moved.
+        </p>
+
+        <div style={{ display:'flex', alignItems:'center', justifyContent:'center', gap:'10px', flexWrap:'wrap' }}>
+          <button onClick={() => navigate(-1)} className="btn btn-ghost" style={{ gap:'7px' }}>
+            <FiArrowLeft size={14} /> Go Back
           </button>
-          <button
-            onClick={() => navigate('/dashboard')}
-            className="flex items-center gap-2 px-5 py-2.5 bg-cyan-500 text-white rounded-xl hover:bg-cyan-400 transition-all text-sm"
-          >
-            <FiHome size={16} /> Dashboard
+          <button onClick={() => navigate('/dashboard')} className="btn btn-primary" style={{ gap:'7px' }}>
+            <FiHome size={14} /> Dashboard
           </button>
         </div>
       </div>
     </div>
   );
-};
-
-export default NotFound;
+}

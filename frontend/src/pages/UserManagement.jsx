@@ -5,172 +5,140 @@ import { userService } from '../services/api';
 import { toast } from 'react-toastify';
 import useAuthStore from '../utils/authStore';
 
-const ROLE_STYLES = {
-  admin: 'bg-red-500/10 text-red-400 border-red-500/30',
-  editor: 'bg-blue-500/10 text-blue-400 border-blue-500/30',
-  author: 'bg-green-500/10 text-green-400 border-green-500/30',
-};
+const ROLE_BADGE    = { admin:'badge badge-red', editor:'badge badge-blue', author:'badge badge-green' };
+const ROLE_AVATAR   = { admin:'#dc2626', editor:'#2563eb', author:'#059669' };
 
-const Modal = ({ open, onClose, title, children }) => {
+function Modal({ open, onClose, title, mw=420, children }) {
   if (!open) return null;
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-      <div className="bg-gray-900 border border-gray-700 rounded-2xl w-full max-w-md shadow-2xl">
-        <div className="flex items-center justify-between p-5 border-b border-gray-800">
-          <h3 className="text-base font-semibold text-white">{title}</h3>
-          <button onClick={onClose} className="text-gray-400 hover:text-white"><FiX size={18} /></button>
+    <div className="modal-overlay" onClick={e => e.target===e.currentTarget && onClose()}>
+      <div className="modal-box" style={{ maxWidth:mw }}>
+        <div className="modal-header">
+          <span className="modal-title">{title}</span>
+          <button className="btn-icon" onClick={onClose}><FiX size={15} /></button>
         </div>
-        <div className="p-5">{children}</div>
+        <div className="modal-body">{children}</div>
       </div>
     </div>
   );
-};
+}
 
-const UserManagement = () => {
-  const { user: currentUser } = useAuthStore();
-  const [users, setUsers] = useState([]);
+export default function UserManagement() {
+  const { user: me } = useAuthStore();
+  const [users, setUsers]   = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
-  const [editUser, setEditUser] = useState(null);
-  const [editForm, setEditForm] = useState({ role: 'author', isActive: true });
-  const [formLoading, setFormLoading] = useState(false);
-  const [deleteId, setDeleteId] = useState(null);
+  const [editU, setEditU]   = useState(null);
+  const [eForm, setEForm]   = useState({ role:'author', isActive:true });
+  const [fLoad, setFLoad]   = useState(false);
+  const [delId, setDelId]   = useState(null);
 
-  const fetchUsers = useCallback(async () => {
+  const fetch = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await userService.getAllUsers({ search: search || undefined });
-      setUsers(res.data.data || []);
-    } catch (err) {
-      toast.error('Failed to fetch users');
-    } finally {
-      setLoading(false);
-    }
+      const r = await userService.getAllUsers({ search:search||undefined });
+      setUsers(r.data.data || []);
+    } catch { toast.error('Failed to load users'); }
+    finally { setLoading(false); }
   }, [search]);
 
-  useEffect(() => { fetchUsers(); }, [fetchUsers]);
+  useEffect(() => { fetch(); }, [fetch]);
 
-  const openEdit = (u) => {
-    setEditUser(u);
-    setEditForm({ role: u.role, isActive: u.isActive !== false });
+  const openEdit = u => { setEditU(u); setEForm({ role:u.role, isActive:u.isActive!==false }); };
+
+  const update = async e => {
+    e.preventDefault(); setFLoad(true);
+    try { await userService.updateUser(editU._id, eForm); toast.success('Updated'); setEditU(null); fetch(); }
+    catch { toast.error('Failed to update'); }
+    finally { setFLoad(false); }
   };
 
-  const handleUpdate = async (e) => {
-    e.preventDefault();
-    setFormLoading(true);
-    try {
-      await userService.updateUser(editUser._id, editForm);
-      toast.success('User updated');
-      setEditUser(null);
-      fetchUsers();
-    } catch (err) {
-      toast.error('Failed to update user');
-    } finally {
-      setFormLoading(false);
-    }
-  };
-
-  const handleDelete = async (id) => {
-    try {
-      await userService.deleteUser(id);
-      toast.success('User deleted');
-      setDeleteId(null);
-      fetchUsers();
-    } catch (err) {
-      toast.error('Failed to delete user');
-    }
+  const del = async id => {
+    try { await userService.deleteUser(id); toast.success('User deleted'); setDelId(null); fetch(); }
+    catch { toast.error('Failed to delete'); }
   };
 
   return (
     <Layout>
-      <div className="p-6 lg:p-8 space-y-6">
-        <div>
-          <h1 className="text-2xl font-bold text-white">User Management</h1>
-          <p className="text-gray-500 text-sm mt-1">{users.length} users registered</p>
-        </div>
-
-        {/* Search */}
-        <div className="bg-gray-900 border border-gray-800 rounded-2xl p-4">
-          <div className="relative">
-            <FiSearch className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500" size={16} />
-            <input
-              type="text"
-              placeholder="Search users..."
-              value={search}
-              onChange={e => setSearch(e.target.value)}
-              className="w-full bg-gray-800 border border-gray-700 text-white rounded-xl pl-10 pr-4 py-2.5 text-sm focus:ring-2 focus:ring-cyan-500 outline-none placeholder-gray-600"
-            />
+      <div className="page">
+        <div className="page-header">
+          <div>
+            <h1 className="page-title">Users</h1>
+            <p className="page-sub">{users.length} users registered</p>
           </div>
         </div>
 
-        {/* User Table */}
-        <div className="bg-gray-900 border border-gray-800 rounded-2xl overflow-hidden">
+        {/* Search */}
+        <div className="filter-bar">
+          <div className="search-wrap" style={{ flex:1 }}>
+            <FiSearch size={14} className="search-icon" />
+            <input type="text" placeholder="Search users…" value={search}
+              onChange={e => setSearch(e.target.value)}
+              className="input input-icon-left" style={{ minHeight:'36px' }} />
+          </div>
+        </div>
+
+        {/* Table */}
+        <div className="card" style={{ overflow:'hidden' }}>
           {loading ? (
-            <div className="flex items-center justify-center py-20">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-cyan-400"></div>
-            </div>
+            <div className="empty"><div className="spinner" /></div>
           ) : users.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-20 text-gray-600">
-              <FiUser size={48} className="mb-3 opacity-30" />
-              <p>No users found</p>
+            <div className="empty">
+              <FiUser size={32} className="empty-icon" />
+              <p className="empty-title">No users found</p>
             </div>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full">
+            <div style={{ overflowX:'auto' }}>
+              <table className="data-table">
                 <thead>
-                  <tr className="border-b border-gray-800">
-                    <th className="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">User</th>
-                    <th className="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider hidden md:table-cell">Email</th>
-                    <th className="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Role</th>
-                    <th className="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider hidden lg:table-cell">Status</th>
-                    <th className="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider hidden lg:table-cell">Joined</th>
-                    <th className="text-right px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Actions</th>
+                  <tr>
+                    <th>User</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Status</th>
+                    <th>Joined</th>
+                    <th style={{ textAlign:'right' }}>Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-800/60">
+                <tbody>
                   {users.map(u => (
-                    <tr key={u._id} className="hover:bg-gray-800/40 transition-colors">
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-3">
-                          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-cyan-500/20 to-blue-500/20 border border-cyan-500/20 flex items-center justify-center text-cyan-400 font-bold text-sm">
+                    <tr key={u._id}>
+                      <td>
+                        <div style={{ display:'flex', alignItems:'center', gap:'10px' }}>
+                          <div style={{
+                            width:'32px', height:'32px', borderRadius:'8px', flexShrink:0,
+                            background: (ROLE_AVATAR[u.role]||'var(--accent)') + '18',
+                            border:`1px solid ${ROLE_AVATAR[u.role]||'var(--accent)'}30`,
+                            display:'flex', alignItems:'center', justifyContent:'center',
+                            fontSize:'12px', fontWeight:800, color: ROLE_AVATAR[u.role]||'var(--accent)',
+                          }}>
                             {(u.firstName?.[0] || u.username?.[0] || 'U').toUpperCase()}
                           </div>
                           <div>
-                            <p className="font-medium text-white text-sm">
-                              {u.firstName ? `${u.firstName} ${u.lastName || ''}`.trim() : u.username}
-                            </p>
-                            <p className="text-gray-500 text-xs">@{u.username}</p>
+                            <div style={{ fontWeight:600, fontSize:'13.5px' }}>
+                              {u.firstName ? `${u.firstName} ${u.lastName||''}`.trim() : u.username}
+                            </div>
+                            <div style={{ fontSize:'11.5px', color:'var(--text-3)' }}>@{u.username}</div>
                           </div>
                         </div>
                       </td>
-                      <td className="px-6 py-4 hidden md:table-cell">
-                        <span className="text-gray-400 text-sm">{u.email}</span>
-                      </td>
-                      <td className="px-6 py-4">
-                        <span className={`inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-medium border ${ROLE_STYLES[u.role]}`}>
-                          {u.role}
+                      <td style={{ color:'var(--text-2)', fontSize:'13px' }}>{u.email}</td>
+                      <td><span className={ROLE_BADGE[u.role]||'badge badge-gray'}>{u.role}</span></td>
+                      <td>
+                        <span className={u.isActive!==false ? 'badge badge-green' : 'badge badge-gray'}>
+                          {u.isActive!==false ? 'Active' : 'Inactive'}
                         </span>
                       </td>
-                      <td className="px-6 py-4 hidden lg:table-cell">
-                        <span className={`inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-medium ${
-                          u.isActive !== false ? 'bg-green-500/10 text-green-400' : 'bg-gray-500/10 text-gray-400'
-                        }`}>
-                          {u.isActive !== false ? 'Active' : 'Inactive'}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 hidden lg:table-cell">
-                        <span className="text-gray-500 text-xs">{new Date(u.createdAt).toLocaleDateString()}</span>
-                      </td>
-                      <td className="px-6 py-4 text-right">
-                        {u._id !== currentUser?.id && (
-                          <div className="flex items-center justify-end gap-2">
-                            <button onClick={() => openEdit(u)} className="p-2 text-gray-500 hover:text-blue-400 hover:bg-blue-400/10 rounded-lg transition-all">
-                              <FiEdit2 size={14} />
-                            </button>
-                            <button onClick={() => setDeleteId(u._id)} className="p-2 text-gray-500 hover:text-red-400 hover:bg-red-400/10 rounded-lg transition-all">
-                              <FiTrash2 size={14} />
-                            </button>
+                      <td style={{ color:'var(--text-3)', fontSize:'12px' }}>{new Date(u.createdAt).toLocaleDateString()}</td>
+                      <td>
+                        {u._id !== me?.id && (
+                          <div style={{ display:'flex', alignItems:'center', justifyContent:'flex-end', gap:'4px' }}>
+                            <button className="btn-icon" onClick={() => openEdit(u)}><FiEdit2 size={14} /></button>
+                            <button className="btn-icon danger" onClick={() => setDelId(u._id)}><FiTrash2 size={14} /></button>
                           </div>
+                        )}
+                        {u._id === me?.id && (
+                          <span style={{ fontSize:'11px', color:'var(--text-3)', display:'block', textAlign:'right' }}>You</span>
                         )}
                       </td>
                     </tr>
@@ -183,58 +151,58 @@ const UserManagement = () => {
       </div>
 
       {/* Edit Modal */}
-      <Modal open={!!editUser} onClose={() => setEditUser(null)} title="Edit User">
-        <form onSubmit={handleUpdate} className="space-y-4">
-          <div>
-            <p className="text-white font-medium">{editUser?.firstName || editUser?.username}</p>
-            <p className="text-gray-500 text-sm">{editUser?.email}</p>
+      <Modal open={!!editU} onClose={() => setEditU(null)} title="Edit User">
+        <form onSubmit={update} style={{ display:'flex', flexDirection:'column', gap:'14px' }}>
+          <div style={{ display:'flex', alignItems:'center', gap:'10px', padding:'10px 12px', background:'var(--surface-2)', borderRadius:'8px', border:'1px solid var(--border)' }}>
+            <div style={{
+              width:'34px', height:'34px', borderRadius:'8px', flexShrink:0,
+              background: (ROLE_AVATAR[editU?.role]||'var(--accent)') + '18',
+              display:'flex', alignItems:'center', justifyContent:'center',
+              fontSize:'13px', fontWeight:800, color: ROLE_AVATAR[editU?.role]||'var(--accent)',
+            }}>
+              {(editU?.firstName?.[0] || editU?.username?.[0] || 'U').toUpperCase()}
+            </div>
+            <div>
+              <p style={{ fontSize:'13.5px', fontWeight:600 }}>{editU?.firstName || editU?.username}</p>
+              <p style={{ fontSize:'11.5px', color:'var(--text-3)' }}>{editU?.email}</p>
+            </div>
           </div>
           <div>
-            <label className="block text-xs text-gray-400 mb-1.5">Role</label>
-            <select
-              value={editForm.role}
-              onChange={e => setEditForm(f => ({ ...f, role: e.target.value }))}
-              className="w-full bg-gray-800 border border-gray-700 text-white rounded-xl px-4 py-2.5 text-sm outline-none"
-            >
+            <label className="label">Role</label>
+            <select value={eForm.role} onChange={e => setEForm(f => ({ ...f, role:e.target.value }))} className="input">
               <option value="author">Author</option>
               <option value="editor">Editor</option>
               <option value="admin">Admin</option>
             </select>
           </div>
-          <div className="flex items-center gap-3">
-            <input
-              type="checkbox"
-              id="isActive"
-              checked={editForm.isActive}
-              onChange={e => setEditForm(f => ({ ...f, isActive: e.target.checked }))}
-              className="w-4 h-4 accent-cyan-500"
-            />
-            <label htmlFor="isActive" className="text-sm text-gray-300">Account Active</label>
-          </div>
-          <div className="flex gap-3 pt-2">
-            <button type="button" onClick={() => setEditUser(null)} className="flex-1 px-4 py-2.5 bg-gray-800 text-gray-300 rounded-xl text-sm hover:bg-gray-700">Cancel</button>
-            <button type="submit" disabled={formLoading} className="flex-1 px-4 py-2.5 bg-cyan-500 text-white rounded-xl text-sm hover:bg-cyan-400 disabled:opacity-50">
-              {formLoading ? 'Saving...' : 'Update User'}
+          <label style={{ display:'flex', alignItems:'center', gap:'10px', cursor:'pointer', userSelect:'none' }}>
+            <input type="checkbox" checked={eForm.isActive}
+              onChange={e => setEForm(f => ({ ...f, isActive:e.target.checked }))}
+              style={{ width:'16px', height:'16px', accentColor:'var(--accent)', cursor:'pointer' }} />
+            <span style={{ fontSize:'13.5px', color:'var(--text-2)', fontWeight:500 }}>Account Active</span>
+          </label>
+          <div style={{ display:'flex', gap:'10px', marginTop:'2px' }}>
+            <button type="button" onClick={() => setEditU(null)} className="btn btn-ghost" style={{ flex:1 }}>Cancel</button>
+            <button type="submit" disabled={fLoad} className="btn btn-primary" style={{ flex:1 }}>
+              {fLoad ? <span className="spinner spinner-sm spinner-white" /> : 'Update'}
             </button>
           </div>
         </form>
       </Modal>
 
-      {/* Delete Confirmation */}
-      <Modal open={!!deleteId} onClose={() => setDeleteId(null)} title="Delete User">
-        <div className="text-center space-y-4">
-          <div className="w-14 h-14 bg-red-500/10 rounded-full flex items-center justify-center mx-auto">
-            <FiTrash2 size={24} className="text-red-400" />
+      {/* Delete */}
+      <Modal open={!!delId} onClose={() => setDelId(null)} title="Delete User" mw={360}>
+        <div style={{ textAlign:'center' }}>
+          <div style={{ width:'46px', height:'46px', borderRadius:'50%', background:'var(--red-s)', border:'1px solid #fecaca', display:'flex', alignItems:'center', justifyContent:'center', margin:'0 auto 14px' }}>
+            <FiTrash2 size={20} color="var(--red)" />
           </div>
-          <p className="text-gray-300">Are you sure? This will permanently delete the user.</p>
-          <div className="flex gap-3">
-            <button onClick={() => setDeleteId(null)} className="flex-1 px-4 py-2.5 bg-gray-800 text-gray-300 rounded-xl text-sm">Cancel</button>
-            <button onClick={() => handleDelete(deleteId)} className="flex-1 px-4 py-2.5 bg-red-500 text-white rounded-xl text-sm hover:bg-red-400">Delete</button>
+          <p style={{ fontSize:'14px', color:'var(--text-2)', marginBottom:'20px' }}>Permanently delete this user? Cannot be undone.</p>
+          <div style={{ display:'flex', gap:'10px' }}>
+            <button onClick={() => setDelId(null)} className="btn btn-ghost" style={{ flex:1 }}>Cancel</button>
+            <button onClick={() => del(delId)} className="btn btn-danger" style={{ flex:1 }}>Delete</button>
           </div>
         </div>
       </Modal>
     </Layout>
   );
-};
-
-export default UserManagement;
+}
