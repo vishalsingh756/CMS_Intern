@@ -5,6 +5,7 @@ import { Parser } from 'json2csv';
 import exceljs from 'exceljs';
 import Client from '../models/Post.js';
 import Deal from '../models/Deal.js';
+import Lead from '../models/Lead.js';
 import { sendResponse } from '../utils/helpers.js';
 import { logActivity } from '../utils/activityLogger.js';
 
@@ -12,11 +13,12 @@ import { logActivity } from '../utils/activityLogger.js';
 
 export const exportData = async (req, res) => {
   try {
-    const { module, format, ids } = req.body; // module: 'clients', 'deals'. format: 'csv', 'xlsx'
+    const { module, format, ids } = req.body; // module: 'clients', 'deals', 'leads'. format: 'csv', 'xlsx'
     
     let Model;
     if (module === 'clients') Model = Client;
     else if (module === 'deals') Model = Deal;
+    else if (module === 'leads') Model = Lead;
     else return sendResponse(res, 400, false, 'Invalid module for export');
 
     const query = {};
@@ -78,6 +80,7 @@ export const importData = async (req, res) => {
     let Model;
     if (module === 'clients') Model = Client;
     else if (module === 'deals') Model = Deal;
+    else if (module === 'leads') Model = Lead;
     else {
       fs.unlinkSync(req.file.path);
       return sendResponse(res, 400, false, 'Invalid module for import');
@@ -101,6 +104,10 @@ export const importData = async (req, res) => {
                row.owner = req.user._id;
                if(row.probability) row.probability = Number(row.probability);
                if(row.amount) row.amount = Number(row.amount);
+            } else if (module === 'leads') {
+               row.owner = req.user._id;
+               if(row.budget) row.budget = Number(row.budget);
+               if(row.score) row.score = Number(row.score);
             }
 
             const doc = new Model(row);
