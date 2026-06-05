@@ -18,6 +18,7 @@ import reportRoutes from './routes/reportRoutes.js';
 import importExportRoutes from './routes/importExportRoutes.js';
 import leadRoutes from './routes/leadRoutes.js';
 import noteRoutes from './routes/noteRoutes.js';
+import searchRoutes from './routes/searchRoutes.js';
 
 dotenv.config();
 
@@ -56,6 +57,7 @@ app.use('/api/reports', reportRoutes);
 app.use('/api/data', importExportRoutes);
 app.use('/api/leads', leadRoutes);
 app.use('/api/notes', noteRoutes);
+app.use('/api/search', searchRoutes);
 
 // 404 handler
 app.use((req, res) => {

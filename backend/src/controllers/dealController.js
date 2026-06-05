@@ -1,6 +1,7 @@
 import Deal from '../models/Deal.js';
 import { paginate, sendResponse } from '../utils/helpers.js';
 import { logActivity } from '../utils/activityLogger.js';
+import { sendEmail, emailTemplates } from '../utils/emailService.js';
 
 export const createDeal = async (req, res) => {
   try {
@@ -64,8 +65,14 @@ export const updateDeal = async (req, res) => {
     if (products) deal.products = products;
 
     await deal.save();
-    await deal.populate('client', 'companyName contactName');
+    await deal.populate('client', 'companyName contactName email');
     await deal.populate('owner', 'username email');
+
+    // Send email notification when deal is won
+    if (wasWon && deal.owner?.email) {
+      const tpl = emailTemplates.dealWon(deal.title, deal.amount, deal.client?.companyName || 'Unknown Client');
+      sendEmail(deal.owner.email, tpl.subject, tpl.html).catch(() => {});
+    }
 
     // Log activity with appropriate action
     const action = wasWon ? 'win_deal' : wasLost ? 'lose_deal' : 'edit_deal';
@@ -128,7 +135,7 @@ export const getDeals = async (req, res) => {
     const { skip, limit: pageLimit } = paginate(page, limit);
 
     const deals = await Deal.find(query)
-      .populate('client', 'companyName')
+      .populate('client', 'companyName contactName email phone')
       .populate('owner', 'username email')
       .sort({ expectedCloseDate: 1 })
       .limit(pageLimit)

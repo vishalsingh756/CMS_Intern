@@ -1,12 +1,21 @@
 import { useState, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   FiPlus, FiEdit2, FiTrash2, FiSearch, FiX,
   FiChevronLeft, FiChevronRight, FiTrendingUp, FiDollarSign,
+  FiUser, FiExternalLink, FiMove,
 } from 'react-icons/fi';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import Layout from '../components/Layout';
 import { dealService, clientService } from '../services/api';
 import { toast } from 'react-toastify';
+
+// Helper: get initials from company name
+const initials = (name = '') => name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2) || '?';
+
+// Deterministic colour from string
+const CLIENT_COLORS = ['#6366f1','#0ea5e9','#10b981','#f59e0b','#ef4444','#8b5cf6','#ec4899','#14b8a6'];
+const clientColor = (name = '') => CLIENT_COLORS[name.charCodeAt(0) % CLIENT_COLORS.length];
 
 const STAGE_BADGE = {
   prospect:    'badge badge-yellow',
@@ -46,33 +55,40 @@ function Modal({ open, onClose, title, mw=520, children }) {
 }
 
 export default function Deals() {
-  const [view, setView]       = useState('kanban'); // 'list' or 'kanban'
-  const [deals, setDeals]     = useState([]);
-  const [clients, setClients] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [page, setPage]       = useState(1);
-  const [totalPages, setTP]   = useState(1);
-  const [total, setTotal]     = useState(0);
-  const [search, setSearch]   = useState('');
-  const [stage, setStage]     = useState('');
-  const [stats, setStats]     = useState(null);
-  const [modal, setModal]     = useState(false);
-  const [editD, setEditD]     = useState(null);
-  const [form, setForm]       = useState(EMPTY);
-  const [fLoad, setFLoad]     = useState(false);
-  const [delId, setDelId]     = useState(null);
+  const navigate = useNavigate();
+  const [view, setView]             = useState('kanban');
+  const [deals, setDeals]           = useState([]);
+  const [clients, setClients]       = useState([]);
+  const [loading, setLoading]       = useState(true);
+  const [page, setPage]             = useState(1);
+  const [totalPages, setTP]         = useState(1);
+  const [total, setTotal]           = useState(0);
+  const [search, setSearch]         = useState('');
+  const [stage, setStage]           = useState('');
+  const [clientFilter, setClientF]  = useState('');
+  const [stats, setStats]           = useState(null);
+  const [modal, setModal]           = useState(false);
+  const [editD, setEditD]           = useState(null);
+  const [form, setForm]             = useState(EMPTY);
+  const [fLoad, setFLoad]           = useState(false);
+  const [delId, setDelId]           = useState(null);
 
   const fetch = useCallback(async () => {
     setLoading(true);
     try {
       const limit = view === 'kanban' ? 200 : 10;
-      const r = await dealService.getDeals({ page: view === 'kanban' ? 1 : page, limit, stage: stage||undefined, search: search||undefined });
+      const r = await dealService.getDeals({
+        page: view === 'kanban' ? 1 : page, limit,
+        stage: stage || undefined,
+        search: search || undefined,
+        client: clientFilter || undefined,
+      });
       setDeals(r.data.data.deals);
       setTP(r.data.data.pagination.pages);
       setTotal(r.data.data.pagination.total);
     } catch { toast.error('Failed to load deals'); }
     finally { setLoading(false); }
-  }, [page, stage, search, view]);
+  }, [page, stage, search, view, clientFilter]);
 
   useEffect(() => { fetch(); }, [fetch]);
   useEffect(() => {
@@ -224,7 +240,6 @@ export default function Deals() {
                                 <div
                                   ref={provided.innerRef}
                                   {...provided.draggableProps}
-                                  {...provided.dragHandleProps}
                                   style={{
                                     userSelect: 'none',
                                     padding: '12px',
@@ -236,8 +251,43 @@ export default function Deals() {
                                     ...provided.draggableProps.style,
                                   }}
                                 >
-                                  <div style={{ fontWeight: 600, fontSize: '13.5px', color: 'var(--text-1)', marginBottom: '4px' }}>{d.title}</div>
-                                  <div style={{ fontSize: '11.5px', color: 'var(--text-3)', marginBottom: '6px' }}>{d.client?.companyName || '—'}</div>
+                                  {/* Drag handle strip — only this area initiates drag */}
+                                  <div
+                                    {...provided.dragHandleProps}
+                                    style={{
+                                      display: 'flex', justifyContent: 'flex-end',
+                                      marginBottom: '6px', cursor: 'grab',
+                                    }}
+                                  >
+                                    <FiMove size={12} color="var(--text-3)" />
+                                  </div>
+                                  <div style={{ fontWeight: 600, fontSize: '13.5px', color: 'var(--text-1)', marginBottom: '6px' }}>{d.title}</div>
+                                  {/* Client chip */}
+                                  {d.client && (
+                                    <div
+                                      onClick={e => { e.stopPropagation(); navigate(`/clients/${d.client._id}`); }}
+                                      style={{
+                                        display:'inline-flex', alignItems:'center', gap:'5px',
+                                        padding:'3px 8px 3px 4px', borderRadius:'99px', cursor:'pointer',
+                                        background: clientColor(d.client.companyName) + '18',
+                                        border:`1px solid ${clientColor(d.client.companyName)}40`,
+                                        marginBottom:'6px',
+                                      }}
+                                      title={`Go to ${d.client.companyName}`}
+                                    >
+                                      <div style={{
+                                        width:'18px', height:'18px', borderRadius:'50%', flexShrink:0,
+                                        background: clientColor(d.client.companyName),
+                                        display:'flex', alignItems:'center', justifyContent:'center',
+                                        fontSize:'8px', fontWeight:800, color:'#fff',
+                                      }}>
+                                        {initials(d.client.companyName)}
+                                      </div>
+                                      <span style={{ fontSize:'11px', fontWeight:600, color: clientColor(d.client.companyName) }}>
+                                        {d.client.companyName}
+                                      </span>
+                                    </div>
+                                  )}
                                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                     <div style={{ fontSize: '13px', fontWeight: 700, color: 'var(--green)', display: 'flex', alignItems: 'center', gap: '2px' }}>
                                       <FiDollarSign size={12} />
@@ -277,6 +327,11 @@ export default function Deals() {
                 <option value="">All Stages</option>
                 {STAGE_CONFIG.map(s => <option key={s.key} value={s.key}>{s.label}</option>)}
               </select>
+              <select value={clientFilter} onChange={e => { setClientF(e.target.value); setPage(1); }}
+                className="input" style={{ width:'auto', minWidth:'150px', minHeight:'36px' }}>
+                <option value="">All Clients</option>
+                {clients.map(c => <option key={c._id} value={c._id}>{c.companyName}</option>)}
+              </select>
             </div>
 
             {/* Table */}
@@ -315,7 +370,35 @@ export default function Deals() {
                               {d.priority} priority
                             </div>
                           </td>
-                          <td style={{ color:'var(--text-2)', fontSize:'13px' }}>{d.client?.companyName || '—'}</td>
+                          <td>
+                            {d.client ? (
+                              <div style={{ display:'flex', alignItems:'center', gap:'8px' }}>
+                                <div style={{
+                                  width:'28px', height:'28px', borderRadius:'50%', flexShrink:0,
+                                  background: clientColor(d.client.companyName),
+                                  display:'flex', alignItems:'center', justifyContent:'center',
+                                  fontSize:'10px', fontWeight:700, color:'#fff',
+                                }}>
+                                  {initials(d.client.companyName)}
+                                </div>
+                                <div>
+                                  <div
+                                    style={{ fontSize:'13px', fontWeight:600, color:'var(--accent)', cursor:'pointer' }}
+                                    onClick={() => navigate(`/clients/${d.client._id}`)}
+                                  >
+                                    {d.client.companyName}
+                                  </div>
+                                  {d.client.contactName && (
+                                    <div style={{ fontSize:'11px', color:'var(--text-3)' }}>{d.client.contactName}</div>
+                                  )}
+                                </div>
+                                <FiExternalLink
+                                  size={12} color="var(--text-3)" style={{ cursor:'pointer', flexShrink:0 }}
+                                  onClick={() => navigate(`/clients/${d.client._id}`)}
+                                />
+                              </div>
+                            ) : <span style={{ color:'var(--text-3)' }}>—</span>}
+                          </td>
                           <td>
                             <div style={{ display:'flex', alignItems:'center', gap:'4px', fontWeight:700, fontSize:'14px', color:'var(--text-1)' }}>
                               <FiDollarSign size={13} color="var(--green)" />

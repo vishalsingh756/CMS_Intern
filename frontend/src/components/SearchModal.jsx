@@ -1,21 +1,23 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FiSearch, FiUsers, FiTrendingUp, FiCheckSquare, FiMessageSquare, FiX, FiArrowRight } from 'react-icons/fi';
-import { clientService, dealService, taskService, interactionService } from '../services/api';
+import { FiSearch, FiUsers, FiTrendingUp, FiCheckSquare, FiMessageSquare, FiX, FiArrowRight, FiTarget } from 'react-icons/fi';
+import { searchService } from '../services/api';
 
 const SECTIONS = [
-  { key: 'clients',      label: 'Clients',      icon: FiUsers,         color: 'var(--blue)',   bg: 'var(--blue-s)' },
-  { key: 'deals',        label: 'Deals',        icon: FiTrendingUp,    color: 'var(--green)',  bg: 'var(--green-s)' },
-  { key: 'tasks',        label: 'Tasks',        icon: FiCheckSquare,   color: 'var(--purple)', bg: 'var(--purple-s)' },
-  { key: 'interactions', label: 'Interactions', icon: FiMessageSquare, color: 'var(--orange)', bg: 'var(--orange-s)' },
+  { key: 'clients',      label: 'Clients',      icon: FiUsers,         color: 'var(--blue)',   bg: 'var(--blue-s)',   path: (i) => `/clients/${i._id}` },
+  { key: 'leads',        label: 'Leads',        icon: FiTarget,        color: 'var(--purple)', bg: 'var(--purple-s)', path: () => '/leads' },
+  { key: 'deals',        label: 'Deals',        icon: FiTrendingUp,    color: 'var(--green)',  bg: 'var(--green-s)',  path: () => '/deals' },
+  { key: 'tasks',        label: 'Tasks',        icon: FiCheckSquare,   color: 'var(--accent)', bg: 'var(--accent-s)', path: () => '/tasks' },
+  { key: 'interactions', label: 'Interactions', icon: FiMessageSquare, color: 'var(--orange)', bg: 'var(--orange-s)', path: () => '/interactions' },
 ];
 
 function getResultLabel(key, item) {
   switch (key) {
-    case 'clients':      return item.name || item.companyName || 'Unnamed';
-    case 'deals':        return item.title || item.name || 'Unnamed';
-    case 'tasks':        return item.title || item.name || 'Unnamed';
-    case 'interactions': return item.subject || item.notes?.slice(0, 60) || 'Interaction';
+    case 'clients':      return item.companyName || item.name || 'Unnamed';
+    case 'leads':        return item.name || 'Unnamed Lead';
+    case 'deals':        return item.title || 'Unnamed Deal';
+    case 'tasks':        return item.title || 'Unnamed Task';
+    case 'interactions': return item.subject || 'Interaction';
     default:             return 'Unknown';
   }
 }
@@ -23,7 +25,8 @@ function getResultLabel(key, item) {
 function getResultSub(key, item) {
   switch (key) {
     case 'clients':      return item.email || item.industry || '';
-    case 'deals':        return item.stage ? `Stage: ${item.stage}` : (item.value ? `$${item.value}` : '');
+    case 'leads':        return item.status ? `Status: ${item.status}` : (item.email || '');
+    case 'deals':        return item.stage ? `Stage: ${item.stage}` : '';
     case 'tasks':        return item.status || item.priority || '';
     case 'interactions': return item.type || '';
     default:             return '';
@@ -56,21 +59,20 @@ export default function SearchModal({ isOpen, onClose }) {
   );
 
   const doSearch = useCallback(async (q) => {
-    if (!q.trim()) { setResults({}); return; }
+    if (!q || q.trim().length < 2) { setResults({}); return; }
     setLoading(true);
     try {
-      const [cl, dl, tk, ix] = await Promise.allSettled([
-        clientService.getClients({ search: q, limit: 4 }),
-        dealService.getDeals({ search: q, limit: 4 }),
-        taskService.getTasks({ search: q, limit: 4 }),
-        interactionService.getInteractions({ search: q, limit: 4 }),
-      ]);
+      const res = await searchService.search(q.trim());
+      const data = res.data?.data || {};
       setResults({
-        clients:      cl.status === 'fulfilled' ? (cl.value.data?.data?.clients || cl.value.data?.data || []) : [],
-        deals:        dl.status === 'fulfilled' ? (dl.value.data?.data?.deals   || dl.value.data?.data || []) : [],
-        tasks:        tk.status === 'fulfilled' ? (tk.value.data?.data?.tasks   || tk.value.data?.data || []) : [],
-        interactions: ix.status === 'fulfilled' ? (ix.value.data?.data?.interactions || ix.value.data?.data || []) : [],
+        clients:      data.clients      || [],
+        leads:        data.leads        || [],
+        deals:        data.deals        || [],
+        tasks:        data.tasks        || [],
+        interactions: data.interactions || [],
       });
+    } catch {
+      setResults({});
     } finally {
       setLoading(false);
     }
@@ -110,13 +112,14 @@ export default function SearchModal({ isOpen, onClose }) {
     if (e.key === 'ArrowDown') { e.preventDefault(); setActive(i => Math.min(i + 1, flat.length - 1)); }
     if (e.key === 'ArrowUp')   { e.preventDefault(); setActive(i => Math.max(i - 1, 0)); }
     if (e.key === 'Enter' && flat[active]) {
-      navigate(getResultPath(flat[active].section.key, flat[active].item));
+      const { section, item } = flat[active];
+      navigate(section.path(item));
       onClose();
     }
   };
 
   const go = (section, item) => {
-    navigate(getResultPath(section.key, item));
+    navigate(section.path(item));
     onClose();
   };
 

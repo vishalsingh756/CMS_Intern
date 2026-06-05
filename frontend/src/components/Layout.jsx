@@ -9,7 +9,7 @@ export default function Layout({ children }) {
     <div style={{ display:'flex', height:'100vh', overflow:'hidden', background:'var(--bg)' }}>
 
       {/* Desktop sidebar — always visible, sticky */}
-      <div style={{ width:'228px', flexShrink:0, display:'flex' }} id="desktop-sidebar">
+      <div style={{ width:'64px', flexShrink:0, display:'flex' }} id="desktop-sidebar">
         <Sidebar alwaysVisible onClose={() => {}} />
       </div>
 

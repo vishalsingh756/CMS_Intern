@@ -117,4 +117,8 @@ export const noteService = {
   togglePin:    (id) => apiClient.put(`/notes/${id}/pin`),
 };
 
+export const searchService = {
+  search: (q) => apiClient.get('/search', { params: { q } }),
+};
+
 export default apiClient;

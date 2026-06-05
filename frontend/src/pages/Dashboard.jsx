@@ -12,7 +12,7 @@ import Layout from '../components/Layout';
 import useAuthStore from '../utils/authStore';
 import { clientService, dealService, taskService } from '../services/api';
 
-const COLORS = ['#4f46e5','#059669','#d97706','#2563eb','#dc2626'];
+const COLORS = ['#0071E3','#34C759','#FF9F0A','#007AFF','#FF3B30'];
 
 const monthly = [
   { m:'Jan', clients:3,  deals:5,  rev:24000 },
@@ -23,7 +23,7 @@ const monthly = [
   { m:'Jun', clients:10, deals:15, rev:89000 },
 ];
 
-const TT = { contentStyle:{ background:'#fff', border:'1px solid #e4e7ec', borderRadius:'8px', fontSize:'12px', color:'#0d1117', boxShadow:'0 4px 12px rgba(0,0,0,0.08)' } };
+const TT = { contentStyle:{ background:'rgba(255,255,255,0.95)', border:'1px solid #D2D2D7', borderRadius:'12px', fontSize:'12px', color:'#1D1D1F', boxShadow:'0 8px 30px rgba(0,0,0,0.12)', backdropFilter:'blur(20px)' } };
 
 function KpiCard({ icon: Icon, label, value, sub, iconBg, iconColor, trend, onClick }) {
   return (
@@ -108,16 +108,16 @@ export default function Dashboard() {
       <div className="page">
         {/* ── Welcome banner ── */}
         <div style={{
-          background: 'linear-gradient(135deg, var(--accent) 0%, #6366f1 60%, #818cf8 100%)',
-          borderRadius: '14px',
-          padding: '22px 26px',
-          marginBottom: '22px',
+          background: 'linear-gradient(135deg, #0071E3 0%, #007AFF 60%, #34aadc 100%)',
+          borderRadius: '20px',
+          padding: '28px 32px',
+          marginBottom: '28px',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
           flexWrap: 'wrap',
-          gap: '14px',
-          boxShadow: '0 8px 24px rgba(79,70,229,0.25)',
+          gap: '16px',
+          boxShadow: '0 8px 32px rgba(0,113,227,0.3)',
           position: 'relative',
           overflow: 'hidden',
         }}>
@@ -150,10 +150,10 @@ export default function Dashboard() {
         {/* ── KPI row ── */}
         <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(190px,1fr))', gap:'12px', marginBottom:'20px' }}
           className="stagger">
-          <KpiCard icon={FiUsers}       label="Total Clients"    value={v(cs?.total)}          sub={`${cs?.active||0} active`}       iconBg="#eef2ff" iconColor="var(--accent)" trend={12} onClick={() => navigate('/clients')} />
-          <KpiCard icon={FiTrendingUp}  label="Total Deals"      value={v(ds?.totalDeals)}     sub={`$${(ds?.totalAmount||0).toLocaleString()} pipeline`} iconBg="#ecfdf5" iconColor="var(--green)" trend={8}  onClick={() => navigate('/deals')} />
-          <KpiCard icon={FiCheckSquare} label="Open Tasks"       value={v(ts?.open)}           sub={`${ts?.overdue||0} overdue`}     iconBg="#fffbeb" iconColor="var(--yellow)" onClick={() => navigate('/tasks')} />
-          <KpiCard icon={FiActivity}    label="Completed Tasks"  value={v(ts?.completed)}      sub={`${ts?.inProgress||0} in progress`} iconBg="#eff6ff" iconColor="var(--blue)" trend={5}  onClick={() => navigate('/tasks')} />
+          <KpiCard icon={FiUsers}       label="Total Clients"   value={v(cs?.total)}      sub={`${cs?.active||0} active`}              iconBg="rgba(0,113,227,0.08)"  iconColor="var(--accent)" trend={12} onClick={() => navigate('/clients')} />
+          <KpiCard icon={FiTrendingUp}  label="Total Deals"     value={v(ds?.totalDeals)} sub={`$${(ds?.totalAmount||0).toLocaleString()} pipeline`} iconBg="rgba(52,199,89,0.1)"  iconColor="var(--green)"  trend={8}  onClick={() => navigate('/deals')} />
+          <KpiCard icon={FiCheckSquare} label="Open Tasks"      value={v(ts?.open)}       sub={`${ts?.overdue||0} overdue`}            iconBg="rgba(255,159,10,0.1)"  iconColor="var(--yellow)"        onClick={() => navigate('/tasks')} />
+          <KpiCard icon={FiActivity}    label="Completed Tasks" value={v(ts?.completed)}  sub={`${ts?.inProgress||0} in progress`}     iconBg="rgba(0,122,255,0.08)"  iconColor="var(--blue)"  trend={5}  onClick={() => navigate('/tasks')} />
         </div>
 
         {/* ── Charts ── */}
@@ -161,11 +161,11 @@ export default function Dashboard() {
           <SCard title="Revenue Overview" actionLabel="6 months">
             <ResponsiveContainer width="100%" height={220}>
               <BarChart data={monthly} barSize={24}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" vertical={false} />
-                <XAxis dataKey="m" axisLine={false} tickLine={false} tick={{ fill:'var(--text-3)', fontSize:11 }} />
-                <YAxis axisLine={false} tickLine={false} tick={{ fill:'var(--text-3)', fontSize:11 }} tickFormatter={v => `$${(v/1000).toFixed(0)}k`} />
-                <Tooltip {...TT} formatter={(v) => [`$${v.toLocaleString()}`, 'Revenue']} cursor={{ fill:'rgba(79,70,229,0.04)' }} />
-                <Bar dataKey="rev" fill="var(--accent)" radius={[5,5,0,0]} />
+                <CartesianGrid strokeDasharray="3 3" stroke="#F5F5F7" vertical={false} />
+                <XAxis dataKey="m" axisLine={false} tickLine={false} tick={{ fill:'#6E6E73', fontSize:11 }} />
+                <YAxis axisLine={false} tickLine={false} tick={{ fill:'#6E6E73', fontSize:11 }} tickFormatter={v => `$${(v/1000).toFixed(0)}k`} />
+                <Tooltip {...TT} formatter={(v) => [`$${v.toLocaleString()}`, 'Revenue']} cursor={{ fill:'rgba(0,113,227,0.04)' }} />
+                <Bar dataKey="rev" fill="var(--accent)" radius={[6,6,0,0]} />
               </BarChart>
             </ResponsiveContainer>
           </SCard>
@@ -194,13 +194,13 @@ export default function Dashboard() {
         <SCard title="Growth Trends" action={() => navigate('/clients')} actionLabel="View all">
           <ResponsiveContainer width="100%" height={200}>
             <LineChart data={monthly}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" vertical={false} />
-              <XAxis dataKey="m" axisLine={false} tickLine={false} tick={{ fill:'var(--text-3)', fontSize:11 }} />
-              <YAxis axisLine={false} tickLine={false} tick={{ fill:'var(--text-3)', fontSize:11 }} />
+              <CartesianGrid strokeDasharray="3 3" stroke="#F5F5F7" vertical={false} />
+              <XAxis dataKey="m" axisLine={false} tickLine={false} tick={{ fill:'#6E6E73', fontSize:11 }} />
+              <YAxis axisLine={false} tickLine={false} tick={{ fill:'#6E6E73', fontSize:11 }} />
               <Tooltip {...TT} />
-              <Legend iconSize={7} wrapperStyle={{ fontSize:'11px', color:'var(--text-3)' }} />
+              <Legend iconSize={7} wrapperStyle={{ fontSize:'11px', color:'#6E6E73' }} />
               <Line type="monotone" dataKey="clients" stroke="var(--accent)" strokeWidth={2.5} dot={{ fill:'var(--accent)', r:3 }} name="Clients" />
-              <Line type="monotone" dataKey="deals"   stroke="var(--green)"  strokeWidth={2.5} dot={{ fill:'var(--green)', r:3 }}  name="Deals"   />
+              <Line type="monotone" dataKey="deals"   stroke="var(--green)"  strokeWidth={2.5} dot={{ fill:'var(--green)',  r:3 }} name="Deals" />
             </LineChart>
           </ResponsiveContainer>
         </SCard>

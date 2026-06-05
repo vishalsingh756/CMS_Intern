@@ -104,6 +104,11 @@ export const getInteractions = async (req, res) => {
     if (client) query.client = client;
     if (type) query.type = type;
 
+    // Non-admin users can only see interactions they created
+    if (req.user.role !== 'admin') {
+      query.createdBy = req.user._id;
+    }
+
     const { skip, limit: pageLimit } = paginate(page, limit);
 
     const interactions = await Interaction.find(query)

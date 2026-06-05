@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { FiMenu, FiSearch } from 'react-icons/fi';
+import { FiSearch } from 'react-icons/fi';
 import useAuthStore from '../utils/authStore';
 import SearchModal from './SearchModal';
 import NotificationPanel from './NotificationPanel';
@@ -49,9 +49,6 @@ export default function Header({ onMenuClick }) {
       <header className="topbar">
         {/* Left */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <button className="btn-icon" onClick={onMenuClick} style={{ display: 'flex' }}>
-            <FiMenu size={17} />
-          </button>
           <span className="topbar-title">{title}</span>
         </div>
 
