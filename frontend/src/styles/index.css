@@ -7,35 +7,35 @@
 /* ─── Apple-Inspired Design System ──────────────────────────────── */
 :root {
   /* Colors */
-  --bg:          #ffffff;
-  --bg-secondary:#F5F5F7;
+  --bg:          #F8FAFC;
+  --bg-secondary:#F1F5F9;
   --surface:     #ffffff;
-  --surface-2:   #F5F5F7;
-  --surface-3:   #E8E8ED;
-  --border:      #D2D2D7;
-  --border-2:    #b8b8bf;
+  --surface-2:   #F1F5F9;
+  --surface-3:   #E2E8F0;
+  --border:      #E2E8F0;
+  --border-2:    #CBD5E1;
 
-  --text-1:      #1D1D1F;
-  --text-2:      #6E6E73;
-  --text-3:      #a1a1aa;
+  --text-1:      #0F172A;
+  --text-2:      #64748B;
+  --text-3:      #94A3B8;
 
-  --accent:      #0071E3;
-  --accent-h:    #0077ED;
-  --accent-s:    #E8F0FD;
-  --accent-rgb:  0,113,227;
+  --accent:      #6366F1;
+  --accent-h:    #4F46E5;
+  --accent-s:    #EEF2FF;
+  --accent-rgb:  99,102,241;
 
-  --green:       #34C759;
-  --green-s:     #edfbf1;
-  --yellow:      #FF9F0A;
-  --yellow-s:    #fff8ec;
-  --red:         #FF3B30;
-  --red-s:       #fff1f0;
-  --blue:        #007AFF;
-  --blue-s:      #e5f0ff;
-  --purple:      #AF52DE;
-  --purple-s:    #f7eaff;
-  --orange:      #FF6B35;
-  --orange-s:    #fff3ee;
+  --green:       #10B981;
+  --green-s:     #ECFDF5;
+  --yellow:      #F59E0B;
+  --yellow-s:    #FFFBEB;
+  --red:         #EF4444;
+  --red-s:       #FEF2F2;
+  --blue:        #3B82F6;
+  --blue-s:      #EFF6FF;
+  --purple:      #8B5CF6;
+  --purple-s:    #F5F3FF;
+  --orange:      #F97316;
+  --orange-s:    #FFF7ED;
 
   --radius:      10px;
   --radius-lg:   14px;
@@ -386,7 +386,7 @@ select.input {
 .sidebar-avatar {
   width: 30px; height: 30px;
   border-radius: 8px;
-  background: linear-gradient(135deg, var(--accent) 0%, #34aadc 100%);
+  background: linear-gradient(135deg, var(--accent) 0%, #06B6D4 100%);
   display: flex; align-items: center; justify-content: center;
   font-size: 11.5px; font-weight: 700; color: #fff;
   flex-shrink: 0;
@@ -496,7 +496,7 @@ select.input {
 /* ─── Auth ───────────────────────────────────────────────────────── */
 .auth-wrap {
   min-height: 100vh;
-  background: linear-gradient(145deg, #F5F5F7 0%, #ffffff 50%, #F0F4FF 100%);
+  background: linear-gradient(145deg, #F1F5F9 0%, #ffffff 50%, #EEF2FF 100%);
   display: flex; align-items: center; justify-content: center;
   padding: 24px;
 }
@@ -752,7 +752,7 @@ select.input {
 .rail-avatar {
   width: 30px; height: 30px;
   border-radius: 8px;
-  background: linear-gradient(135deg, var(--accent) 0%, #34aadc 100%);
+  background: linear-gradient(135deg, var(--accent) 0%, #06B6D4 100%);
   display: flex; align-items: center; justify-content: center;
   font-size: 12px; font-weight: 700; color: #fff;
   flex-shrink: 0;
