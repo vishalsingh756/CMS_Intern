@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 import Report from '../models/Report.js';
-import Client from '../models/Post.js';
+import Client from '../models/Client.js';
 import Deal from '../models/Deal.js';
 import Task from '../models/Task.js';
 import Interaction from '../models/Interaction.js';

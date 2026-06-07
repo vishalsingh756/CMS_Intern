@@ -1,4 +1,5 @@
 import Deal from '../models/Deal.js';
+import Client from '../models/Client.js';
 import { paginate, sendResponse } from '../utils/helpers.js';
 import { logActivity } from '../utils/activityLogger.js';
 import { sendEmail, emailTemplates } from '../utils/emailService.js';
@@ -26,6 +27,10 @@ export const createDeal = async (req, res) => {
 
     // Log activity
     await logActivity(req.user._id, 'create_deal', 'deal', deal._id, { title, amount }, req);
+
+    if (deal.stage === 'won' && deal.client) {
+      await Client.findByIdAndUpdate(deal.client, { status: 'active' });
+    }
 
     sendResponse(res, 201, true, 'Deal created successfully', deal);
   } catch (error) {
@@ -77,6 +82,10 @@ export const updateDeal = async (req, res) => {
     // Log activity with appropriate action
     const action = wasWon ? 'win_deal' : wasLost ? 'lose_deal' : 'edit_deal';
     await logActivity(req.user._id, action, 'deal', deal._id, { title, stage }, req);
+
+    if (wasWon && deal.client) {
+      await Client.findByIdAndUpdate(deal.client._id || deal.client, { status: 'active' });
+    }
 
     sendResponse(res, 200, true, 'Deal updated successfully', deal);
   } catch (error) {

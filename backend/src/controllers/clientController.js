@@ -1,11 +1,11 @@
-import Client from '../models/Post.js'; // Using Post.js which now contains Client model
+import Client from '../models/Client.js';
 import User from '../models/User.js';
 import { paginate, sendResponse } from '../utils/helpers.js';
 import { logActivity } from '../utils/activityLogger.js';
 
 export const createClient = async (req, res) => {
   try {
-    const { companyName, contactName, email, phone, address, industry, status, source, website, notes } = req.body;
+    const { companyName, contactName, email, phone, address, industry, status, source, website, notes, contacts } = req.body;
 
     // Check if client with same email exists
     let existingClient = await Client.findOne({ email });
@@ -25,6 +25,7 @@ export const createClient = async (req, res) => {
       website: website || undefined,
       notes: notes || undefined,
       assignedTo: req.user._id,
+      contacts: contacts || [],
     });
 
     await client.save();
@@ -43,7 +44,7 @@ export const createClient = async (req, res) => {
 export const updateClient = async (req, res) => {
   try {
     const { id } = req.params;
-    const { companyName, contactName, email, phone, address, industry, status, source, website, notes, lastContact } = req.body;
+    const { companyName, contactName, email, phone, address, industry, status, source, website, notes, lastContact, contacts } = req.body;
 
     let client = await Client.findById(id);
 
@@ -68,6 +69,7 @@ export const updateClient = async (req, res) => {
     if (website) client.website = website;
     if (notes) client.notes = notes;
     if (lastContact) client.lastContact = lastContact;
+    if (contacts) client.contacts = contacts;
 
     await client.save();
     await client.populate('assignedTo', 'username email');

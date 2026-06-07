@@ -3,7 +3,7 @@ import path from 'path';
 import csv from 'csv-parser';
 import { Parser } from 'json2csv';
 import exceljs from 'exceljs';
-import Client from '../models/Post.js';
+import Client from '../models/Client.js';
 import Deal from '../models/Deal.js';
 import { sendResponse } from '../utils/helpers.js';
 import { logActivity } from '../utils/activityLogger.js';

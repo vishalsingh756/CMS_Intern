@@ -60,6 +60,15 @@ const clientSchema = new mongoose.Schema(
     website: String,
     annualRevenue: Number,
     employeeCount: Number,
+    contacts: [
+      {
+        name: { type: String, required: true },
+        email: { type: String, required: true },
+        phone: String,
+        role: String,
+        isPrimary: { type: Boolean, default: false }
+      }
+    ],
   },
   { timestamps: true }
 );

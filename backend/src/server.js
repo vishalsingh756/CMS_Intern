@@ -8,7 +8,7 @@ import { apiLimiter } from './middleware/rateLimiter.js';
 
 // Import routes
 import authRoutes from './routes/authRoutes.js';
-import clientRoutes from './routes/postRoutes.js';
+import clientRoutes from './routes/clientRoutes.js';
 import interactionRoutes from './routes/interactionRoutes.js';
 import dealRoutes from './routes/dealRoutes.js';
 import taskRoutes from './routes/taskRoutes.js';

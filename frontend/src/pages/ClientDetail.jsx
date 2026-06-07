@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
   FiArrowLeft, FiEdit2, FiPlus, FiMail, FiPhone, FiGlobe,
-  FiMapPin, FiCalendar, FiMessageSquare, FiTrendingUp, FiCheckSquare, FiX
+  FiMapPin, FiCalendar, FiMessageSquare, FiTrendingUp, FiCheckSquare, FiX, FiUsers
 } from 'react-icons/fi';
 import Layout from '../components/Layout';
 import { clientService, dealService, taskService, interactionService, noteService } from '../services/api';
@@ -63,6 +63,8 @@ const ClientDetail = () => {
   const [noteForm, setNoteForm] = useState({ content: '' });
   const [submitting, setSubmitting] = useState(false);
   const [timelineFilter, setTimelineFilter] = useState('all');
+  const [contactModal, setContactModal] = useState(false);
+  const [contactForm, setContactForm] = useState({ name: '', email: '', phone: '', role: '' });
 
   useEffect(() => {
     const fetch = async () => {
@@ -161,6 +163,35 @@ const ClientDetail = () => {
       toast.success('Note deleted');
     } catch {
       toast.error('Failed to delete note');
+    }
+  };
+
+  const handleAddContact = async (e) => {
+    e.preventDefault();
+    setSubmitting(true);
+    try {
+      const updatedContacts = [...(client.contacts || []), contactForm];
+      const res = await clientService.updateClient(id, { contacts: updatedContacts });
+      setClient(res.data.data);
+      toast.success('Contact added');
+      setContactModal(false);
+      setContactForm({ name: '', email: '', phone: '', role: '' });
+    } catch (err) {
+      toast.error('Failed to add contact');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleDeleteContact = async (idx) => {
+    if (!window.confirm('Are you sure you want to delete this contact?')) return;
+    try {
+      const updatedContacts = (client.contacts || []).filter((_, i) => i !== idx);
+      const res = await clientService.updateClient(id, { contacts: updatedContacts });
+      setClient(res.data.data);
+      toast.success('Contact deleted');
+    } catch {
+      toast.error('Failed to delete contact');
     }
   };
 
@@ -298,7 +329,7 @@ const ClientDetail = () => {
               {[
                 { label: 'Deals', value: deals.length, color: 'text-blue-600', icon: FiTrendingUp },
                 { label: 'Tasks', value: tasks.length, color: 'text-yellow-600', icon: FiCheckSquare },
-                { label: 'Contacts', value: interactions.length, color: 'text-purple-600', icon: FiMessageSquare },
+                { label: 'Contacts', value: (client.contacts || []).length + 1, color: 'text-purple-600', icon: FiUsers },
               ].map((s, i) => (
                 <div key={i} className="text-center bg-gray-50 rounded-xl p-3 border border-gray-100">
                   <s.icon size={18} className={`${s.color} mx-auto mb-1`} />
@@ -329,6 +360,7 @@ const ClientDetail = () => {
           <div className="flex border-b border-gray-200 overflow-x-auto bg-gray-50">
             {[
               { key: 'timeline', label: 'Timeline', count: timelineItems.length },
+              { key: 'contacts', label: 'Contacts', count: (client.contacts || []).length + 1 },
               { key: 'interactions', label: 'Interactions', count: interactions.length },
               { key: 'notes', label: 'Collaborative Notes', count: notes.length },
               { key: 'deals', label: 'Deals', count: deals.length },
@@ -388,6 +420,51 @@ const ClientDetail = () => {
                         {item.meta && <p className="text-[10px] text-gray-500 mt-2 font-medium">{item.meta}</p>}
                         {item.actions}
                       </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Contacts Tab */}
+            {activeTab === 'contacts' && (
+              <div>
+                <div className="flex items-center justify-between mb-4">
+                  <p className="text-sm text-gray-500">Additional company contacts</p>
+                  <button
+                    onClick={() => setContactModal(true)}
+                    className="flex items-center gap-2 bg-cyan-600 text-white px-4 py-2 rounded-xl text-sm hover:bg-cyan-700 transition-all"
+                  >
+                    <FiPlus size={14} /> Add Contact
+                  </button>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {/* Primary Contact (from Client root) */}
+                  <div className="bg-cyan-50/50 border border-cyan-200 rounded-xl p-4 relative">
+                    <span className="absolute top-3 right-3 px-2 py-0.5 bg-cyan-100 text-cyan-800 text-[10px] font-bold rounded-full">Primary</span>
+                    <p className="font-semibold text-gray-900 text-sm">{client.contactName}</p>
+                    <p className="text-gray-500 text-xs mt-1">Role: Primary Account Contact</p>
+                    <div className="mt-3 space-y-1 text-xs text-gray-605">
+                      <p>✉️ {client.email}</p>
+                      <p>📞 {client.phone}</p>
+                    </div>
+                  </div>
+                  {/* Additional Contacts */}
+                  {(client.contacts || []).map((c, idx) => (
+                    <div key={idx} className="bg-white border border-gray-200 rounded-xl p-4 relative">
+                      <p className="font-semibold text-gray-900 text-sm">{c.name}</p>
+                      <p className="text-gray-500 text-xs mt-1">Role: {c.role || 'Not specified'}</p>
+                      <div className="mt-3 space-y-1 text-xs text-gray-605">
+                        <p>✉️ {c.email}</p>
+                        {c.phone && <p>📞 {c.phone}</p>}
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => handleDeleteContact(idx)}
+                        className="absolute bottom-3 right-3 text-red-500 hover:text-red-700 text-xs font-semibold"
+                      >
+                        Delete
+                      </button>
                     </div>
                   ))}
                 </div>
@@ -693,6 +770,58 @@ const ClientDetail = () => {
             <button type="button" onClick={() => setNoteModal(false)} className="flex-1 px-4 py-2.5 bg-white border border-gray-300 text-gray-700 rounded-xl text-sm hover:bg-gray-50">Cancel</button>
             <button type="submit" disabled={submitting} className="flex-1 px-4 py-2.5 bg-cyan-600 text-white rounded-xl text-sm hover:bg-cyan-700 transition-all disabled:opacity-50 font-medium">
               {submitting ? 'Saving...' : 'Add Note'}
+            </button>
+          </div>
+        </form>
+      </Modal>
+      {/* Add Contact Modal */}
+      <Modal open={contactModal} onClose={() => setContactModal(false)} title="Add Company Contact">
+        <form onSubmit={handleAddContact} className="space-y-4">
+          <div>
+            <label className="block text-xs text-gray-500 mb-1.5 font-semibold">Full Name *</label>
+            <input
+              value={contactForm.name}
+              onChange={e => setContactForm(f => ({ ...f, name: e.target.value }))}
+              required
+              placeholder="Jane Doe"
+              className="w-full bg-white border border-gray-300 text-gray-900 rounded-xl px-3 py-2.5 text-sm outline-none focus:border-cyan-500"
+            />
+          </div>
+          <div>
+            <label className="block text-xs text-gray-500 mb-1.5 font-semibold">Email Address *</label>
+            <input
+              type="email"
+              value={contactForm.email}
+              onChange={e => setContactForm(f => ({ ...f, email: e.target.value }))}
+              required
+              placeholder="jane.doe@company.com"
+              className="w-full bg-white border border-gray-300 text-gray-900 rounded-xl px-3 py-2.5 text-sm outline-none focus:border-cyan-500"
+            />
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="block text-xs text-gray-500 mb-1.5 font-semibold">Phone Number</label>
+              <input
+                value={contactForm.phone}
+                onChange={e => setContactForm(f => ({ ...f, phone: e.target.value }))}
+                placeholder="+1 (555) 019-2834"
+                className="w-full bg-white border border-gray-300 text-gray-900 rounded-xl px-3 py-2.5 text-sm outline-none focus:border-cyan-500"
+              />
+            </div>
+            <div>
+              <label className="block text-xs text-gray-500 mb-1.5 font-semibold">Role / Title</label>
+              <input
+                value={contactForm.role}
+                onChange={e => setContactForm(f => ({ ...f, role: e.target.value }))}
+                placeholder="Technical Lead"
+                className="w-full bg-white border border-gray-300 text-gray-900 rounded-xl px-3 py-2.5 text-sm outline-none focus:border-cyan-500"
+              />
+            </div>
+          </div>
+          <div className="flex gap-3 pt-2">
+            <button type="button" onClick={() => setContactModal(false)} className="flex-1 px-4 py-2.5 bg-white border border-gray-300 text-gray-700 rounded-xl text-sm hover:bg-gray-50 font-medium">Cancel</button>
+            <button type="submit" disabled={submitting} className="flex-1 px-4 py-2.5 bg-cyan-600 text-white rounded-xl text-sm hover:bg-cyan-700 transition-all disabled:opacity-50 font-medium">
+              {submitting ? 'Saving...' : 'Add Contact'}
             </button>
           </div>
         </form>
