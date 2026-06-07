@@ -4,6 +4,50 @@ import { paginate, sendResponse } from '../utils/helpers.js';
 import { logActivity } from '../utils/activityLogger.js';
 import { sendEmail, emailTemplates } from '../utils/emailService.js';
 
+const autoUpdateClientStatus = async (clientId, userId, req) => {
+  try {
+    if (!clientId) return;
+
+    // Find all deals for this client
+    const clientDeals = await Deal.find({ client: clientId });
+    
+    // Check if there are any won deals
+    const hasWonDeal = clientDeals.some(d => d.stage === 'won');
+    // Check if there are any active/open deals
+    const hasOpenDeal = clientDeals.some(d => !['won', 'lost'].includes(d.stage));
+
+    let newStatus = 'prospect'; // default
+    if (hasWonDeal) {
+      newStatus = 'active';
+    } else if (clientDeals.length > 0 && !hasOpenDeal) {
+      // All deals are closed, and none of them were won (meaning they are all lost)
+      newStatus = 'lost';
+    } else if (clientDeals.length === 0) {
+      newStatus = 'prospect';
+    }
+
+    // Get the client's current status
+    const client = await Client.findById(clientId);
+    if (client && client.status !== newStatus) {
+      const oldStatus = client.status;
+      client.status = newStatus;
+      await client.save();
+
+      // Log status transition activity
+      await logActivity(
+        userId, 
+        'client_status_auto_transition', 
+        'client', 
+        clientId, 
+        { companyName: client.companyName, oldStatus, newStatus }, 
+        req
+      );
+    }
+  } catch (error) {
+    console.error('Failed to auto-update client status:', error);
+  }
+};
+
 export const createDeal = async (req, res) => {
   try {
     const { title, client, amount, probability, stage, expectedCloseDate, description, priority, products } = req.body;
@@ -28,8 +72,8 @@ export const createDeal = async (req, res) => {
     // Log activity
     await logActivity(req.user._id, 'create_deal', 'deal', deal._id, { title, amount }, req);
 
-    if (deal.stage === 'won' && deal.client) {
-      await Client.findByIdAndUpdate(deal.client, { status: 'active' });
+    if (deal.client) {
+      await autoUpdateClientStatus(deal.client, req.user._id, req);
     }
 
     sendResponse(res, 201, true, 'Deal created successfully', deal);
@@ -83,8 +127,8 @@ export const updateDeal = async (req, res) => {
     const action = wasWon ? 'win_deal' : wasLost ? 'lose_deal' : 'edit_deal';
     await logActivity(req.user._id, action, 'deal', deal._id, { title, stage }, req);
 
-    if (wasWon && deal.client) {
-      await Client.findByIdAndUpdate(deal.client._id || deal.client, { status: 'active' });
+    if (deal.client) {
+      await autoUpdateClientStatus(deal.client._id || deal.client, req.user._id, req);
     }
 
     sendResponse(res, 200, true, 'Deal updated successfully', deal);
@@ -113,6 +157,10 @@ export const deleteDeal = async (req, res) => {
 
     // Log activity
     await logActivity(req.user._id, 'delete_deal', 'deal', id, { title: deal.title }, req);
+
+    if (deal.client) {
+      await autoUpdateClientStatus(deal.client, req.user._id, req);
+    }
 
     sendResponse(res, 200, true, 'Deal deleted successfully');
   } catch (error) {
