@@ -66,6 +66,9 @@ body {
 button { font-family: inherit; cursor: pointer; }
 input, textarea, select { font-family: inherit; }
 a { text-decoration: none; color: inherit; }
+button, input, select, textarea, a, tr, svg {
+  transition: all 0.22s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
 
 /* ─── Scrollbar ───────────────────────────────────────────────────── */
 ::-webkit-scrollbar { width: 6px; height: 6px; }

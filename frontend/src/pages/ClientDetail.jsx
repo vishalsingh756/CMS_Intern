@@ -383,7 +383,7 @@ const ClientDetail = () => {
             ))}
           </div>
 
-          <div className="p-5">
+          <div className="p-5 anim-fade-in" key={activeTab}>
             {/* Timeline Tab */}
             {activeTab === 'timeline' && (
               <div>
