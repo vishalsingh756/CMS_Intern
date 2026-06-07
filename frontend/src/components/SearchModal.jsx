@@ -5,7 +5,6 @@ import { searchService } from '../services/api';
 
 const SECTIONS = [
   { key: 'clients',      label: 'Clients',      icon: FiUsers,         color: 'var(--blue)',   bg: 'var(--blue-s)',   path: (i) => `/clients/${i._id}` },
-  { key: 'leads',        label: 'Leads',        icon: FiTarget,        color: 'var(--purple)', bg: 'var(--purple-s)', path: () => '/leads' },
   { key: 'deals',        label: 'Deals',        icon: FiTrendingUp,    color: 'var(--green)',  bg: 'var(--green-s)',  path: () => '/deals' },
   { key: 'tasks',        label: 'Tasks',        icon: FiCheckSquare,   color: 'var(--accent)', bg: 'var(--accent-s)', path: () => '/tasks' },
   { key: 'interactions', label: 'Interactions', icon: FiMessageSquare, color: 'var(--orange)', bg: 'var(--orange-s)', path: () => '/interactions' },
@@ -14,7 +13,6 @@ const SECTIONS = [
 function getResultLabel(key, item) {
   switch (key) {
     case 'clients':      return item.companyName || item.name || 'Unnamed';
-    case 'leads':        return item.name || 'Unnamed Lead';
     case 'deals':        return item.title || 'Unnamed Deal';
     case 'tasks':        return item.title || 'Unnamed Task';
     case 'interactions': return item.subject || 'Interaction';
@@ -25,7 +23,6 @@ function getResultLabel(key, item) {
 function getResultSub(key, item) {
   switch (key) {
     case 'clients':      return item.email || item.industry || '';
-    case 'leads':        return item.status ? `Status: ${item.status}` : (item.email || '');
     case 'deals':        return item.stage ? `Stage: ${item.stage}` : '';
     case 'tasks':        return item.status || item.priority || '';
     case 'interactions': return item.type || '';
@@ -66,7 +63,6 @@ export default function SearchModal({ isOpen, onClose }) {
       const data = res.data?.data || {};
       setResults({
         clients:      data.clients      || [],
-        leads:        data.leads        || [],
         deals:        data.deals        || [],
         tasks:        data.tasks        || [],
         interactions: data.interactions || [],

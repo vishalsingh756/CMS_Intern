@@ -8,7 +8,6 @@ import NotificationPanel from './NotificationPanel';
 const titles = {
   '/dashboard':     'Dashboard',
   '/clients':       'Clients',
-  '/leads':         'Leads',
   '/deals':         'Deals',
   '/tasks':         'Tasks',
   '/interactions':  'Interactions',

@@ -9,7 +9,6 @@ import useAuthStore from '../utils/authStore';
 
 const nav = [
   { path: '/dashboard',     icon: FiHome,          label: 'Dashboard' },
-  { path: '/leads',         icon: FiTarget,        label: 'Leads',        roles: ['author','editor','admin'] },
   { path: '/clients',       icon: FiUsers,         label: 'Clients',      roles: ['author','editor','admin'] },
   { path: '/deals',         icon: FiTrendingUp,    label: 'Deals',        roles: ['author','editor','admin'] },
   { path: '/tasks',         icon: FiCheckSquare,   label: 'Tasks',        roles: ['author','editor','admin'] },

@@ -2,32 +2,34 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer,
-  LineChart, Line, CartesianGrid, Legend, PieChart, Pie, Cell,
+  LineChart, Line, CartesianGrid, Legend,
+  PieChart, Pie, Cell, AreaChart, Area,
 } from 'recharts';
 import {
   FiUsers, FiTrendingUp, FiCheckSquare, FiActivity,
-  FiPlus, FiArrowRight, FiArrowUpRight,
+  FiPlus, FiArrowRight, FiArrowUpRight, FiRefreshCw,
 } from 'react-icons/fi';
 import Layout from '../components/Layout';
 import useAuthStore from '../utils/authStore';
-import { clientService, dealService, taskService } from '../services/api';
+import { clientService, dealService, taskService, dashboardService } from '../services/api';
 
-const COLORS = ['#0071E3','#34C759','#FF9F0A','#007AFF','#FF3B30'];
+/* ── Palette ─────────────────────────────────────────────────────────────── */
+const COLORS      = ['#6366F1','#10B981','#F59E0B','#3B82F6','#EF4444','#8B5CF6','#F97316'];
+const TT_STYLE    = {
+  contentStyle: {
+    background: 'rgba(255,255,255,0.96)',
+    border: '1px solid #E2E8F0',
+    borderRadius: '12px',
+    fontSize: '12px',
+    color: '#0F172A',
+    boxShadow: '0 8px 30px rgba(0,0,0,0.10)',
+  },
+};
 
-const monthly = [
-  { m:'Jan', clients:3,  deals:5,  rev:24000 },
-  { m:'Feb', clients:5,  deals:8,  rev:38000 },
-  { m:'Mar', clients:4,  deals:6,  rev:31000 },
-  { m:'Apr', clients:8,  deals:12, rev:67000 },
-  { m:'May', clients:6,  deals:9,  rev:51000 },
-  { m:'Jun', clients:10, deals:15, rev:89000 },
-];
-
-const TT = { contentStyle:{ background:'rgba(255,255,255,0.95)', border:'1px solid #D2D2D7', borderRadius:'12px', fontSize:'12px', color:'#1D1D1F', boxShadow:'0 8px 30px rgba(0,0,0,0.12)', backdropFilter:'blur(20px)' } };
-
+/* ── Sub-components ──────────────────────────────────────────────────────── */
 function KpiCard({ icon: Icon, label, value, sub, iconBg, iconColor, trend, onClick }) {
   return (
-    <div className="kpi-card anim-fade-up" onClick={onClick}>
+    <div className="kpi-card anim-fade-up" onClick={onClick} style={{ cursor: onClick ? 'pointer' : 'default' }}>
       <div style={{ display:'flex', alignItems:'flex-start', justifyContent:'space-between' }}>
         <div className="kpi-icon" style={{ background: iconBg }}>
           <Icon size={17} color={iconColor} />
@@ -52,7 +54,7 @@ function KpiCard({ icon: Icon, label, value, sub, iconBg, iconColor, trend, onCl
   );
 }
 
-function SCard({ title, action, actionLabel, children, noPad }) {
+function SCard({ title, action, actionLabel, children }) {
   return (
     <div className="section-card">
       <div className="section-header">
@@ -66,72 +68,149 @@ function SCard({ title, action, actionLabel, children, noPad }) {
           </button>
         )}
       </div>
-      <div style={noPad ? {} : { padding:'18px' }}>{children}</div>
+      <div style={{ padding:'18px' }}>{children}</div>
     </div>
   );
 }
 
+function EmptyChart({ icon: Icon, label }) {
+  return (
+    <div className="empty" style={{ padding:'40px 0' }}>
+      <Icon size={28} className="empty-icon" />
+      <p className="empty-sub">{label}</p>
+    </div>
+  );
+}
+
+/* ── Custom PieChart label ───────────────────────────────────────────────── */
+const renderCustomLabel = ({ name, percent }) =>
+  percent > 0.04 ? `${(percent * 100).toFixed(0)}%` : '';
+
+/* ── Dashboard ───────────────────────────────────────────────────────────── */
 export default function Dashboard() {
   const navigate = useNavigate();
-  const { user } = useAuthStore();
+  const { user }  = useAuthStore();
+
+  /* KPI stats */
   const [cs, setCs] = useState(null);
   const [ds, setDs] = useState(null);
   const [ts, setTs] = useState(null);
-  const [loading, setLoading] = useState(true);
 
+  /* Chart data from real DB aggregation */
+  const [overview, setOverview]   = useState(null);
+  const [loading, setLoading]     = useState(true);
+  const [chartLoading, setChartLoading] = useState(true);
+  const [chartError, setChartError]     = useState(false);
+
+  /* ── Initial load ──────────────────────────────────────────────────────── */
   useEffect(() => {
+    // KPI cards — existing stats endpoints
     Promise.allSettled([
       clientService.getClientStats(),
       dealService.getDealStats(),
       taskService.getTaskStats(),
     ]).then(([c, d, t]) => {
-      if (c.status==='fulfilled') setCs(c.value.data.data);
-      if (d.status==='fulfilled') setDs(d.value.data.data);
-      if (t.status==='fulfilled') setTs(t.value.data.data);
+      if (c.status === 'fulfilled') setCs(c.value.data.data);
+      if (d.status === 'fulfilled') setDs(d.value.data.data);
+      if (t.status === 'fulfilled') setTs(t.value.data.data);
     }).finally(() => setLoading(false));
+
+    // Chart data — new overview endpoint
+    fetchOverview();
   }, []);
 
-  const pieData = ds ? [
-    { name:'Prospect',    v: ds.byStage?.prospect    || 0 },
-    { name:'Proposal',    v: ds.byStage?.proposal    || 0 },
-    { name:'Negotiation', v: ds.byStage?.negotiation || 0 },
-    { name:'Won',         v: ds.byStage?.won         || 0 },
-    { name:'Lost',        v: ds.byStage?.lost        || 0 },
-  ] : [];
+  const fetchOverview = async () => {
+    setChartLoading(true);
+    setChartError(false);
+    try {
+      const res = await dashboardService.getOverview();
+      setOverview(res.data.data);
+    } catch (err) {
+      console.error('Dashboard overview error:', err);
+      setChartError(true);
+    } finally {
+      setChartLoading(false);
+    }
+  };
 
-  const v = (val) => loading ? '—' : (val ?? 0);
-  const hr = new Date().getHours();
+  /* ── Helpers ─────────────────────────────────────────────────────────────*/
+  const fmt   = (val) => loading ? '—' : (val ?? 0);
+  const hr    = new Date().getHours();
   const greet = hr < 12 ? 'Good morning' : hr < 18 ? 'Good afternoon' : 'Good evening';
+
+  /* Strip months that have all-zero values for a cleaner chart */
+  const monthly = overview?.monthly ?? [];
+  const hasAnyData = monthly.some(m => m.clients || m.deals || m.tasks || m.wonRevenue);
+
+  /* Pie data */
+  const dealPie   = (overview?.dealBreakdown   ?? []).filter(d => d.value > 0);
+  const taskPie   = (overview?.taskBreakdown   ?? []).filter(d => d.value > 0);
+  const clientPie = (overview?.clientBreakdown ?? []).filter(d => d.value > 0);
+
+  /* ── Chart loading / error state ─────────────────────────────────────── */
+  const ChartPlaceholder = ({ height = 220 }) => (
+    <div style={{
+      height,
+      display:'flex',
+      flexDirection:'column',
+      alignItems:'center',
+      justifyContent:'center',
+      gap:'10px',
+      color:'var(--text-3)',
+      fontSize:'13px',
+    }}>
+      {chartLoading ? (
+        <>
+          <div className="spinner" style={{ width:22, height:22 }} />
+          <span>Loading chart data…</span>
+        </>
+      ) : chartError ? (
+        <>
+          <FiActivity size={24} />
+          <span>Could not load chart data</span>
+          <button className="btn btn-ghost" onClick={fetchOverview}
+            style={{ fontSize:'11px', padding:'5px 12px', marginTop:'4px', display:'flex', alignItems:'center', gap:'5px' }}>
+            <FiRefreshCw size={11} /> Retry
+          </button>
+        </>
+      ) : (
+        <>
+          <FiTrendingUp size={24} />
+          <span>No data yet — start adding records!</span>
+        </>
+      )}
+    </div>
+  );
 
   return (
     <Layout>
       <div className="page">
-        {/* ── Welcome banner ── */}
+
+        {/* ── Welcome banner ─────────────────────────────────────────────── */}
         <div style={{
-          background: 'linear-gradient(135deg, #0071E3 0%, #007AFF 60%, #34aadc 100%)',
-          borderRadius: '20px',
-          padding: '28px 32px',
-          marginBottom: '28px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          flexWrap: 'wrap',
-          gap: '16px',
-          boxShadow: '0 8px 32px rgba(0,113,227,0.3)',
-          position: 'relative',
-          overflow: 'hidden',
+          background:'linear-gradient(135deg,#6366F1 0%,#4F46E5 55%,#06B6D4 100%)',
+          borderRadius:'20px',
+          padding:'28px 32px',
+          marginBottom:'28px',
+          display:'flex',
+          alignItems:'center',
+          justifyContent:'space-between',
+          flexWrap:'wrap',
+          gap:'16px',
+          boxShadow:'0 8px 32px rgba(99,102,241,0.28)',
+          position:'relative',
+          overflow:'hidden',
         }}>
-          {/* Decorative circle */}
           <div style={{
-            position:'absolute', right:'-40px', top:'-40px',
-            width:'180px', height:'180px', borderRadius:'50%',
+            position:'absolute', right:'-50px', top:'-50px',
+            width:'200px', height:'200px', borderRadius:'50%',
             background:'rgba(255,255,255,0.07)',
           }} />
           <div style={{ position:'relative' }}>
-            <h1 style={{ fontSize:'19px', fontWeight:800, color:'#fff', letterSpacing:'-0.03em' }}>
+            <h1 style={{ fontSize:'20px', fontWeight:800, color:'#fff', letterSpacing:'-0.03em' }}>
               {greet}, {user?.firstName || user?.username}! 👋
             </h1>
-            <p style={{ fontSize:'13px', color:'rgba(255,255,255,0.75)', marginTop:'4px' }}>
+            <p style={{ fontSize:'13px', color:'rgba(255,255,255,0.72)', marginTop:'4px' }}>
               Here's your business overview for today
             </p>
           </div>
@@ -147,80 +226,164 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* ── KPI row ── */}
-        <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(190px,1fr))', gap:'12px', marginBottom:'20px' }}
+        {/* ── KPI row ────────────────────────────────────────────────────── */}
+        <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(190px,1fr))', gap:'12px', marginBottom:'24px' }}
           className="stagger">
-          <KpiCard icon={FiUsers}       label="Total Clients"   value={v(cs?.total)}      sub={`${cs?.active||0} active`}              iconBg="rgba(0,113,227,0.08)"  iconColor="var(--accent)" trend={12} onClick={() => navigate('/clients')} />
-          <KpiCard icon={FiTrendingUp}  label="Total Deals"     value={v(ds?.totalDeals)} sub={`$${(ds?.totalAmount||0).toLocaleString()} pipeline`} iconBg="rgba(52,199,89,0.1)"  iconColor="var(--green)"  trend={8}  onClick={() => navigate('/deals')} />
-          <KpiCard icon={FiCheckSquare} label="Open Tasks"      value={v(ts?.open)}       sub={`${ts?.overdue||0} overdue`}            iconBg="rgba(255,159,10,0.1)"  iconColor="var(--yellow)"        onClick={() => navigate('/tasks')} />
-          <KpiCard icon={FiActivity}    label="Completed Tasks" value={v(ts?.completed)}  sub={`${ts?.inProgress||0} in progress`}     iconBg="rgba(0,122,255,0.08)"  iconColor="var(--blue)"  trend={5}  onClick={() => navigate('/tasks')} />
+          <KpiCard icon={FiUsers}       label="Total Clients"    value={fmt(cs?.total)}      sub={`${cs?.active||0} active`}                  iconBg="rgba(99,102,241,0.08)"  iconColor="var(--accent)" trend={12} onClick={() => navigate('/clients')} />
+          <KpiCard icon={FiTrendingUp}  label="Total Deals"      value={fmt(ds?.totalDeals)} sub={`$${(ds?.totalAmount||0).toLocaleString()} pipeline`} iconBg="rgba(16,185,129,0.1)"   iconColor="var(--green)"  trend={8}  onClick={() => navigate('/deals')}   />
+          <KpiCard icon={FiCheckSquare} label="Open Tasks"       value={fmt(ts?.open)}       sub={`${ts?.overdue||0} overdue`}                iconBg="rgba(245,158,11,0.1)"   iconColor="var(--yellow)"             onClick={() => navigate('/tasks')}   />
+          <KpiCard icon={FiActivity}    label="Completed Tasks"  value={fmt(ts?.completed)}  sub={`${ts?.inProgress||0} in progress`}         iconBg="rgba(59,130,246,0.08)"  iconColor="var(--blue)"   trend={5}  onClick={() => navigate('/tasks')}   />
         </div>
 
-        {/* ── Charts ── */}
-        <div style={{ display:'grid', gridTemplateColumns:'2fr 1fr', gap:'14px', marginBottom:'16px' }}>
-          <SCard title="Revenue Overview" actionLabel="6 months">
+        {/* ── Row 1: Revenue over time (full width) ──────────────────────── */}
+        <SCard title="Won Revenue — Last 12 Months">
+          {chartLoading || chartError || !hasAnyData ? (
+            <ChartPlaceholder height={220} />
+          ) : (
             <ResponsiveContainer width="100%" height={220}>
-              <BarChart data={monthly} barSize={24}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#F5F5F7" vertical={false} />
-                <XAxis dataKey="m" axisLine={false} tickLine={false} tick={{ fill:'#6E6E73', fontSize:11 }} />
-                <YAxis axisLine={false} tickLine={false} tick={{ fill:'#6E6E73', fontSize:11 }} tickFormatter={v => `$${(v/1000).toFixed(0)}k`} />
-                <Tooltip {...TT} formatter={(v) => [`$${v.toLocaleString()}`, 'Revenue']} cursor={{ fill:'rgba(0,113,227,0.04)' }} />
-                <Bar dataKey="rev" fill="var(--accent)" radius={[6,6,0,0]} />
-              </BarChart>
+              <AreaChart data={monthly}>
+                <defs>
+                  <linearGradient id="gradRevenue" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%"  stopColor="var(--accent)" stopOpacity={0.22} />
+                    <stop offset="95%" stopColor="var(--accent)" stopOpacity={0}    />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" stroke="#F1F5F9" vertical={false} />
+                <XAxis dataKey="m" axisLine={false} tickLine={false} tick={{ fill:'#94A3B8', fontSize:11 }} />
+                <YAxis axisLine={false} tickLine={false} tick={{ fill:'#94A3B8', fontSize:11 }}
+                  tickFormatter={v => v >= 1000 ? `$${(v/1000).toFixed(0)}k` : `$${v}`} />
+                <Tooltip {...TT_STYLE} formatter={v => [`$${Number(v).toLocaleString()}`, 'Won Revenue']} />
+                <Area type="monotone" dataKey="wonRevenue" name="Won Revenue"
+                  stroke="var(--accent)" strokeWidth={2.5}
+                  fillOpacity={1} fill="url(#gradRevenue)" />
+              </AreaChart>
             </ResponsiveContainer>
+          )}
+        </SCard>
+
+        {/* ── Row 2: Clients & Leads growth | Deal stages pie ────────────── */}
+        <div style={{ display:'grid', gridTemplateColumns:'2fr 1fr', gap:'14px', marginTop:'14px' }}>
+
+          <SCard title="Growth Trends — Clients & Deals">
+            {chartLoading || chartError || !hasAnyData ? (
+              <ChartPlaceholder height={230} />
+            ) : (
+              <ResponsiveContainer width="100%" height={230}>
+                <LineChart data={monthly}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#F1F5F9" vertical={false} />
+                  <XAxis dataKey="m" axisLine={false} tickLine={false} tick={{ fill:'#94A3B8', fontSize:11 }} />
+                  <YAxis axisLine={false} tickLine={false} tick={{ fill:'#94A3B8', fontSize:11 }} allowDecimals={false} />
+                  <Tooltip {...TT_STYLE} />
+                  <Legend iconSize={8} wrapperStyle={{ fontSize:'11px', color:'#64748B' }} />
+                  <Line type="monotone" dataKey="clients" name="Clients" stroke="var(--accent)" strokeWidth={2.5} dot={{ r:3, fill:'var(--accent)' }} activeDot={{ r:5 }} />
+                  <Line type="monotone" dataKey="deals"   name="Deals"   stroke="var(--green)"  strokeWidth={2.5} dot={{ r:3, fill:'var(--green)'  }} activeDot={{ r:5 }} />
+                </LineChart>
+              </ResponsiveContainer>
+            )}
           </SCard>
 
-          <SCard title="Deal Stages">
-            {pieData.some(d => d.v > 0) ? (
-              <ResponsiveContainer width="100%" height={220}>
+          <SCard title="Deal Pipeline Stages">
+            {chartLoading || chartError ? (
+              <ChartPlaceholder height={230} />
+            ) : dealPie.length === 0 ? (
+              <EmptyChart icon={FiTrendingUp} label="No deals yet" />
+            ) : (
+              <ResponsiveContainer width="100%" height={230}>
                 <PieChart>
-                  <Pie data={pieData} cx="50%" cy="45%" innerRadius={52} outerRadius={80} paddingAngle={3} dataKey="v">
-                    {pieData.map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
+                  <Pie data={dealPie} cx="50%" cy="45%" innerRadius={50} outerRadius={80}
+                    paddingAngle={3} dataKey="value" label={renderCustomLabel} labelLine={false}>
+                    {dealPie.map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
                   </Pie>
-                  <Tooltip {...TT} />
+                  <Tooltip {...TT_STYLE} />
                   <Legend iconSize={7} wrapperStyle={{ fontSize:'11px', color:'var(--text-3)' }} />
                 </PieChart>
               </ResponsiveContainer>
-            ) : (
-              <div className="empty" style={{ padding:'40px 0' }}>
-                <FiTrendingUp size={28} className="empty-icon" />
-                <p className="empty-sub">No deals yet</p>
-              </div>
             )}
           </SCard>
         </div>
 
-        {/* ── Line chart ── */}
-        <SCard title="Growth Trends" action={() => navigate('/clients')} actionLabel="View all">
-          <ResponsiveContainer width="100%" height={200}>
-            <LineChart data={monthly}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#F5F5F7" vertical={false} />
-              <XAxis dataKey="m" axisLine={false} tickLine={false} tick={{ fill:'#6E6E73', fontSize:11 }} />
-              <YAxis axisLine={false} tickLine={false} tick={{ fill:'#6E6E73', fontSize:11 }} />
-              <Tooltip {...TT} />
-              <Legend iconSize={7} wrapperStyle={{ fontSize:'11px', color:'#6E6E73' }} />
-              <Line type="monotone" dataKey="clients" stroke="var(--accent)" strokeWidth={2.5} dot={{ fill:'var(--accent)', r:3 }} name="Clients" />
-              <Line type="monotone" dataKey="deals"   stroke="var(--green)"  strokeWidth={2.5} dot={{ fill:'var(--green)',  r:3 }} name="Deals" />
-            </LineChart>
-          </ResponsiveContainer>
-        </SCard>
+        {/* ── Row 3: Task breakdown | Client status | Monthly activity bar ── */}
+        <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr 1fr', gap:'14px', marginTop:'14px' }}>
 
-        {/* ── Quick stats ── */}
+          {/* Task status breakdown */}
+          <SCard title="Task Status Breakdown">
+            {chartLoading || chartError ? (
+              <ChartPlaceholder height={200} />
+            ) : taskPie.length === 0 ? (
+              <EmptyChart icon={FiCheckSquare} label="No tasks yet" />
+            ) : (
+              <ResponsiveContainer width="100%" height={200}>
+                <PieChart>
+                  <Pie data={taskPie} cx="50%" cy="45%" innerRadius={42} outerRadius={68}
+                    paddingAngle={3} dataKey="value" label={renderCustomLabel} labelLine={false}>
+                    {taskPie.map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
+                  </Pie>
+                  <Tooltip {...TT_STYLE} />
+                  <Legend iconSize={7} wrapperStyle={{ fontSize:'11px', color:'var(--text-3)' }} />
+                </PieChart>
+              </ResponsiveContainer>
+            )}
+          </SCard>
+
+          {/* Client status breakdown */}
+          <SCard title="Client Status Breakdown">
+            {chartLoading || chartError ? (
+              <ChartPlaceholder height={200} />
+            ) : clientPie.length === 0 ? (
+              <EmptyChart icon={FiUsers} label="No clients yet" />
+            ) : (
+              <ResponsiveContainer width="100%" height={200}>
+                <PieChart>
+                  <Pie data={clientPie} cx="50%" cy="45%" innerRadius={42} outerRadius={68}
+                    paddingAngle={3} dataKey="value" label={renderCustomLabel} labelLine={false}>
+                    {clientPie.map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
+                  </Pie>
+                  <Tooltip {...TT_STYLE} />
+                  <Legend iconSize={7} wrapperStyle={{ fontSize:'11px', color:'var(--text-3)' }} />
+                </PieChart>
+              </ResponsiveContainer>
+            )}
+          </SCard>
+
+          {/* Monthly activity volume (bar) */}
+          <SCard title="Monthly Activity Volume">
+            {chartLoading || chartError || !hasAnyData ? (
+              <ChartPlaceholder height={200} />
+            ) : (
+              <ResponsiveContainer width="100%" height={200}>
+                <BarChart data={monthly} barSize={14} barGap={3}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#F1F5F9" vertical={false} />
+                  <XAxis dataKey="m" axisLine={false} tickLine={false} tick={{ fill:'#94A3B8', fontSize:10 }} />
+                  <YAxis axisLine={false} tickLine={false} tick={{ fill:'#94A3B8', fontSize:10 }} allowDecimals={false} />
+                  <Tooltip {...TT_STYLE} />
+                  <Legend iconSize={7} wrapperStyle={{ fontSize:'10px', color:'#64748B' }} />
+                  <Bar dataKey="clients" name="Clients" fill="var(--accent)" radius={[4,4,0,0]} />
+                  <Bar dataKey="tasks"   name="Tasks"   fill="var(--yellow)" radius={[4,4,0,0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            )}
+          </SCard>
+        </div>
+
+        {/* ── Row 4: Quick-stat chips ─────────────────────────────────────── */}
         <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(140px,1fr))', gap:'10px', marginTop:'14px' }}>
           {[
-            { label:'Prospects',     value: cs?.prospects           || 0, color:'var(--accent)' },
-            { label:'Active Clients',value: cs?.active              || 0, color:'var(--green)'  },
-            { label:'Won Deals',     value: ds?.byStage?.won        || 0, color:'var(--blue)'   },
-            { label:'Avg Deal Size', value:`$${Math.round(ds?.avgAmount||0).toLocaleString()}`, color:'var(--yellow)' },
+            { label:'Prospects',      value: cs?.prospects            || 0,  color:'var(--accent)' },
+            { label:'Active Clients', value: cs?.active               || 0,  color:'var(--green)'  },
+            { label:'Won Deals',      value: ds?.byStage?.won         || 0,  color:'var(--blue)'   },
+            { label:'Lost Deals',     value: ds?.byStage?.lost        || 0,  color:'var(--red)'    },
+            { label:'Avg Deal Size',  value:`$${Math.round(ds?.avgAmount||0).toLocaleString()}`,  color:'var(--yellow)' },
+            { label:'Tasks Overdue',  value: ts?.overdue              || 0,  color:'var(--orange)' },
           ].map((s, i) => (
             <div key={i} className="card" style={{ padding:'14px 16px', textAlign:'center' }}>
-              <div style={{ fontSize:'22px', fontWeight:900, color: s.color, letterSpacing:'-0.03em' }}>
+              <div style={{ fontSize:'22px', fontWeight:900, color:s.color, letterSpacing:'-0.03em' }}>
                 {loading ? '—' : s.value}
               </div>
               <div style={{ fontSize:'11.5px', color:'var(--text-3)', marginTop:'3px', fontWeight:600 }}>{s.label}</div>
             </div>
           ))}
         </div>
+
       </div>
     </Layout>
   );

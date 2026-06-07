@@ -71,25 +71,6 @@ const MODULES = {
     ],
     groupFields: ['type', 'outcome'],
   },
-  leads: {
-    label: 'Leads',
-    color: 'var(--yellow)',
-    bg: 'var(--yellow-s)',
-    columns: [
-      { key: 'name',        label: 'Name' },
-      { key: 'company',     label: 'Company' },
-      { key: 'email',       label: 'Email' },
-      { key: 'phone',       label: 'Phone' },
-      { key: 'source',      label: 'Source' },
-      { key: 'industry',    label: 'Industry' },
-      { key: 'status',      label: 'Status' },
-      { key: 'category',    label: 'Category' },
-      { key: 'score',       label: 'Score' },
-      { key: 'budget',      label: 'Budget' },
-      { key: 'createdAt',   label: 'Created Date' },
-    ],
-    groupFields: ['source', 'industry', 'status', 'category'],
-  },
 };
 
 const OPERATORS = [
@@ -605,7 +586,7 @@ export default function Reports() {
               <div style={{ marginBottom: 16 }}>
                 <div className="label">Target Module</div>
                 <div style={{ display: 'flex', gap: 8 }}>
-                  {['clients', 'deals', 'leads'].map(m => (
+                  {['clients', 'deals'].map(m => (
                     <button
                       key={m}
                       onClick={() => setImportModule(m)}

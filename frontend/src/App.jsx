@@ -17,7 +17,6 @@ import ActivityLogs from './pages/ActivityLogs';
 import Profile from './pages/Profile';
 import NotFound from './pages/NotFound';
 import Reports from './pages/Reports';
-import Leads from './pages/Leads';
 
 function App() {
   const { user } = useAuthStore();
@@ -62,7 +61,6 @@ function App() {
         <Route path="/activity-logs" element={<ProtectedRoute element={<ActivityLogs />} requiredRole="admin" />} />
         <Route path="/profile" element={<ProtectedRoute element={<Profile />} />} />
         <Route path="/reports" element={<ProtectedRoute element={<Reports />} />} />
-        <Route path="/leads" element={<ProtectedRoute element={<Leads />} />} />
 
         {/* Catch all */}
         <Route path="*" element={<NotFound />} />

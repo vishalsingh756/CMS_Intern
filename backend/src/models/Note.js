@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 
 const noteSchema = new mongoose.Schema({
   content:    { type: String, required: true },
-  entityType: { type: String, enum: ['client','lead','deal','task'], required: true },
+  entityType: { type: String, enum: ['client','deal','task'], required: true },
   entityId:   { type: mongoose.Schema.Types.ObjectId, required: true },
   isPinned:   { type: Boolean, default: false },
   mentions:   [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],

@@ -99,15 +99,10 @@ export const activityService = {
   getLogs: (params) => apiClient.get('/activity', { params }),
 };
 
-export const leadService = {
-  createLead:   (data) => apiClient.post('/leads', data),
-  getLeads:     (params) => apiClient.get('/leads', { params }),
-  getLead:      (id) => apiClient.get(`/leads/${id}`),
-  updateLead:   (id, data) => apiClient.put(`/leads/${id}`, data),
-  deleteLead:   (id) => apiClient.delete(`/leads/${id}`),
-  addScore:     (id, data) => apiClient.post(`/leads/${id}/score`, data),
-  convertLead:  (id) => apiClient.post(`/leads/${id}/convert`),
+export const dashboardService = {
+  getOverview: () => apiClient.get('/dashboard/overview'),
 };
+
 
 export const noteService = {
   createNote:   (data) => apiClient.post('/notes', data),
