@@ -1,6 +1,6 @@
-# Client Relationship Management (CRM) System
+# Client Management System (CMS)
 
-A modern, production-ready, full-stack CRM built with the **MERN** stack (MongoDB, Express, React, Node.js). This application is designed to streamline client onboarding, sales pipelines, task management, and team interactions.
+A modern, production-ready, full-stack CMS built with the **MERN** stack (MongoDB, Express, React, Node.js). This application is designed to streamline client onboarding, sales pipelines, task management, and team interactions.
 
 ---
 
@@ -99,7 +99,7 @@ CMS/
 ├── backend/
 │   ├── src/
 │   │   ├── config/          # DB connection & JWT settings
-│   │   ├── controllers/     # Core CRM logic (clients, deals, tasks, reports)
+│   │   ├── controllers/     # Core CMS logic (clients, deals, tasks, reports)
 │   │   ├── middleware/      # Auth protection, rate limiter, file upload
 │   │   ├── models/          # MongoDB Mongoose schemas
 │   │   ├── routes/          # API route definitions
