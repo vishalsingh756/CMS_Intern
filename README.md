@@ -80,15 +80,12 @@ Ensure you have **Node.js (v16+)** and **MongoDB** (local community server or At
 
 ---
 
-## 🔑 Development Access & Roles
+## 🔑 Access & Registration
 
-You can register a new account on the signup page, or log in using these default credentials:
-
-- **Admin Account:**
-  - **Email:** `admin@example.com`
-  - **Password:** `admin123456`
-- **Standard User Account:**
-  - Standard accounts can be created at `http://localhost:3000/register`.
+To access the application:
+1. Open the application in your browser.
+2. Go to the register page to create a new user account.
+3. Log in using your new credentials.
 
 ---
 
