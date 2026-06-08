@@ -30,8 +30,15 @@ connectDB();
 // Middleware
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ limit: '10mb', extended: true }));
+const getOrigins = () => {
+  const local = ['http://localhost:3000', 'http://localhost:5173'];
+  if (!process.env.FRONTEND_URL) return local;
+  const prod = process.env.FRONTEND_URL.replace(/\/$/, '');
+  return [prod, process.env.FRONTEND_URL, ...local];
+};
+
 app.use(cors({
-  origin: process.env.FRONTEND_URL || ['http://localhost:3000', 'http://localhost:5173'],
+  origin: getOrigins(),
   credentials: true,
 }));
 app.use(morgan('combined'));
