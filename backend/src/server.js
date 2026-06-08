@@ -38,7 +38,15 @@ const getOrigins = () => {
 };
 
 app.use(cors({
-  origin: getOrigins(),
+  origin: (origin, callback) => {
+    if (!origin) return callback(null, true);
+    const allowed = getOrigins();
+    if (allowed.indexOf(origin) !== -1 || origin.endsWith('.vercel.app')) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true,
 }));
 app.use(morgan('combined'));
