@@ -1,292 +1,116 @@
-﻿# README - MERN CMS
+# Client Relationship Management (CRM) System
 
-## 🚀 Modern Content Management System
+A modern, production-ready, full-stack CRM built with the **MERN** stack (MongoDB, Express, React, Node.js). This application is designed to streamline client onboarding, sales pipelines, task management, and team interactions.
 
-A production-ready, full-stack Content Management System built with the MERN stack (MongoDB, Express.js, React.js, Node.js).
+---
 
-### ✨ Features
+## ⚡ Core Features
 
-- 🔐 **Secure Authentication**: JWT-based authentication with bcrypt hashing
-- 👥 **Role-Based Access Control**: Admin, Editor, and Author roles
-- 📝 **Content Management**: Create, edit, publish, and schedule posts
-- 📁 **Media Library**: Upload and organize media files
-- 💬 **Comment System**: Comment moderation and management
-- 📊 **Analytics Dashboard**: Real-time statistics and metrics
-- 🔍 **SEO Tools**: Meta tags, sitemaps, and slug optimization
-- 📱 **Responsive Design**: Mobile-friendly admin interface
-- 🎨 **Rich Text Editor**: WYSIWYG editor for content creation
-- ⚡ **Performance Optimized**: Pagination, caching, and database indexing
+- 👥 **Client Directory**: Manage customer profiles, contact info, lead sources, and industries.
+- 💼 **Sales Pipeline**: Track active deals, deal stages (Prospect $\rightarrow$ Negotiation $\rightarrow$ Proposal $\rightarrow$ Won/Lost), win probabilities, and value.
+- 📅 **Task Manager**: Organize follow-ups with priority levels (High, Medium, Low), statuses, and due dates.
+- 💬 **Interaction Logs**: Log emails, phone calls, meetings, and visits, including client sentiment outcome tracking.
+- 📊 **Dynamic Reports & Analytics**: Run ad-hoc filters and aggregations to generate metrics and charts (via Recharts).
+- 🔍 **Global Search**: Instantly query across clients, deals, tasks, and interaction subjects.
+- 🛡️ **Role-Based Access Control (RBAC)**:
+  - **Admin**: Full access to all data, system activity audit logs, and user management.
+  - **Users/Editors**: Isolated workspace. They only see and manage records they created or are assigned to.
+- 📥 **Import & Export**: Built-in support for bulk importing and exporting data via CSV and Excel format.
 
-### 🛠️ Technology Stack
+---
+
+## 🛠️ Tech Stack
 
 **Frontend:**
-- React 18.2
-- React Router 6
-- Tailwind CSS 3
-- Zustand (State Management)
-- React Quill (Rich Text Editor)
-- Axios (HTTP Client)
-- Vite (Build Tool)
+- **React 18** (Vite build system)
+- **Tailwind CSS 3** (Custom SaaS indigo/cyan visual styling)
+- **Zustand** (Global state management)
+- **Recharts** (Visual data reporting)
+- **React Router 6** (Client routing & route protection)
+- **Axios** (Configured with central API interceptors for auth tokens)
 
 **Backend:**
-- Node.js
-- Express.js
-- MongoDB
-- Mongoose ODM
-- JWT Authentication
-- Bcrypt (Password Hashing)
+- **Node.js** & **Express.js** (ES Modules)
+- **MongoDB** & **Mongoose ODM** (Proper indices, schemas, and relational references)
+- **JWT & Bcrypt** (Secure stateless session authentication & password hashing)
+- **Multer, ExcelJS, csv-parser** (File uploads and data conversion)
+- **Express Rate Limit** (Anti-abuse protection)
 
-**DevTools:**
-- Nodemon
-- ESLint
-- Jest
+---
 
-### 📋 Prerequisites
+## 🚀 Quick Start
 
-- Node.js >= 16.0
-- MongoDB (local or MongoDB Atlas)
-- npm or yarn
-- Git
+### 1. Prerequisites
+Ensure you have **Node.js (v16+)** and **MongoDB** (local community server or Atlas) installed.
 
-### ⚡ Quick Start
+### 2. Backend Setup
+1. Navigate to the backend directory:
+   ```bash
+   cd backend
+   ```
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+3. Create a `.env` file from the example:
+   ```bash
+   cp .env.example .env
+   ```
+   *Modify the `MONGODB_URI` and `JWT_SECRET` in `.env` if needed.*
+4. Start the server in development mode:
+   ```bash
+   npm run dev
+   ```
+   *Backend will run at http://localhost:5000 (Health Check: http://localhost:5000/api/health)*
 
-#### 1. Clone Repository
-```bash
-git clone https://github.com/yourusername/cms.git
-cd cms
-```
+### 3. Frontend Setup
+1. Open a new terminal and navigate to the frontend directory:
+   ```bash
+   cd frontend
+   ```
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+3. Start the Vite development server:
+   ```bash
+   npm run dev
+   ```
+   *Frontend will run at http://localhost:3000*
 
-#### 2. Backend Setup
-```bash
-cd backend
-npm install
-cp ../.env.example .env
-# Edit .env with your MongoDB URI and JWT secret
-npm run dev
-```
+---
 
-#### 3. Frontend Setup
-```bash
-cd frontend
-npm install
-npm run dev
-```
+## 🔑 Development Access & Roles
 
-#### 4. Access Application
-- Frontend: http://localhost:3000
-- Backend: http://localhost:5000
-- API Health Check: http://localhost:5000/api/health
+You can register a new account on the signup page, or log in using these default credentials:
 
-### 📁 Project Structure
+- **Admin Account:**
+  - **Email:** `admin@example.com`
+  - **Password:** `admin123456`
+- **Standard User Account:**
+  - Standard accounts can be created at `http://localhost:3000/register`.
 
-```
-cms/
-├── backend/                 # Express.js backend
+---
+
+## 📁 Repository Structure
+
+```text
+CMS/
+├── backend/
 │   ├── src/
-│   │   ├── controllers/    # Business logic
-│   │   ├── models/         # MongoDB schemas
-│   │   ├── routes/         # API routes
-│   │   ├── middleware/     # Custom middleware
-│   │   ├── utils/          # Utilities
-│   │   └── server.js       # Entry point
+│   │   ├── config/          # DB connection & JWT settings
+│   │   ├── controllers/     # Core CRM logic (clients, deals, tasks, reports)
+│   │   ├── middleware/      # Auth protection, rate limiter, file upload
+│   │   ├── models/          # MongoDB Mongoose schemas
+│   │   ├── routes/          # API route definitions
+│   │   └── server.js        # Backend entry point
 │   └── package.json
 │
-├── frontend/                # React frontend
+├── frontend/
 │   ├── src/
-│   │   ├── pages/          # Page components
-│   │   ├── components/     # Reusable components
-│   │   ├── services/       # API integration
-│   │   ├── utils/          # Utility functions
-│   │   └── App.jsx         # Main app
+│   │   ├── components/      # Layout, Sidebar, Header
+│   │   ├── pages/           # Dashboard, Clients, Deals, Tasks, Reports, User Mgmt
+│   │   ├── services/        # Axios API integration
+│   │   └── utils/           # Zustand Auth store & Protected Routes
 │   └── package.json
-│
-├── DOCUMENTATION.md         # Complete documentation
-├── DEPLOYMENT.md           # Deployment guide
-├── ARCHITECTURE.md         # Architecture & patterns
-└── README.md              # This file
 ```
-
-### 🔑 Default Users
-
-After setup, create accounts via registration or use:
-- Email: admin@example.com
-- Password: admin123456
-
-### 📚 Documentation
-
-- [Complete Documentation](./DOCUMENTATION.md)
-- [Deployment Guide](./DEPLOYMENT.md)
-- [Architecture & Best Practices](./ARCHITECTURE.md)
-- [API Reference](./API.md)
-
-### 🔌 API Endpoints
-
-**Authentication**
-- `POST /api/auth/register` - Register new user
-- `POST /api/auth/login` - User login
-- `GET /api/auth/me` - Get current user
-- `PUT /api/auth/profile` - Update profile
-
-**Posts**
-- `GET /api/posts` - Get all posts
-- `POST /api/posts` - Create post
-- `GET /api/posts/:id` - Get single post
-- `PUT /api/posts/:id` - Update post
-- `DELETE /api/posts/:id` - Delete post
-- `PUT /api/posts/:id/publish` - Publish post
-
-**Categories**
-- `GET /api/categories` - Get all categories
-- `POST /api/categories` - Create category
-- `PUT /api/categories/:id` - Update category
-- `DELETE /api/categories/:id` - Delete category
-
-**Tags**
-- Similar to categories
-
-**Comments**
-- `GET /api/comments/post/:postId` - Get post comments
-- `POST /api/comments` - Create comment
-- `PUT /api/comments/:id` - Update comment
-- `DELETE /api/comments/:id` - Delete comment
-- `PUT /api/comments/:id/approve` - Approve comment
-- `PUT /api/comments/:id/reject` - Reject comment
-
-**Media**
-- `POST /api/media` - Upload file
-- `GET /api/media` - Get media library
-- `DELETE /api/media/:id` - Delete file
-
-**Users** (Admin only)
-- `GET /api/users` - Get all users
-- `PUT /api/users/:id` - Update user
-- `DELETE /api/users/:id` - Delete user
-
-### 🔒 Security Features
-
-✅ Password hashing with bcrypt
-✅ JWT token authentication
-✅ Role-based access control
-✅ Input validation and sanitization
-✅ CORS protection
-✅ Rate limiting
-✅ SQL injection prevention
-✅ XSS protection
-
-### 📈 Performance Features
-
-✅ Database indexing
-✅ Query pagination
-✅ Response compression
-✅ Lazy loading
-✅ Code splitting
-✅ Caching headers
-
-### 🚀 Deployment
-
-### Heroku (Backend)
-```bash
-heroku create your-cms-app
-heroku config:set MONGODB_URI="your_uri"
-heroku config:set JWT_SECRET="your_secret"
-git push heroku main
-```
-
-### Vercel (Frontend)
-```bash
-vercel --prod
-```
-
-See [Deployment Guide](./DEPLOYMENT.md) for detailed instructions.
-
-### 🧪 Testing
-
-```bash
-# Run tests
-npm test
-
-# Run with coverage
-npm test -- --coverage
-```
-
-### 📝 Environment Variables
-
-### Backend (.env)
-```
-MONGODB_URI=mongodb+srv://user:pass@cluster.mongodb.net/cms_db
-JWT_SECRET=your_secure_secret_key
-JWT_EXPIRE=7d
-PORT=5000
-NODE_ENV=development
-FRONTEND_URL=http://localhost:3000
-RATE_LIMIT_WINDOW_MS=900000
-RATE_LIMIT_MAX_REQUESTS=100
-```
-
-### Frontend (.env)
-```
-VITE_API_URL=http://localhost:5000/api
-```
-
-### 🐛 Troubleshooting
-
-**MongoDB Connection Error**
-- Verify MONGODB_URI in .env
-- Ensure MongoDB is running
-- Check network access (if using Atlas)
-
-**CORS Error**
-- Check FRONTEND_URL in backend .env
-- Ensure frontend URL matches configuration
-
-**Port Already in Use**
-```bash
-# macOS/Linux
-lsof -i :5000
-kill -9 <PID>
-
-# Windows
-netstat -ano | findstr :5000
-taskkill /PID <PID> /F
-```
-
-**Module Not Found**
-```bash
-rm -rf node_modules package-lock.json
-npm install
-```
-
-### 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-### 📄 License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-### 💬 Support
-
-For support, email support@example.com or open an issue on GitHub.
-
-### 📚 Additional Resources
-
-- [MongoDB Documentation](https://docs.mongodb.com/)
-- [Express.js Guide](https://expressjs.com/)
-- [React Documentation](https://react.dev/)
-- [Tailwind CSS](https://tailwindcss.com/)
-- [JWT Authentication](https://jwt.io/)
-
-### 🎯 Roadmap
-
-- [ ] Multi-language support
-- [ ] AI-assisted content generation
-- [ ] Real-time collaboration
-- [ ] Plugin system
-- [ ] Webhooks
-- [ ] GraphQL API
-- [ ] Mobile app
-- [ ] Advanced analytics
