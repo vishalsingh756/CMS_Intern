@@ -12,20 +12,25 @@
   --surface:       #ffffff;
   --surface-2:     #F8FAFC;
   --surface-3:     #F1F5F9;
-  --border:        rgba(226, 232, 240, 0.7);
+  --border:        rgba(226, 232, 240, 0.65);
   --border-2:      #E2E8F0;
   --border-hover:  #CBD5E1;
+
+  /* Premium Glassmorphic Colors */
+  --card-bg:       rgba(255, 255, 255, 0.68);
+  --card-blur:     blur(20px) saturate(190%);
+  --input-bg:      rgba(255, 255, 255, 0.55);
 
   /* Typography */
   --text-1:        #0F172A;
   --text-2:        #475569;
   --text-3:        #94A3B8;
 
-  /* Accent - Royal Indigo & Amber Accent */
-  --accent:        #4F46E5;
-  --accent-h:      #3B2E9B;
-  --accent-s:      #EEF2FF;
-  --accent-rgb:    79, 70, 229;
+  /* Accent - High-Fidelity Custom Purple-Indigo */
+  --accent:        #5F55FA;
+  --accent-h:      #4A3EF0;
+  --accent-s:      rgba(95, 85, 250, 0.08);
+  --accent-rgb:    95, 85, 250;
 
   /* Semantic Colors */
   --green:         #10B981;
@@ -56,12 +61,12 @@
   --sb-text-2:     #94A3B8;
   --sb-text-3:     #64748B;
   --sb-hover:      rgba(255, 255, 255, 0.05);
-  --sb-active-bg:  linear-gradient(135deg, rgba(79, 70, 229, 0.25) 0%, rgba(79, 70, 229, 0.1) 100%);
+  --sb-active-bg:  linear-gradient(135deg, rgba(95, 85, 250, 0.25) 0%, rgba(95, 85, 250, 0.1) 100%);
   --sb-active-txt: #ffffff;
 
   /* Custom components */
-  --topbar-bg:     rgba(255, 255, 255, 0.85);
-  --auth-bg:       radial-gradient(circle at 10% 20%, rgba(238, 242, 255, 0.8) 0%, rgba(248, 250, 252, 1) 90%);
+  --topbar-bg:     rgba(248, 250, 252, 0.75);
+  --auth-bg:       radial-gradient(circle at 10% 20%, rgba(95, 85, 250, 0.05) 0%, rgba(248, 250, 252, 1) 90%);
 
   /* Border Radii */
   --radius:        12px;
@@ -71,33 +76,38 @@
 
   /* Soft Ambient Depth Shadows */
   --shadow-xs:     0 2px 4px rgba(0, 0, 0, 0.02);
-  --shadow-sm:     0 8px 20px -4px rgba(0, 0, 0, 0.04), 0 1px 3px rgba(0, 0, 0, 0.02);
-  --shadow:        0 16px 36px -8px rgba(79, 70, 229, 0.06), 0 4px 12px -2px rgba(0, 0, 0, 0.03);
-  --shadow-lg:     0 24px 48px -12px rgba(15, 23, 42, 0.12), 0 8px 16px -4px rgba(15, 23, 42, 0.04);
-  --shadow-xl:     0 32px 64px -16px rgba(15, 23, 42, 0.16), 0 16px 24px -8px rgba(15, 23, 42, 0.08);
+  --shadow-sm:     0 8px 20px -4px rgba(0, 0, 0, 0.03), 0 1px 3px rgba(0, 0, 0, 0.01);
+  --shadow:        0 16px 36px -8px rgba(95, 85, 250, 0.05), 0 4px 12px -2px rgba(0, 0, 0, 0.02);
+  --shadow-lg:     0 24px 48px -12px rgba(15, 23, 42, 0.08), 0 8px 16px -4px rgba(15, 23, 42, 0.03);
+  --shadow-xl:     0 32px 64px -16px rgba(15, 23, 42, 0.12), 0 16px 24px -8px rgba(15, 23, 42, 0.06);
 }
 
 [data-theme="dark"] {
   /* Core Colors */
-  --bg:            #090D1A;
-  --bg-secondary:  #101524;
-  --surface:       #111827;
-  --surface-2:     #1F2937;
-  --surface-3:     #374151;
-  --border:        rgba(255, 255, 255, 0.05);
-  --border-2:      rgba(255, 255, 255, 0.12);
-  --border-hover:  rgba(255, 255, 255, 0.22);
+  --bg:            #080C16;
+  --bg-secondary:  #0F1422;
+  --surface:       #111726;
+  --surface-2:     #1C2336;
+  --surface-3:     #2D374E;
+  --border:        rgba(255, 255, 255, 0.04);
+  --border-2:      rgba(255, 255, 255, 0.09);
+  --border-hover:  rgba(255, 255, 255, 0.18);
+
+  /* Premium Glassmorphic Colors */
+  --card-bg:       rgba(17, 23, 38, 0.65);
+  --card-blur:     blur(20px) saturate(190%);
+  --input-bg:      rgba(17, 23, 38, 0.4);
 
   /* Typography */
   --text-1:        #F9FAFB;
   --text-2:        #9CA3AF;
   --text-3:        #6B7280;
 
-  /* Accent overrides - softer indigo */
-  --accent:        #6366F1;
-  --accent-h:      #4F46E5;
-  --accent-s:      rgba(99, 102, 241, 0.15);
-  --accent-rgb:    99, 102, 241;
+  /* Accent overrides - softer neon indigo */
+  --accent:        #7F76FF;
+  --accent-h:      #5F55FA;
+  --accent-s:      rgba(127, 118, 255, 0.12);
+  --accent-rgb:    127, 118, 255;
 
   /* Semantic Colors for Dark mode (slightly desaturated) */
   --green:         #34D399;
@@ -122,18 +132,18 @@
   --badge-orange-txt: #FB923C;
 
   /* Sidebar Dark Theme variables (matches base style, stays dark) */
-  --sb-bg:         #090D1A;
-  --sb-border:     rgba(255, 255, 255, 0.05);
+  --sb-bg:         #080C16;
+  --sb-border:     rgba(255, 255, 255, 0.04);
   --sb-text-1:     #F9FAFB;
   --sb-text-2:     #9CA3AF;
   --sb-text-3:     #6B7280;
   --sb-hover:      rgba(255, 255, 255, 0.04);
-  --sb-active-bg:  linear-gradient(135deg, rgba(99, 102, 241, 0.3) 0%, rgba(99, 102, 241, 0.15) 100%);
+  --sb-active-bg:  linear-gradient(135deg, rgba(127, 118, 255, 0.3) 0%, rgba(127, 118, 255, 0.15) 100%);
   --sb-active-txt: #ffffff;
 
   /* Custom components dark theme overrides */
-  --topbar-bg:     rgba(17, 24, 39, 0.85);
-  --auth-bg:       radial-gradient(circle at 10% 20%, rgba(99, 102, 241, 0.08) 0%, rgba(9, 13, 26, 1) 90%);
+  --topbar-bg:     rgba(8, 12, 22, 0.75);
+  --auth-bg:       radial-gradient(circle at 10% 20%, rgba(127, 118, 255, 0.05) 0%, rgba(8, 12, 22, 1) 90%);
 
   /* Ambient shadows for dark mode */
   --shadow-xs:     0 2px 4px rgba(0, 0, 0, 0.2);
@@ -239,29 +249,38 @@ button, input, select, textarea, a, tr, svg {
 
 /* ─── Cards ───────────────────────────────────────────────────────── */
 .card {
-  background: var(--surface);
+  background: var(--card-bg);
+  backdrop-filter: var(--card-blur);
+  -webkit-backdrop-filter: var(--card-blur);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-sm);
   transition: box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1), 
               transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), 
-              border-color 0.25s;
+              border-color 0.25s,
+              background-color 0.25s;
 }
 .card:hover { 
   box-shadow: var(--shadow); 
-  border-color: rgba(79, 70, 229, 0.15); 
+  border-color: rgba(var(--accent-rgb), 0.22); 
   transform: translateY(-2px);
+  background: var(--surface);
 }
 .card-inset {
-  background: var(--surface-2);
+  background: rgba(0, 0, 0, 0.02);
   border: 1px solid var(--border);
   border-radius: var(--radius);
+}
+[data-theme="dark"] .card-inset {
+  background: rgba(255, 255, 255, 0.02);
 }
 
 /* ─── Inputs ──────────────────────────────────────────────────────── */
 .input {
   width: 100%;
-  background: var(--surface);
+  background: var(--input-bg);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   border: 1.5px solid var(--border-2);
   border-radius: var(--radius);
   padding: 11px 16px;
@@ -269,10 +288,10 @@ button, input, select, textarea, a, tr, svg {
   color: var(--text-1);
   outline: none;
   box-shadow: var(--shadow-xs);
-  transition: border-color 0.2s, box-shadow 0.2s;
+  transition: border-color 0.2s, box-shadow 0.2s, background-color 0.2s;
 }
 .input::placeholder { color: var(--text-3); }
-.input:hover { border-color: var(--border-hover); }
+.input:hover { border-color: var(--border-hover); background: var(--surface); }
 .input:focus {
   border-color: var(--accent);
   background: var(--surface);
@@ -409,7 +428,10 @@ select.input {
   text-transform: uppercase;
   letter-spacing: 0.06em;
   border-bottom: 1.5px solid var(--border-2);
-  background: var(--surface-2);
+  background: rgba(0, 0, 0, 0.015);
+}
+[data-theme="dark"] .data-table thead th {
+  background: rgba(255, 255, 255, 0.015);
 }
 .data-table thead th:first-child { border-radius: var(--radius) 0 0 0; }
 .data-table thead th:last-child  { border-radius: 0 var(--radius) 0 0; }
@@ -417,20 +439,24 @@ select.input {
   border-bottom: 1px solid var(--border-2);
 }
 .data-table tbody tr:last-child { border-bottom: none; }
-.data-table tbody tr:hover { background: var(--surface-2); }
+.data-table tbody tr:hover { background: rgba(0, 0, 0, 0.02); }
+[data-theme="dark"] .data-table tbody tr:hover { background: rgba(255, 255, 255, 0.025); }
 .data-table td { padding: 16px 20px; color: var(--text-1); vertical-align: middle; }
 
 /* ─── Modal ──────────────────────────────────────────────────────── */
 .modal-overlay {
   position: fixed; inset: 0; z-index: 200;
-  background: rgba(15, 23, 42, 0.4);
-  backdrop-filter: blur(8px);
+  background: rgba(15, 23, 42, 0.32);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
   display: flex; align-items: center; justify-content: center;
   padding: 24px;
   animation: fadeIn 0.2s ease;
 }
 .modal-box {
-  background: var(--surface);
+  background: var(--card-bg);
+  backdrop-filter: var(--card-blur);
+  -webkit-backdrop-filter: var(--card-blur);
   border: 1px solid var(--border-2);
   border-radius: var(--radius-xl);
   width: 100%;
@@ -585,7 +611,9 @@ select.input {
 
 /* ─── KPI cards ──────────────────────────────────────────────────── */
 .kpi-card {
-  background: var(--surface);
+  background: var(--card-bg);
+  backdrop-filter: var(--card-blur);
+  -webkit-backdrop-filter: var(--card-blur);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   padding: 24px;
@@ -598,7 +626,8 @@ select.input {
 .kpi-card:hover {
   box-shadow: var(--shadow);
   transform: translateY(-4px);
-  border-color: rgba(79, 70, 229, 0.2);
+  border-color: rgba(var(--accent-rgb), 0.25);
+  background: var(--surface);
 }
 .kpi-icon {
   width: 44px; height: 44px;
@@ -612,7 +641,9 @@ select.input {
 
 /* ─── Filter bar ─────────────────────────────────────────────────── */
 .filter-bar {
-  background: var(--surface);
+  background: var(--card-bg);
+  backdrop-filter: var(--card-blur);
+  -webkit-backdrop-filter: var(--card-blur);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   padding: 12px 16px;
@@ -655,7 +686,9 @@ select.input {
 
 /* ─── Section card ───────────────────────────────────────────────── */
 .section-card {
-  background: var(--surface);
+  background: var(--card-bg);
+  backdrop-filter: var(--card-blur);
+  -webkit-backdrop-filter: var(--card-blur);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-sm);
@@ -665,7 +698,10 @@ select.input {
   display: flex; align-items: center; justify-content: space-between;
   padding: 16px 24px;
   border-bottom: 1px solid var(--border-2);
-  background: var(--surface-2);
+  background: rgba(0, 0, 0, 0.015);
+}
+[data-theme="dark"] .section-header {
+  background: rgba(255, 255, 255, 0.015);
 }
 .section-title { font-family: 'Outfit', sans-serif; font-size: 14.5px; font-weight: 700; color: var(--text-1); letter-spacing: -0.01em; }
 .section-body  { padding: 24px; }
