@@ -140,10 +140,6 @@ export default function Login() {
             </div>
           </div>
         </div>
-
-        <p style={{ textAlign: 'center', marginTop: '14px', fontSize: '11.5px', color: 'var(--text-3)' }}>
-          Demo: register any account or create an admin
-        </p>
       </div>
     </div>
   );
