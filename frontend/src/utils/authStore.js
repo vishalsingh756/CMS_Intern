@@ -29,13 +29,7 @@ const useAuthStore = create((set) => ({
     set({ isLoading: true, error: null });
     try {
       const response = await authService.register(data);
-      set({
-        user: response.data.data.user,
-        token: response.data.data.token,
-        isLoading: false,
-      });
-      localStorage.setItem('user', JSON.stringify(response.data.data.user));
-      localStorage.setItem('token', response.data.data.token);
+      set({ isLoading: false });
       return response.data;
     } catch (error) {
       set({
@@ -92,6 +86,63 @@ const useAuthStore = create((set) => ({
     } catch (error) {
       set({
         error: error.response?.data?.message || 'Update failed',
+        isLoading: false,
+      });
+      throw error;
+    }
+  },
+
+  verifyEmail: async (data) => {
+    set({ isLoading: true, error: null });
+    try {
+      const response = await authService.verifyEmail(data);
+      set({
+        user: response.data.data.user,
+        token: response.data.data.token,
+        isLoading: false,
+      });
+      localStorage.setItem('user', JSON.stringify(response.data.data.user));
+      localStorage.setItem('token', response.data.data.token);
+      return response.data;
+    } catch (error) {
+      set({
+        error: error.response?.data?.message || 'Verification failed',
+        isLoading: false,
+      });
+      throw error;
+    }
+  },
+
+  resendVerification: async (data) => {
+    set({ isLoading: true, error: null });
+    try {
+      const response = await authService.resendVerification(data);
+      set({ isLoading: false });
+      return response.data;
+    } catch (error) {
+      set({
+        error: error.response?.data?.message || 'Resending code failed',
+        isLoading: false,
+      });
+      throw error;
+    }
+  },
+
+  googleLogin: async (googleToken) => {
+    set({ isLoading: true, error: null });
+    try {
+      const response = await authService.googleLogin(googleToken);
+      set({
+        user: response.data.data.user,
+        token: response.data.data.token,
+        isLoading: false,
+      });
+      localStorage.setItem('user', JSON.stringify(response.data.data.user));
+      localStorage.setItem('token', response.data.data.token);
+      return response.data;
+    } catch (error) {
+      set({
+        error: error.response?.data?.message || 'Google login failed',
         isLoading: false,
       });
       throw error;

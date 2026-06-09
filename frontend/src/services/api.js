@@ -40,6 +40,9 @@ export const authService = {
   logout: () => apiClient.get('/auth/logout'),
   getCurrentUser: () => apiClient.get('/auth/me'),
   updateProfile: (data) => apiClient.put('/auth/profile', data),
+  verifyEmail: (data) => apiClient.post('/auth/verify-email', data),
+  resendVerification: (data) => apiClient.post('/auth/resend-verification', data),
+  googleLogin: (token) => apiClient.post('/auth/google', { token }),
 };
 
 export const clientService = {

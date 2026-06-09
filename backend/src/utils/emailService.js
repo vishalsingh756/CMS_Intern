@@ -88,4 +88,24 @@ export const emailTemplates = {
         <p style="color:#6E6E73;font-size:13px;">Log in to your CMS to review and assign this lead.</p>
       </div>`,
   }),
+
+  verificationCode: (code) => ({
+    subject: `🔑 Your CMS Verification Code`,
+    html: `
+      <div style="font-family:Inter,sans-serif;max-width:540px;margin:0 auto;padding:32px 24px;background:#fff;border-radius:12px;border:1px solid #e5e7eb;">
+        <div style="background:linear-gradient(135deg,#4F46E5,#6366F1);border-radius:10px;padding:20px 24px;margin-bottom:24px;text-align:center;">
+          <h1 style="color:#fff;margin:0;font-size:22px;font-weight:800;">🔑 Email Verification</h1>
+        </div>
+        <p style="color:#1D1D1F;font-size:15px;line-height:1.6;margin-bottom:24px;">
+          Thank you for registering! Please use the verification code below to complete your account setup. This code is valid for 24 hours.
+        </p>
+        <div style="background:#F5F5F7;border-radius:8px;padding:24px;margin:20px 0;text-align:center;">
+          <p style="margin:0 0 8px;color:#6E6E73;font-size:13px;text-transform:uppercase;letter-spacing:0.04em;">Your Verification Code</p>
+          <p style="margin:0;font-weight:900;font-size:32px;color:#4F46E5;letter-spacing:0.1em;">${code}</p>
+        </div>
+        <p style="color:#6E6E73;font-size:13px;margin-top:24px;line-height:1.5;">
+          If you did not request this, please ignore this email.
+        </p>
+      </div>`,
+  }),
 };
