@@ -17,6 +17,7 @@ import ActivityLogs from './pages/ActivityLogs';
 import Profile from './pages/Profile';
 import NotFound from './pages/NotFound';
 import Reports from './pages/Reports';
+import About from './pages/About';
 
 function App() {
   const { user } = useAuthStore();
@@ -44,11 +45,12 @@ function App() {
     <BrowserRouter>
       <Routes>
         {/* Root route */}
-        <Route path="/" element={user ? <Navigate to="/dashboard" /> : <Navigate to="/login" />} />
+        <Route path="/" element={user ? <Navigate to="/dashboard" /> : <About />} />
 
         {/* Public routes */}
         <Route path="/login" element={user ? <Navigate to="/dashboard" /> : <Login />} />
         <Route path="/register" element={user ? <Navigate to="/dashboard" /> : <Register />} />
+        <Route path="/about" element={<About />} />
 
         {/* Protected routes */}
         <Route path="/dashboard" element={<ProtectedRoute element={<Dashboard />} />} />

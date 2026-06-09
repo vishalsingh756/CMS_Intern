@@ -126,11 +126,18 @@ export default function Login() {
             </button>
           </form>
 
-          <div style={{ marginTop: '18px', textAlign: 'center' }}>
-            <span style={{ fontSize: '12.5px', color: 'var(--text-3)' }}>No account? </span>
-            <Link to="/register" style={{ fontSize: '12.5px', color: 'var(--accent)', fontWeight: 600 }}>
-              Create one
-            </Link>
+          <div style={{ marginTop: '18px', textAlign: 'center', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            <div>
+              <span style={{ fontSize: '12.5px', color: 'var(--text-3)' }}>No account? </span>
+              <Link to="/register" style={{ fontSize: '12.5px', color: 'var(--accent)', fontWeight: 600 }}>
+                Create one
+              </Link>
+            </div>
+            <div>
+              <Link to="/about" style={{ fontSize: '12px', color: 'var(--text-3)', fontWeight: 500 }}>
+                About & Contact
+              </Link>
+            </div>
           </div>
         </div>
 
