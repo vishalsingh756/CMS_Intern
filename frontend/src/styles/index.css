@@ -587,13 +587,58 @@ select.input {
   overflow: hidden;
   z-index: 100;
   transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+              background 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.3s cubic-bezier(0.16, 1, 0.3, 1),
               box-shadow 0.3s ease;
   will-change: width;
 }
 
 .sidebar-rail[data-expanded] {
   width: 230px;
-  box-shadow: 10px 0 40px rgba(0, 0, 0, 0.15);
+  background: rgba(255, 255, 255, 0.78) !important;
+  backdrop-filter: blur(20px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+  border-right: 1px solid rgba(226, 232, 240, 0.8) !important;
+  box-shadow: 12px 0 40px rgba(0, 0, 0, 0.08) !important;
+}
+
+/* Adjust children text and hover states dynamically when expanded as glassmorphism */
+.sidebar-rail[data-expanded] .rail-logo-name {
+  color: var(--text-1) !important;
+}
+.sidebar-rail[data-expanded] .rail-logo:hover {
+  background: rgba(0, 0, 0, 0.04) !important;
+}
+.sidebar-rail[data-expanded] .rail-section-label {
+  color: var(--text-3) !important;
+}
+.sidebar-rail[data-expanded] .rail-item {
+  color: var(--text-2) !important;
+}
+.sidebar-rail[data-expanded] .rail-item:hover {
+  background: rgba(0, 0, 0, 0.04) !important;
+  color: var(--text-1) !important;
+}
+.sidebar-rail[data-expanded] .rail-item.active {
+  background: var(--accent) !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 12px rgba(var(--accent-rgb), 0.25) !important;
+}
+.sidebar-rail[data-expanded] .rail-user-name {
+  color: var(--text-1) !important;
+}
+.sidebar-rail[data-expanded] .rail-user-role {
+  color: var(--text-3) !important;
+}
+.sidebar-rail[data-expanded] .rail-user:hover {
+  background: rgba(0, 0, 0, 0.04) !important;
+}
+.sidebar-rail[data-expanded] .rail-logout {
+  color: var(--text-2) !important;
+}
+.sidebar-rail[data-expanded] .rail-logout:hover {
+  background: rgba(239, 68, 68, 0.08) !important;
+  color: var(--red) !important;
 }
 
 .rail-logo {
