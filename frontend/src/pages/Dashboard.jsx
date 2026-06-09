@@ -14,7 +14,7 @@ import useAuthStore from '../utils/authStore';
 import { clientService, dealService, taskService, dashboardService } from '../services/api';
 
 /* ── Palette ─────────────────────────────────────────────────────────────── */
-const COLORS      = ['#6366F1','#10B981','#F59E0B','#3B82F6','#EF4444','#8B5CF6','#F97316'];
+const COLORS      = ['var(--accent)','var(--green)','var(--yellow)','var(--blue)','var(--red)','var(--purple)','var(--orange)'];
 const TT_STYLE    = {
   contentStyle: {
     background: 'var(--surface)',
@@ -188,7 +188,7 @@ export default function Dashboard() {
 
         {/* ── Welcome banner ─────────────────────────────────────────────── */}
         <div style={{
-          background:'linear-gradient(135deg,#6366F1 0%,#4F46E5 55%,#06B6D4 100%)',
+          background:'linear-gradient(135deg, var(--accent) 0%, var(--accent-h) 55%, #06B6D4 100%)',
           borderRadius:'20px',
           padding:'28px 32px',
           marginBottom:'28px',
@@ -197,7 +197,7 @@ export default function Dashboard() {
           justifyContent:'space-between',
           flexWrap:'wrap',
           gap:'16px',
-          boxShadow:'0 8px 32px rgba(99,102,241,0.28)',
+          boxShadow:'0 8px 32px rgba(var(--accent-rgb),0.25)',
           position:'relative',
           overflow:'hidden',
         }}>
@@ -229,10 +229,10 @@ export default function Dashboard() {
         {/* ── KPI row ────────────────────────────────────────────────────── */}
         <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(190px,1fr))', gap:'12px', marginBottom:'24px' }}
           className="stagger">
-          <KpiCard icon={FiUsers}       label="Total Clients"    value={fmt(cs?.total)}      sub={`${cs?.active||0} active`}                  iconBg="rgba(99,102,241,0.08)"  iconColor="var(--accent)" trend={12} onClick={() => navigate('/clients')} />
-          <KpiCard icon={FiTrendingUp}  label="Total Deals"      value={fmt(ds?.totalDeals)} sub={`₹${(ds?.totalAmount||0).toLocaleString()} pipeline`} iconBg="rgba(16,185,129,0.1)"   iconColor="var(--green)"  trend={8}  onClick={() => navigate('/deals')}   />
-          <KpiCard icon={FiCheckSquare} label="Open Tasks"       value={fmt(ts?.open)}       sub={`${ts?.overdue||0} overdue`}                iconBg="rgba(245,158,11,0.1)"   iconColor="var(--yellow)"             onClick={() => navigate('/tasks')}   />
-          <KpiCard icon={FiActivity}    label="Completed Tasks"  value={fmt(ts?.completed)}  sub={`${ts?.inProgress||0} in progress`}         iconBg="rgba(59,130,246,0.08)"  iconColor="var(--blue)"   trend={5}  onClick={() => navigate('/tasks')}   />
+          <KpiCard icon={FiUsers}       label="Total Clients"    value={fmt(cs?.total)}      sub={`${cs?.active||0} active`}                  iconBg="var(--accent-s)"  iconColor="var(--accent)" trend={12} onClick={() => navigate('/clients')} />
+          <KpiCard icon={FiTrendingUp}  label="Total Deals"      value={fmt(ds?.totalDeals)} sub={`₹${(ds?.totalAmount||0).toLocaleString()} pipeline`} iconBg="var(--green-s)"   iconColor="var(--green)"  trend={8}  onClick={() => navigate('/deals')}   />
+          <KpiCard icon={FiCheckSquare} label="Open Tasks"       value={fmt(ts?.open)}       sub={`${ts?.overdue||0} overdue`}                iconBg="var(--yellow-s)"   iconColor="var(--yellow)"             onClick={() => navigate('/tasks')}   />
+          <KpiCard icon={FiActivity}    label="Completed Tasks"  value={fmt(ts?.completed)}  sub={`${ts?.inProgress||0} in progress`}         iconBg="var(--blue-s)"  iconColor="var(--blue)"   trend={5}  onClick={() => navigate('/tasks')}   />
         </div>
 
         {/* ── Row 1: Revenue over time (full width) ──────────────────────── */}

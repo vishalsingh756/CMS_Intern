@@ -495,11 +495,11 @@ select.input {
 }
 .sidebar-logo-mark {
   width: 32px; height: 32px;
-  background: linear-gradient(135deg, var(--accent) 0%, #6366F1 100%);
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-h) 100%);
   border-radius: 10px;
   display: flex; align-items: center; justify-content: center;
   flex-shrink: 0;
-  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.4);
+  box-shadow: 0 4px 12px rgba(var(--accent-rgb), 0.35);
 }
 .sidebar-logo-name { font-family: 'Outfit', sans-serif; font-size: 16px; font-weight: 800; color: var(--sb-text-1); letter-spacing: -0.03em; }
 .sidebar-logo-sub  { font-size: 10px; font-weight: 600; color: var(--sb-text-3); letter-spacing: 0.05em; text-transform: uppercase; }
@@ -822,11 +822,11 @@ select.input {
 
 .rail-logo-mark {
   width: 32px; height: 32px;
-  background: linear-gradient(135deg, var(--accent) 0%, #6366F1 100%);
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-h) 100%);
   border-radius: 9px;
   display: flex; align-items: center; justify-content: center;
   flex-shrink: 0;
-  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+  box-shadow: 0 4px 12px rgba(var(--accent-rgb), 0.25);
 }
 
 .rail-logo-name {

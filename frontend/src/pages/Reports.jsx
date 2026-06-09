@@ -92,7 +92,7 @@ const CHART_TYPES = [
   { value: 'line',       label: 'Line chart' },
 ];
 
-const COLORS = ['#4f46e5','#059669','#d97706','#dc2626','#7c3aed','#2563eb','#ea580c','#0891b2'];
+const COLORS = ['var(--accent)','var(--green)','var(--yellow)','var(--red)','var(--purple)','var(--blue)','var(--orange)'];
 
 const TT_STYLE = {
   contentStyle: {
