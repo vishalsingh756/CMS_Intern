@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { FiMail, FiLock, FiUser, FiEye, FiEyeOff, FiLayers } from 'react-icons/fi';
+import { FcGoogle } from 'react-icons/fc';
 import useAuthStore from '../utils/authStore';
 import { toast } from 'react-toastify';
 
@@ -279,7 +280,46 @@ export default function Register() {
           </form>
 
           {/* Divider & Google Sign-in Button */}
-          {import.meta.env.VITE_GOOGLE_CLIENT_ID && (
+          {!import.meta.env.VITE_GOOGLE_CLIENT_ID ? (
+            <>
+              {/* Divider */}
+              <div style={{ display: 'flex', alignItems: 'center', margin: '18px 0 12px 0', gap: '10px' }}>
+                <div style={{ flex: 1, height: '1px', background: 'var(--border)' }}></div>
+                <span style={{ fontSize: '12px', color: 'var(--text-3)' }}>or</span>
+                <div style={{ flex: 1, height: '1px', background: 'var(--border)' }}></div>
+              </div>
+
+              {/* Mock Google Button */}
+              <div style={{ display: 'flex', justifyContent: 'center' }}>
+                <button
+                  type="button"
+                  onClick={() => toast.info('Google Sign-In is in development. Please set the VITE_GOOGLE_CLIENT_ID environment variable in Vercel settings to activate it.')}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '10px',
+                    width: '340px',
+                    height: '40px',
+                    borderRadius: '20px',
+                    border: '1px solid var(--border)',
+                    background: '#fff',
+                    color: '#1f2937',
+                    fontWeight: 600,
+                    fontSize: '14px',
+                    cursor: 'pointer',
+                    boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
+                    transition: 'background-color 0.2s',
+                  }}
+                  onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#f9fafb'}
+                  onMouseOut={(e) => e.currentTarget.style.backgroundColor = '#fff'}
+                >
+                  <FcGoogle size={18} />
+                  <span>Sign up with Google</span>
+                </button>
+              </div>
+            </>
+          ) : (
             <>
               {/* Divider */}
               <div style={{ display: 'flex', alignItems: 'center', margin: '18px 0 12px 0', gap: '10px' }}>
