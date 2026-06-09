@@ -41,10 +41,14 @@ app.use(cors({
   origin: (origin, callback) => {
     if (!origin) return callback(null, true);
     const allowed = getOrigins();
-    if (allowed.indexOf(origin) !== -1 || origin.endsWith('.vercel.app')) {
+    const cleanOrigin = origin.replace(/\/$/, '');
+    const isAllowed = allowed.some(url => url.replace(/\/$/, '') === cleanOrigin) || 
+                      cleanOrigin.endsWith('.vercel.app') ||
+                      cleanOrigin === 'https://cms-intern.vercel.app';
+    if (isAllowed) {
       callback(null, true);
     } else {
-      callback(new Error('Not allowed by CORS'));
+      callback(null, false);
     }
   },
   credentials: true,
