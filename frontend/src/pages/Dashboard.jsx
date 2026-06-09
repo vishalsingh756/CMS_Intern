@@ -230,7 +230,7 @@ export default function Dashboard() {
         <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(190px,1fr))', gap:'12px', marginBottom:'24px' }}
           className="stagger">
           <KpiCard icon={FiUsers}       label="Total Clients"    value={fmt(cs?.total)}      sub={`${cs?.active||0} active`}                  iconBg="rgba(99,102,241,0.08)"  iconColor="var(--accent)" trend={12} onClick={() => navigate('/clients')} />
-          <KpiCard icon={FiTrendingUp}  label="Total Deals"      value={fmt(ds?.totalDeals)} sub={`$${(ds?.totalAmount||0).toLocaleString()} pipeline`} iconBg="rgba(16,185,129,0.1)"   iconColor="var(--green)"  trend={8}  onClick={() => navigate('/deals')}   />
+          <KpiCard icon={FiTrendingUp}  label="Total Deals"      value={fmt(ds?.totalDeals)} sub={`₹${(ds?.totalAmount||0).toLocaleString()} pipeline`} iconBg="rgba(16,185,129,0.1)"   iconColor="var(--green)"  trend={8}  onClick={() => navigate('/deals')}   />
           <KpiCard icon={FiCheckSquare} label="Open Tasks"       value={fmt(ts?.open)}       sub={`${ts?.overdue||0} overdue`}                iconBg="rgba(245,158,11,0.1)"   iconColor="var(--yellow)"             onClick={() => navigate('/tasks')}   />
           <KpiCard icon={FiActivity}    label="Completed Tasks"  value={fmt(ts?.completed)}  sub={`${ts?.inProgress||0} in progress`}         iconBg="rgba(59,130,246,0.08)"  iconColor="var(--blue)"   trend={5}  onClick={() => navigate('/tasks')}   />
         </div>
@@ -251,8 +251,8 @@ export default function Dashboard() {
                 <CartesianGrid strokeDasharray="3 3" stroke="#F1F5F9" vertical={false} />
                 <XAxis dataKey="m" axisLine={false} tickLine={false} tick={{ fill:'#94A3B8', fontSize:11 }} />
                 <YAxis axisLine={false} tickLine={false} tick={{ fill:'#94A3B8', fontSize:11 }}
-                  tickFormatter={v => v >= 1000 ? `$${(v/1000).toFixed(0)}k` : `$${v}`} />
-                <Tooltip {...TT_STYLE} formatter={v => [`$${Number(v).toLocaleString()}`, 'Won Revenue']} />
+                  tickFormatter={v => v >= 1000 ? `₹${(v/1000).toFixed(0)}k` : `₹${v}`} />
+                <Tooltip {...TT_STYLE} formatter={v => [`₹${Number(v).toLocaleString()}`, 'Won Revenue']} />
                 <Area type="monotone" dataKey="wonRevenue" name="Won Revenue"
                   stroke="var(--accent)" strokeWidth={2.5}
                   fillOpacity={1} fill="url(#gradRevenue)" />
@@ -372,7 +372,7 @@ export default function Dashboard() {
             { label:'Active Clients', value: cs?.active               || 0,  color:'var(--green)'  },
             { label:'Won Deals',      value: ds?.byStage?.won         || 0,  color:'var(--blue)'   },
             { label:'Lost Deals',     value: ds?.byStage?.lost        || 0,  color:'var(--red)'    },
-            { label:'Avg Deal Size',  value:`$${Math.round(ds?.avgAmount||0).toLocaleString()}`,  color:'var(--yellow)' },
+            { label:'Avg Deal Size',  value:`₹${Math.round(ds?.avgAmount||0).toLocaleString()}`,  color:'var(--yellow)' },
             { label:'Tasks Overdue',  value: ts?.overdue              || 0,  color:'var(--orange)' },
           ].map((s, i) => (
             <div key={i} className="card" style={{ padding:'14px 16px', textAlign:'center' }}>

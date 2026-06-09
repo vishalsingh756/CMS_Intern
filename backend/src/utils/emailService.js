@@ -47,7 +47,7 @@ export const emailTemplates = {
           <p style="margin:0 0 6px;color:#6E6E73;font-size:13px;">Client</p>
           <p style="margin:0;font-weight:700;font-size:16px;color:#1D1D1F;">${clientName}</p>
           <p style="margin:8px 0 6px;color:#6E6E73;font-size:13px;">Deal Value</p>
-          <p style="margin:0;font-weight:800;font-size:22px;color:#34C759;">$${Number(amount).toLocaleString()}</p>
+          <p style="margin:0;font-weight:800;font-size:22px;color:#34C759;">₹${Number(amount).toLocaleString()}</p>
         </div>
         <p style="color:#6E6E73;font-size:13px;margin-top:24px;">This is an automated message from your CMS.</p>
       </div>`,

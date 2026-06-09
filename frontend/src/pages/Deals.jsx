@@ -2,9 +2,10 @@ import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   FiPlus, FiEdit2, FiTrash2, FiSearch, FiX,
-  FiChevronLeft, FiChevronRight, FiTrendingUp, FiDollarSign,
+  FiChevronLeft, FiChevronRight, FiTrendingUp,
   FiUser, FiExternalLink, FiMove,
 } from 'react-icons/fi';
+import { LuIndianRupee } from 'react-icons/lu';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import Layout from '../components/Layout';
 import { dealService, clientService } from '../services/api';
@@ -150,7 +151,7 @@ export default function Deals() {
             <h1 className="page-title">Deals Pipeline</h1>
             <p className="page-sub">
               {total} deals
-              {stats?.totalAmount > 0 && <span style={{ marginLeft:'8px' }}>· <strong>${stats.totalAmount.toLocaleString()}</strong> total value</span>}
+              {stats?.totalAmount > 0 && <span style={{ marginLeft:'8px' }}>· <strong>₹{stats.totalAmount.toLocaleString()}</strong> total value</span>}
             </p>
           </div>
           <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
@@ -214,7 +215,7 @@ export default function Deals() {
                         <span style={{ fontSize: '11px', color: 'var(--text-3)' }}>{stageDeals.length} deals</span>
                       </div>
                       <span style={{ fontSize: '13px', fontWeight: 700, color: 'var(--text-2)' }}>
-                        ${totalAmt.toLocaleString()}
+                        ₹{totalAmt.toLocaleString()}
                       </span>
                     </div>
 
@@ -401,7 +402,7 @@ export default function Deals() {
                           </td>
                           <td>
                             <div style={{ display:'flex', alignItems:'center', gap:'4px', fontWeight:700, fontSize:'14px', color:'var(--text-1)' }}>
-                              <FiDollarSign size={13} color="var(--green)" />
+                              <LuIndianRupee size={13} color="var(--green)" />
                               {d.amount?.toLocaleString()}
                             </div>
                           </td>
@@ -461,7 +462,7 @@ export default function Deals() {
               </select>
             </div>
             <div>
-              <label className="label">Amount ($) *</label>
+              <label className="label">Amount (₹) *</label>
               <input type="number" name="amount" value={form.amount} onChange={ch} required min="0" placeholder="50000" className="input" />
             </div>
             <div>

@@ -99,7 +99,7 @@ const fmt = (key, val) => {
   if (key.toLowerCase().includes('date') || key === 'completedAt') {
     return val ? new Date(val).toLocaleDateString() : '—';
   }
-  if (key === 'amount') return `$${Number(val).toLocaleString()}`;
+  if (key === 'amount') return `₹${Number(val).toLocaleString()}`;
   if (key === 'probability') return `${val}%`;
   return String(val);
 };

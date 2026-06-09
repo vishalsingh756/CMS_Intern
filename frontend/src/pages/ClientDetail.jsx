@@ -254,7 +254,7 @@ const ClientDetail = () => {
     type: 'deal',
     date: d.createdAt,
     title: `Deal Linked: ${d.title}`,
-    description: `Amount: $${d.amount?.toLocaleString()} | Stage: ${d.stage} | Probability: ${d.probability}%`,
+    description: `Amount: ₹${d.amount?.toLocaleString()} | Stage: ${d.stage} | Probability: ${d.probability}%`,
   }));
 
   const taskEvents = tasks.map(t => ({
@@ -560,7 +560,7 @@ const ClientDetail = () => {
                       <p className={`text-xs mt-1 ${DEAL_STAGE_COLORS[deal.stage]}`}>{deal.stage} · {deal.priority} priority</p>
                     </div>
                     <div className="text-right">
-                      <p className="text-gray-900 font-semibold">${deal.amount?.toLocaleString()}</p>
+                      <p className="text-gray-900 font-semibold">₹{deal.amount?.toLocaleString()}</p>
                       <p className="text-gray-500 text-xs mt-1">{deal.probability}% probability</p>
                     </div>
                   </div>
