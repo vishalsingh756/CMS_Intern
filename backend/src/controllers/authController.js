@@ -48,6 +48,8 @@ export const register = async (req, res) => {
 
     await user.save();
 
+    console.log(`[AUTH DEBUG] Verification code for ${email} is: ${verificationCode}`);
+
     // Send verification email
     const template = emailTemplates.verificationCode(verificationCode);
     await sendEmail(email, template.subject, template.html);
@@ -99,6 +101,8 @@ export const login = async (req, res) => {
         user.verificationCodeExpires = new Date(Date.now() + 24 * 60 * 60 * 1000);
         await user.save();
       }
+
+      console.log(`[AUTH DEBUG] Verification code for ${user.email} is: ${user.verificationCode}`);
 
       // Send/resend verification email
       const template = emailTemplates.verificationCode(user.verificationCode);
@@ -282,6 +286,8 @@ export const resendVerification = async (req, res) => {
     user.verificationCode = verificationCode;
     user.verificationCodeExpires = new Date(Date.now() + 24 * 60 * 60 * 1000);
     await user.save();
+
+    console.log(`[AUTH DEBUG] Resent verification code for ${email} is: ${verificationCode}`);
 
     // Send code
     const template = emailTemplates.verificationCode(verificationCode);
