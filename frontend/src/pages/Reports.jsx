@@ -94,6 +94,17 @@ const CHART_TYPES = [
 
 const COLORS = ['#4f46e5','#059669','#d97706','#dc2626','#7c3aed','#2563eb','#ea580c','#0891b2'];
 
+const TT_STYLE = {
+  contentStyle: {
+    background: 'var(--surface)',
+    border: '1px solid var(--border-2)',
+    borderRadius: '12px',
+    fontSize: '12px',
+    color: 'var(--text-1)',
+    boxShadow: 'var(--shadow-lg)',
+  },
+};
+
 const fmt = (key, val) => {
   if (val === null || val === undefined) return '—';
   if (key.toLowerCase().includes('date') || key === 'completedAt') {
@@ -307,18 +318,22 @@ export default function Reports() {
               <Pie data={chartData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={100} label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}>
                 {chartData.map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
               </Pie>
-              <Tooltip /><Legend />
+              <Tooltip {...TT_STYLE} /><Legend wrapperStyle={{ fontSize: 11, color: 'var(--text-3)' }} />
             </PieChart>
           ) : chartType === 'line' ? (
             <LineChart data={chartData}>
-              <XAxis dataKey="name" tick={{ fontSize: 11 }} /><YAxis tick={{ fontSize: 11 }} />
-              <Tooltip /><Legend />
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
+              <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#94A3B8', fontSize: 11 }} />
+              <YAxis axisLine={false} tickLine={false} tick={{ fill: '#94A3B8', fontSize: 11 }} />
+              <Tooltip {...TT_STYLE} /><Legend wrapperStyle={{ fontSize: 11, color: 'var(--text-3)' }} />
               <Line type="monotone" dataKey="value" stroke={COLORS[0]} strokeWidth={2} dot={{ r: 4 }} />
             </LineChart>
           ) : (
             <BarChart data={chartData}>
-              <XAxis dataKey="name" tick={{ fontSize: 11 }} /><YAxis tick={{ fontSize: 11 }} />
-              <Tooltip /><Legend />
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
+              <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#94A3B8', fontSize: 11 }} />
+              <YAxis axisLine={false} tickLine={false} tick={{ fill: '#94A3B8', fontSize: 11 }} />
+              <Tooltip {...TT_STYLE} /><Legend wrapperStyle={{ fontSize: 11, color: 'var(--text-3)' }} />
               <Bar dataKey="value" radius={[4, 4, 0, 0]}>
                 {chartData.map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
               </Bar>

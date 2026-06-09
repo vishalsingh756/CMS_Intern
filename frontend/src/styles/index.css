@@ -14,6 +14,7 @@
   --surface-3:     #F1F5F9;
   --border:        rgba(226, 232, 240, 0.7);
   --border-2:      #E2E8F0;
+  --border-hover:  #CBD5E1;
 
   /* Typography */
   --text-1:        #0F172A;
@@ -40,6 +41,14 @@
   --orange:        #F97316;
   --orange-s:      #FFF7ED;
 
+  /* Badge Text Colors (Legibility) */
+  --badge-green-txt: #065F46;
+  --badge-yellow-txt: #92400E;
+  --badge-red-txt: #991B1B;
+  --badge-blue-txt: #1E40AF;
+  --badge-purple-txt: #5B21B6;
+  --badge-orange-txt: #9A3412;
+
   /* Sidebar Dark Theme variables */
   --sb-bg:         #0B0F19;
   --sb-border:     rgba(255, 255, 255, 0.06);
@@ -49,6 +58,10 @@
   --sb-hover:      rgba(255, 255, 255, 0.05);
   --sb-active-bg:  linear-gradient(135deg, rgba(79, 70, 229, 0.25) 0%, rgba(79, 70, 229, 0.1) 100%);
   --sb-active-txt: #ffffff;
+
+  /* Custom components */
+  --topbar-bg:     rgba(255, 255, 255, 0.85);
+  --auth-bg:       radial-gradient(circle at 10% 20%, rgba(238, 242, 255, 0.8) 0%, rgba(248, 250, 252, 1) 90%);
 
   /* Border Radii */
   --radius:        12px;
@@ -62,6 +75,117 @@
   --shadow:        0 16px 36px -8px rgba(79, 70, 229, 0.06), 0 4px 12px -2px rgba(0, 0, 0, 0.03);
   --shadow-lg:     0 24px 48px -12px rgba(15, 23, 42, 0.12), 0 8px 16px -4px rgba(15, 23, 42, 0.04);
   --shadow-xl:     0 32px 64px -16px rgba(15, 23, 42, 0.16), 0 16px 24px -8px rgba(15, 23, 42, 0.08);
+}
+
+[data-theme="dark"] {
+  /* Core Colors */
+  --bg:            #090D1A;
+  --bg-secondary:  #101524;
+  --surface:       #111827;
+  --surface-2:     #1F2937;
+  --surface-3:     #374151;
+  --border:        rgba(255, 255, 255, 0.05);
+  --border-2:      rgba(255, 255, 255, 0.12);
+  --border-hover:  rgba(255, 255, 255, 0.22);
+
+  /* Typography */
+  --text-1:        #F9FAFB;
+  --text-2:        #9CA3AF;
+  --text-3:        #6B7280;
+
+  /* Accent overrides - softer indigo */
+  --accent:        #6366F1;
+  --accent-h:      #4F46E5;
+  --accent-s:      rgba(99, 102, 241, 0.15);
+  --accent-rgb:    99, 102, 241;
+
+  /* Semantic Colors for Dark mode (slightly desaturated) */
+  --green:         #34D399;
+  --green-s:       rgba(52, 211, 153, 0.12);
+  --yellow:        #FBBF24;
+  --yellow-s:      rgba(251, 191, 36, 0.12);
+  --red:           #FCA5A5;
+  --red-s:         rgba(252, 165, 165, 0.12);
+  --blue:          #93C5FD;
+  --blue-s:        rgba(147, 197, 253, 0.12);
+  --purple:        #C084FC;
+  --purple-s:      rgba(192, 132, 252, 0.12);
+  --orange:        #FB923C;
+  --orange-s:      rgba(251, 146, 60, 0.12);
+
+  /* Badge Text Colors (Legibility in Dark mode) */
+  --badge-green-txt: #34D399;
+  --badge-yellow-txt: #FBBF24;
+  --badge-red-txt: #FCA5A5;
+  --badge-blue-txt: #93C5FD;
+  --badge-purple-txt: #C084FC;
+  --badge-orange-txt: #FB923C;
+
+  /* Sidebar Dark Theme variables (matches base style, stays dark) */
+  --sb-bg:         #090D1A;
+  --sb-border:     rgba(255, 255, 255, 0.05);
+  --sb-text-1:     #F9FAFB;
+  --sb-text-2:     #9CA3AF;
+  --sb-text-3:     #6B7280;
+  --sb-hover:      rgba(255, 255, 255, 0.04);
+  --sb-active-bg:  linear-gradient(135deg, rgba(99, 102, 241, 0.3) 0%, rgba(99, 102, 241, 0.15) 100%);
+  --sb-active-txt: #ffffff;
+
+  /* Custom components dark theme overrides */
+  --topbar-bg:     rgba(17, 24, 39, 0.85);
+  --auth-bg:       radial-gradient(circle at 10% 20%, rgba(99, 102, 241, 0.08) 0%, rgba(9, 13, 26, 1) 90%);
+
+  /* Ambient shadows for dark mode */
+  --shadow-xs:     0 2px 4px rgba(0, 0, 0, 0.2);
+  --shadow-sm:     0 8px 20px -4px rgba(0, 0, 0, 0.35);
+  --shadow:        0 16px 36px -8px rgba(0, 0, 0, 0.5);
+  --shadow-lg:     0 24px 48px -12px rgba(0, 0, 0, 0.6);
+  --shadow-xl:     0 32px 64px -16px rgba(0, 0, 0, 0.7);
+}
+
+[data-theme="dark"] .glass {
+  background: rgba(17, 24, 39, 0.75) !important;
+  backdrop-filter: blur(20px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.07) !important;
+}
+
+[data-theme="dark"] .sidebar-rail[data-expanded] {
+  background: rgba(17, 24, 39, 0.78) !important;
+  backdrop-filter: blur(24px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
+  border-right: 1px solid rgba(255, 255, 255, 0.08) !important;
+  box-shadow: 12px 0 40px rgba(0, 0, 0, 0.5) !important;
+}
+
+[data-theme="dark"] .sidebar-rail[data-expanded] .rail-logo-name {
+  color: var(--text-1) !important;
+}
+[data-theme="dark"] .sidebar-rail[data-expanded] .rail-section-label {
+  color: var(--text-3) !important;
+}
+[data-theme="dark"] .sidebar-rail[data-expanded] .rail-item {
+  color: var(--text-2) !important;
+}
+[data-theme="dark"] .sidebar-rail[data-expanded] .rail-item:hover {
+  background: rgba(255, 255, 255, 0.04) !important;
+  color: var(--text-1) !important;
+}
+[data-theme="dark"] .sidebar-rail[data-expanded] .rail-item.active {
+  background: var(--accent) !important;
+  color: #ffffff !important;
+}
+[data-theme="dark"] .sidebar-rail[data-expanded] .rail-user-name {
+  color: var(--text-1) !important;
+}
+[data-theme="dark"] .sidebar-rail[data-expanded] .rail-user-role {
+  color: var(--text-3) !important;
+}
+[data-theme="dark"] .sidebar-rail[data-expanded] .rail-logout {
+  color: var(--text-2) !important;
+}
+[data-theme="dark"] .sidebar-rail[data-expanded] .rail-logout:hover {
+  background: rgba(239, 68, 68, 0.15) !important;
+  color: var(--red) !important;
 }
 
 /* ─── Global Reset ────────────────────────────────────────────────── */
@@ -88,8 +212,8 @@ button, input, select, textarea, a, tr, svg {
 /* ─── Scrollbar ───────────────────────────────────────────────────── */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #E2E8F0; border-radius: 99px; }
-::-webkit-scrollbar-thumb:hover { background: #CBD5E1; }
+::-webkit-scrollbar-thumb { background: var(--border-2); border-radius: 99px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text-3); }
 
 /* ─── Animations ─────────────────────────────────────────────────── */
 @keyframes fadeUp {
@@ -148,10 +272,10 @@ button, input, select, textarea, a, tr, svg {
   transition: border-color 0.2s, box-shadow 0.2s;
 }
 .input::placeholder { color: var(--text-3); }
-.input:hover { border-color: #CBD5E1; }
+.input:hover { border-color: var(--border-hover); }
 .input:focus {
   border-color: var(--accent);
-  background: #fff;
+  background: var(--surface);
   box-shadow: 0 0 0 4px rgba(var(--accent-rgb), 0.08);
 }
 .input.error {
@@ -213,7 +337,7 @@ select.input {
 }
 .btn-ghost:hover:not(:disabled) {
   background: var(--surface-2);
-  border-color: #CBD5E1;
+  border-color: var(--border-hover);
   color: var(--text-1);
 }
 
@@ -223,7 +347,7 @@ select.input {
   border: 1.5px solid rgba(239, 68, 68, 0.2);
 }
 .btn-danger:hover:not(:disabled) {
-  background: #FEE2E2;
+  background: var(--red-s);
   border-color: rgba(239, 68, 68, 0.3);
 }
 
@@ -252,12 +376,12 @@ select.input {
   line-height: 1.4;
   letter-spacing: 0.01em;
 }
-.badge-green  { background: var(--green-s);  color: #065F46;  border-color: rgba(16, 185, 129, 0.2); }
-.badge-yellow { background: var(--yellow-s); color: #92400E;  border-color: rgba(245, 158, 11, 0.2); }
-.badge-red    { background: var(--red-s);    color: #991B1B;  border-color: rgba(239, 68, 68, 0.2); }
-.badge-blue   { background: var(--blue-s);   color: #1E40AF;  border-color: rgba(59, 130, 246, 0.2); }
-.badge-purple { background: var(--purple-s); color: #5B21B6;  border-color: rgba(139, 92, 246, 0.2); }
-.badge-orange { background: var(--orange-s); color: #9A3412;  border-color: rgba(249, 115, 22, 0.2); }
+.badge-green  { background: var(--green-s);  color: var(--badge-green-txt);  border-color: rgba(16, 185, 129, 0.2); }
+.badge-yellow { background: var(--yellow-s); color: var(--badge-yellow-txt); border-color: rgba(245, 158, 11, 0.2); }
+.badge-red    { background: var(--red-s);    color: var(--badge-red-txt);    border-color: rgba(239, 68, 68, 0.2); }
+.badge-blue   { background: var(--blue-s);   color: var(--badge-blue-txt);   border-color: rgba(59, 130, 246, 0.2); }
+.badge-purple { background: var(--purple-s); color: var(--badge-purple-txt); border-color: rgba(139, 92, 246, 0.2); }
+.badge-orange { background: var(--orange-s); color: var(--badge-orange-txt); border-color: rgba(249, 115, 22, 0.2); }
 .badge-gray   { background: var(--surface-3); color: var(--text-2); border-color: var(--border-2); }
 .badge-accent { background: var(--accent-s); color: var(--accent); border-color: rgba(var(--accent-rgb),0.2); }
 
@@ -290,10 +414,10 @@ select.input {
 .data-table thead th:first-child { border-radius: var(--radius) 0 0 0; }
 .data-table thead th:last-child  { border-radius: 0 var(--radius) 0 0; }
 .data-table tbody tr {
-  border-bottom: 1px solid #F1F5F9;
+  border-bottom: 1px solid var(--border-2);
 }
 .data-table tbody tr:last-child { border-bottom: none; }
-.data-table tbody tr:hover { background: #FAFBFC; }
+.data-table tbody tr:hover { background: var(--surface-2); }
 .data-table td { padding: 16px 20px; color: var(--text-1); vertical-align: middle; }
 
 /* ─── Modal ──────────────────────────────────────────────────────── */
@@ -306,7 +430,7 @@ select.input {
   animation: fadeIn 0.2s ease;
 }
 .modal-box {
-  background: #ffffff;
+  background: var(--surface);
   border: 1px solid var(--border-2);
   border-radius: var(--radius-xl);
   width: 100%;
@@ -427,7 +551,7 @@ select.input {
 /* ─── Topbar ─────────────────────────────────────────────────────── */
 .topbar {
   height: 60px;
-  background: rgba(255, 255, 255, 0.85);
+  background: var(--topbar-bg);
   backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--border);
   display: flex; align-items: center; justify-content: space-between;
@@ -514,14 +638,14 @@ select.input {
 /* ─── Auth ───────────────────────────────────────────────────────── */
 .auth-wrap {
   min-height: 100vh;
-  background: radial-gradient(circle at 10% 20%, rgba(238, 242, 255, 0.8) 0%, rgba(248, 250, 252, 1) 90%);
+  background: var(--auth-bg);
   display: flex; align-items: center; justify-content: center;
   padding: 24px;
 }
 .auth-card {
   width: 100%;
   max-width: 420px;
-  background: #ffffff;
+  background: var(--surface);
   border: 1px solid var(--border-2);
   border-radius: var(--radius-xl);
   padding: 44px 38px;

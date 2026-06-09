@@ -17,12 +17,12 @@ import { clientService, dealService, taskService, dashboardService } from '../se
 const COLORS      = ['#6366F1','#10B981','#F59E0B','#3B82F6','#EF4444','#8B5CF6','#F97316'];
 const TT_STYLE    = {
   contentStyle: {
-    background: 'rgba(255,255,255,0.96)',
-    border: '1px solid #E2E8F0',
+    background: 'var(--surface)',
+    border: '1px solid var(--border-2)',
     borderRadius: '12px',
     fontSize: '12px',
-    color: '#0F172A',
-    boxShadow: '0 8px 30px rgba(0,0,0,0.10)',
+    color: 'var(--text-1)',
+    boxShadow: 'var(--shadow-lg)',
   },
 };
 
@@ -248,7 +248,7 @@ export default function Dashboard() {
                     <stop offset="95%" stopColor="var(--accent)" stopOpacity={0}    />
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="#F1F5F9" vertical={false} />
+                <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
                 <XAxis dataKey="m" axisLine={false} tickLine={false} tick={{ fill:'#94A3B8', fontSize:11 }} />
                 <YAxis axisLine={false} tickLine={false} tick={{ fill:'#94A3B8', fontSize:11 }}
                   tickFormatter={v => v >= 1000 ? `₹${(v/1000).toFixed(0)}k` : `₹${v}`} />
@@ -270,7 +270,7 @@ export default function Dashboard() {
             ) : (
               <ResponsiveContainer width="100%" height={230}>
                 <LineChart data={monthly}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#F1F5F9" vertical={false} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
                   <XAxis dataKey="m" axisLine={false} tickLine={false} tick={{ fill:'#94A3B8', fontSize:11 }} />
                   <YAxis axisLine={false} tickLine={false} tick={{ fill:'#94A3B8', fontSize:11 }} allowDecimals={false} />
                   <Tooltip {...TT_STYLE} />
@@ -352,7 +352,7 @@ export default function Dashboard() {
             ) : (
               <ResponsiveContainer width="100%" height={200}>
                 <BarChart data={monthly} barSize={14} barGap={3}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#F1F5F9" vertical={false} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
                   <XAxis dataKey="m" axisLine={false} tickLine={false} tick={{ fill:'#94A3B8', fontSize:10 }} />
                   <YAxis axisLine={false} tickLine={false} tick={{ fill:'#94A3B8', fontSize:10 }} allowDecimals={false} />
                   <Tooltip {...TT_STYLE} />
