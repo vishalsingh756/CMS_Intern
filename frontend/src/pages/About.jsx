@@ -157,52 +157,56 @@ export default function About() {
           </div>
         </section>
 
-        {/* Contact Us Section with Google Form */}
+        {/* Contact Us Section */}
         <section id="contact" style={{ background: 'var(--surface-2)', borderTop: '1px solid var(--border)', padding: '80px 24px' }}>
-          <div style={{ maxWidth: '800px', margin: '0 auto' }}>
+          <div style={{ maxWidth: '600px', margin: '0 auto' }}>
             
-            <div style={{ textAlign: 'center', marginBottom: '36px' }}>
-              <div style={{ width: '42px', height: '42px', borderRadius: '50%', background: 'var(--accent-s)', color: 'var(--accent)', display: 'inline-flex', alignItems: 'center', justifyOrigin: 'center', justifyContent: 'center', marginBottom: '12px' }}>
-                <FiMail size={20} />
-              </div>
-              <h2 style={{ fontSize: '26px', fontWeight: 800, color: 'var(--text-1)', letterSpacing: '-0.04em' }}>Get in Touch</h2>
-              <p style={{ fontSize: '14.5px', color: 'var(--text-2)', marginTop: '8px' }}>
-                Have questions or need support? Fill out the Google Form below to contact our team.
-              </p>
-            </div>
-
-            {/* Embedded Google Form */}
-            <div style={{
-              borderRadius: 'var(--radius-xl)',
-              overflow: 'hidden',
+            <div className="glass" style={{
+              padding: '40px 32px',
+              borderRadius: 'var(--radius-2xl)',
               border: '1px solid var(--border)',
-              boxShadow: 'var(--shadow)',
+              boxShadow: 'var(--shadow-xl)',
+              textAlign: 'center',
               background: '#fff',
-              width: '100%',
-              position: 'relative'
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: '20px'
             }}>
-              <iframe
-                src={GOOGLE_FORM_URL}
-                width="100%"
-                height="650"
-                frameBorder="0"
-                marginHeight="0"
-                marginWidth="0"
-                style={{ display: 'block', background: '#fff' }}
-              >
-                Loading…
-              </iframe>
-            </div>
+              <div style={{
+                width: '56px', height: '56px', borderRadius: '50%',
+                background: 'var(--accent-s)', color: 'var(--accent)',
+                display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                boxShadow: '0 4px 12px rgba(79,70,229,0.1)'
+              }}>
+                <FiMail size={24} />
+              </div>
+              
+              <div>
+                <h2 style={{ fontSize: '24px', fontWeight: 900, color: 'var(--text-1)', letterSpacing: '-0.04em' }}>Get in Touch</h2>
+                <p style={{ fontSize: '14px', color: 'var(--text-3)', marginTop: '8px', lineHeight: '1.6' }}>
+                  Have questions, feature requests, or need support? Click below to open our official contact form and reach our team.
+                </p>
+              </div>
 
-            {/* External Link Option */}
-            <div style={{ textAlign: 'center', marginTop: '20px' }}>
               <a 
                 href={GOOGLE_FORM_URL.replace('?embedded=true', '')} 
                 target="_blank" 
                 rel="noreferrer" 
-                style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '13px', color: 'var(--accent)', fontWeight: 600 }}
+                className="btn btn-primary"
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  padding: '12px 28px',
+                  fontSize: '14.5px',
+                  fontWeight: 600,
+                  borderRadius: '980px',
+                  boxShadow: '0 4px 14px rgba(79,70,229,0.35)',
+                  textDecoration: 'none'
+                }}
               >
-                Open Google Form in a new tab <FiExternalLink size={13} />
+                Open Contact Form <FiExternalLink size={14} />
               </a>
             </div>
 

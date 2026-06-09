@@ -68,14 +68,16 @@ const useAuthStore = create((set) => ({
   },
 
   logout: async () => {
+    // Clear auth state and storage synchronously to instantly log out the user
+    set({ user: null, token: null });
+    localStorage.removeItem('user');
+    localStorage.removeItem('token');
+
+    // Fire API logout in the background without blocking the UI redirect
     try {
       await authService.logout();
     } catch (error) {
       console.error('Logout error:', error);
-    } finally {
-      set({ user: null, token: null });
-      localStorage.removeItem('user');
-      localStorage.removeItem('token');
     }
   },
 
