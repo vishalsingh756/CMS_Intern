@@ -72,7 +72,7 @@ function ClientForm({ form, setForm, onSubmit, loading, onClose }) {
 
   return (
     <form onSubmit={onSubmit} style={{ display:'flex', flexDirection:'column', gap:'14px' }}>
-      <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'12px' }}>
+      <div className="form-grid">
         <Inp label="Company Name *" name="companyName" value={form.companyName} onChange={ch} required placeholder="Acme Corp" />
         <Inp label="Contact Name *" name="contactName" value={form.contactName} onChange={ch} required placeholder="John Doe" />
         <Inp label="Email *" type="email" name="email" value={form.email} onChange={ch} required placeholder="john@acme.com" />
@@ -88,7 +88,7 @@ function ClientForm({ form, setForm, onSubmit, loading, onClose }) {
 
       <div>
         <p style={{ fontSize:'10.5px', fontWeight:700, color:'var(--text-3)', textTransform:'uppercase', letterSpacing:'0.08em', marginBottom:'10px' }}>Address</p>
-        <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'10px' }}>
+        <div className="form-grid">
           <Inp label="Street"  {...a('street')}     placeholder="123 Main St" />
           <Inp label="City"    {...a('city')}        placeholder="New York" />
           <Inp label="State"   {...a('state')}       placeholder="NY" />

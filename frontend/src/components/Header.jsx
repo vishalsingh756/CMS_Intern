@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { FiSearch } from 'react-icons/fi';
+import { FiSearch, FiMenu } from 'react-icons/fi';
 import useAuthStore from '../utils/authStore';
 import SearchModal from './SearchModal';
 import NotificationPanel from './NotificationPanel';
@@ -48,6 +48,23 @@ export default function Header({ onMenuClick }) {
       <header className="topbar">
         {/* Left */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <button
+            onClick={onMenuClick}
+            id="mobile-menu-btn"
+            style={{
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              color: 'var(--text-1)',
+              display: 'none',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: '6px',
+              borderRadius: '6px',
+            }}
+          >
+            <FiMenu size={20} />
+          </button>
           <span className="topbar-title">{title}</span>
         </div>
 

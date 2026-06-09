@@ -70,11 +70,12 @@ const useAuthStore = create((set) => ({
   logout: async () => {
     try {
       await authService.logout();
+    } catch (error) {
+      console.error('Logout error:', error);
+    } finally {
       set({ user: null, token: null });
       localStorage.removeItem('user');
       localStorage.removeItem('token');
-    } catch (error) {
-      console.error('Logout error:', error);
     }
   },
 

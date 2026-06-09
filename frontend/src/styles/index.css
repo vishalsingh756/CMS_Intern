@@ -813,3 +813,40 @@ select.input {
 /* Tooltip on collapsed — show item label as native title */
 .sidebar-rail:not([data-expanded]) .rail-item { cursor: pointer; }
 
+/* ── Responsive adjustments for mobile and web ───────────────────── */
+@media (max-width: 768px) {
+  #desktop-sidebar {
+    display: none !important;
+  }
+  #mobile-menu-btn {
+    display: flex !important;
+  }
+  .grid-2-1 {
+    grid-template-columns: 1fr !important;
+  }
+  .grid-3 {
+    grid-template-columns: 1fr !important;
+  }
+  .form-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+.grid-2-1 {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 14px;
+}
+
+.grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+

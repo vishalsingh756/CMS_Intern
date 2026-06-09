@@ -74,7 +74,7 @@ export default function Profile() {
           </div>
 
           <form onSubmit={save} style={{ display:'flex', flexDirection:'column', gap:'14px' }}>
-            <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'12px' }}>
+            <div className="form-grid">
               <div>
                 <label className="label">First Name</label>
                 <input value={form.firstName} onChange={e => ch('firstName', e.target.value)}

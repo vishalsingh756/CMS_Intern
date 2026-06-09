@@ -452,7 +452,7 @@ export default function Deals() {
             <label className="label">Deal Title *</label>
             <input name="title" value={form.title} onChange={ch} required placeholder="Enterprise License" className="input" />
           </div>
-          <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'10px' }}>
+          <div className="form-grid">
             <div>
               <label className="label">Client *</label>
               <select name="client" value={form.client} onChange={ch} required className="input">

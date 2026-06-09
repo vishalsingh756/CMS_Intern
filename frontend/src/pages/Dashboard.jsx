@@ -262,7 +262,7 @@ export default function Dashboard() {
         </SCard>
 
         {/* ── Row 2: Clients & Leads growth | Deal stages pie ────────────── */}
-        <div style={{ display:'grid', gridTemplateColumns:'2fr 1fr', gap:'14px', marginTop:'14px' }}>
+        <div className="grid-2-1" style={{ marginTop:'14px' }}>
 
           <SCard title="Growth Trends — Clients & Deals">
             {chartLoading || chartError || !hasAnyData ? (
@@ -303,7 +303,7 @@ export default function Dashboard() {
         </div>
 
         {/* ── Row 3: Task breakdown | Client status | Monthly activity bar ── */}
-        <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr 1fr', gap:'14px', marginTop:'14px' }}>
+        <div className="grid-3" style={{ marginTop:'14px' }}>
 
           {/* Task status breakdown */}
           <SCard title="Task Status Breakdown">

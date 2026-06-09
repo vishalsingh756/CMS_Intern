@@ -264,7 +264,7 @@ export default function Tasks() {
             <label className="label">Description</label>
             <textarea name="description" value={form.description} onChange={ch} rows={2} className="input" style={{ resize:'none' }} />
           </div>
-          <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'10px' }}>
+          <div className="form-grid">
             <div>
               <label className="label">Client</label>
               <select name="client" value={form.client} onChange={ch} className="input">

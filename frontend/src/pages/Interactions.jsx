@@ -214,7 +214,7 @@ export default function Interactions() {
       {/* Log/Edit Modal */}
       <Modal open={modal} onClose={() => setModal(false)} title={editI ? 'Edit Interaction' : 'Log Interaction'}>
         <form onSubmit={save} style={{ display:'flex', flexDirection:'column', gap:'13px' }}>
-          <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'10px' }}>
+          <div className="form-grid">
             <div>
               <label className="label">Client *</label>
               <select name="client" value={form.client} onChange={ch} required className="input">
@@ -239,7 +239,7 @@ export default function Interactions() {
             <label className="label">Description *</label>
             <textarea name="description" value={form.description} onChange={ch} required rows={4} placeholder="Details of the interaction…" className="input" style={{ resize:'none' }} />
           </div>
-          <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'10px' }}>
+          <div className="form-grid">
             <div>
               <label className="label">Date & Time *</label>
               <input type="datetime-local" name="date" value={form.date} onChange={ch} required className="input" />
