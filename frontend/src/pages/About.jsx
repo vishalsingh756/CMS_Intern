@@ -3,7 +3,7 @@ import { FiUsers, FiDollarSign, FiCheckSquare, FiBarChart2, FiLayers, FiMail, Fi
 
 export default function About() {
   // Google Form URL (embedded=true renders the form layout natively)
-  const GOOGLE_FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSfD-xMh4v35U3Tee3wM_c7b5GjT-wK1PqLw9xXj8vLq4D_Ntg/viewform?embedded=true";
+  const GOOGLE_FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSeD5Rld3Mi67fIQYBu5IdaI4XdaLPLK2jvecvaKYDzBxfMHYw/viewform?embedded=true";
 
   const features = [
     {
