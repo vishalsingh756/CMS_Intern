@@ -23,9 +23,12 @@ export default function Login() {
   // Initialize Google Sign-In
   useEffect(() => {
     const initGoogle = () => {
+      const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+      if (!clientId) return; // Do not initialize if Client ID is not set
+
       if (window.google?.accounts?.id && !unverifiedEmail) {
         window.google.accounts.id.initialize({
-          client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID || "1098481525208-mockclientid.apps.googleusercontent.com",
+          client_id: clientId,
           callback: async (response) => {
             setLoading(true);
             try {
@@ -289,17 +292,22 @@ export default function Login() {
             </button>
           </form>
 
-          {/* Divider */}
-          <div style={{ display: 'flex', alignItems: 'center', margin: '18px 0 12px 0', gap: '10px' }}>
-            <div style={{ flex: 1, height: '1px', background: 'var(--border)' }}></div>
-            <span style={{ fontSize: '12px', color: 'var(--text-3)' }}>or</span>
-            <div style={{ flex: 1, height: '1px', background: 'var(--border)' }}></div>
-          </div>
+          {/* Divider & Google Sign-in Button */}
+          {import.meta.env.VITE_GOOGLE_CLIENT_ID && (
+            <>
+              {/* Divider */}
+              <div style={{ display: 'flex', alignItems: 'center', margin: '18px 0 12px 0', gap: '10px' }}>
+                <div style={{ flex: 1, height: '1px', background: 'var(--border)' }}></div>
+                <span style={{ fontSize: '12px', color: 'var(--text-3)' }}>or</span>
+                <div style={{ flex: 1, height: '1px', background: 'var(--border)' }}></div>
+              </div>
 
-          {/* Google Sign-in Button */}
-          <div style={{ display: 'flex', justifyContent: 'center' }}>
-            <div id="google-signin-btn"></div>
-          </div>
+              {/* Google Sign-in Button */}
+              <div style={{ display: 'flex', justifyContent: 'center' }}>
+                <div id="google-signin-btn"></div>
+              </div>
+            </>
+          )}
 
           <div style={{ marginTop: '18px', textAlign: 'center', display: 'flex', flexDirection: 'column', gap: '8px' }}>
             <div>
