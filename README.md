@@ -83,9 +83,10 @@ Ensure you have **Node.js (v16+)** and **MongoDB** (local community server or At
 ## 🔑 Access & Registration
 
 To access the application:
-1. Open the application in your browser.
-2. Go to the register page to create a new user account.
-3. Log in using your new credentials.
+1. Open the live deployment at [https://cms-intern.vercel.app/](https://cms-intern.vercel.app/).
+2. Or run it locally and open the application in your browser.
+3. Go to the register page to create a new user account.
+4. Log in using your new credentials.
 
 ---
 
