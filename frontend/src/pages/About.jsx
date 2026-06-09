@@ -1,7 +1,9 @@
 import { Link } from 'react-router-dom';
 import { FiUsers, FiDollarSign, FiCheckSquare, FiBarChart2, FiLayers, FiMail, FiInfo, FiExternalLink } from 'react-icons/fi';
+import useAuthStore from '../utils/authStore';
 
 export default function About() {
+  const { user } = useAuthStore();
   // Google Form URL (embedded=true renders the form layout natively)
   const GOOGLE_FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSeD5Rld3Mi67fIQYBu5IdaI4XdaLPLK2jvecvaKYDzBxfMHYw/viewform?embedded=true";
 
@@ -59,12 +61,20 @@ export default function About() {
 
           {/* Action Buttons */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <Link to="/login" className="btn btn-ghost" style={{ padding: '8px 16px', borderRadius: '980px', fontSize: '13px' }}>
-              Sign In
-            </Link>
-            <Link to="/register" className="btn btn-primary" style={{ padding: '8px 16px', borderRadius: '980px', fontSize: '13px' }}>
-              Get Started
-            </Link>
+            {user ? (
+              <Link to="/dashboard" className="btn btn-primary" style={{ padding: '8px 16px', borderRadius: '980px', fontSize: '13px' }}>
+                Back to Dashboard
+              </Link>
+            ) : (
+              <>
+                <Link to="/login" className="btn btn-ghost" style={{ padding: '8px 16px', borderRadius: '980px', fontSize: '13px' }}>
+                  Sign In
+                </Link>
+                <Link to="/register" className="btn btn-primary" style={{ padding: '8px 16px', borderRadius: '980px', fontSize: '13px' }}>
+                  Get Started
+                </Link>
+              </>
+            )}
           </div>
 
         </div>
@@ -231,8 +241,14 @@ export default function About() {
           </p>
 
           <div style={{ display: 'flex', gap: '16px' }}>
-            <Link to="/login" style={{ fontSize: '13px', color: 'var(--text-2)' }}>Sign In</Link>
-            <Link to="/register" style={{ fontSize: '13px', color: 'var(--text-2)' }}>Register</Link>
+            {user ? (
+              <Link to="/dashboard" style={{ fontSize: '13px', color: 'var(--text-2)' }}>Dashboard</Link>
+            ) : (
+              <>
+                <Link to="/login" style={{ fontSize: '13px', color: 'var(--text-2)' }}>Sign In</Link>
+                <Link to="/register" style={{ fontSize: '13px', color: 'var(--text-2)' }}>Register</Link>
+              </>
+            )}
           </div>
 
         </div>

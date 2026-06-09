@@ -2,7 +2,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import {
   FiHome, FiUsers, FiTrendingUp, FiCheckSquare,
   FiMessageSquare, FiActivity, FiLogOut, FiLayers,
-  FiPieChart, FiTarget, FiChevronRight,
+  FiPieChart, FiTarget, FiChevronRight, FiInfo,
 } from 'react-icons/fi';
 import { RiUser3Line } from 'react-icons/ri';
 import useAuthStore from '../utils/authStore';
@@ -14,6 +14,7 @@ const nav = [
   { path: '/tasks',         icon: FiCheckSquare,   label: 'Tasks',        roles: ['author','editor','admin'] },
   { path: '/interactions',  icon: FiMessageSquare, label: 'Interactions', roles: ['author','editor','admin'] },
   { path: '/reports',       icon: FiPieChart,      label: 'Reports',      roles: ['author','editor','admin'] },
+  { path: '/about',         icon: FiInfo,          label: 'About & Help', roles: ['author','editor','admin'] },
   { path: '/users',         icon: RiUser3Line,     label: 'Users',        roles: ['admin'] },
   { path: '/activity-logs', icon: FiActivity,      label: 'Activity',     roles: ['admin'] },
 ];
