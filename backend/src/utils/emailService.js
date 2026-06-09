@@ -108,4 +108,24 @@ export const emailTemplates = {
         </p>
       </div>`,
   }),
+
+  followUpReminder: (clientName, subject, type, description) => ({
+    subject: `🔔 Follow-up Reminder: ${clientName}`,
+    html: `
+      <div style="font-family:Inter,sans-serif;max-width:540px;margin:0 auto;padding:32px 24px;background:#fff;border-radius:12px;border:1px solid #e5e7eb;">
+        <div style="background:linear-gradient(135deg,#007AFF,#00C7BE);border-radius:10px;padding:20px 24px;margin-bottom:24px;">
+          <h1 style="color:#fff;margin:0;font-size:22px;font-weight:800;">🔔 Follow-up Reminder</h1>
+        </div>
+        <p style="color:#1D1D1F;font-size:15px;margin-bottom:8px;">This is a reminder for your scheduled follow-up today with <strong>${clientName}</strong>.</p>
+        <div style="background:#F5F5F7;border-radius:8px;padding:16px 20px;margin:20px 0;">
+          <p style="margin:0 0 6px;color:#6E6E73;font-size:13px;">Subject</p>
+          <p style="margin:0 0 12px;font-weight:700;font-size:15px;color:#1D1D1F;">${subject}</p>
+          <p style="margin:0 0 6px;color:#6E6E73;font-size:13px;">Type</p>
+          <p style="margin:0 0 12px;font-weight:600;font-size:14px;color:#1D1D1F;text-transform:capitalize;">${type.replace('_', ' ')}</p>
+          <p style="margin:0 0 6px;color:#6E6E73;font-size:13px;">Description</p>
+          <p style="margin:0;color:#333;font-size:14px;line-height:1.5;">${description || 'No description provided.'}</p>
+        </div>
+        <p style="color:#6E6E73;font-size:13px;margin-top:24px;">Please update this interaction outcome in the CMS after your follow-up.</p>
+      </div>`,
+  }),
 };

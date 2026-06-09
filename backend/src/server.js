@@ -19,6 +19,7 @@ import importExportRoutes from './routes/importExportRoutes.js';
 import noteRoutes from './routes/noteRoutes.js';
 import searchRoutes from './routes/searchRoutes.js';
 import dashboardRoutes from './routes/dashboardRoutes.js';
+import cronRoutes from './routes/cronRoutes.js';
 
 dotenv.config();
 
@@ -77,6 +78,7 @@ app.use('/api/data', importExportRoutes);
 app.use('/api/notes', noteRoutes);
 app.use('/api/search', searchRoutes);
 app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/cron', cronRoutes);
 
 // 404 handler
 app.use((req, res) => {
