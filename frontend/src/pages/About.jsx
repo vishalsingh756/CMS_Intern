@@ -1,7 +1,8 @@
 import { Link } from 'react-router-dom';
 import { 
   FiUsers, FiCheckSquare, FiBarChart2, FiLayers, FiInfo, 
-  FiCheckCircle, FiShield, FiTarget, FiActivity, FiUsers as FiCollaboration 
+  FiCheckCircle, FiShield, FiTarget, FiActivity, FiUsers as FiCollaboration,
+  FiMail, FiExternalLink
 } from 'react-icons/fi';
 import useAuthStore from '../utils/authStore';
 
@@ -74,6 +75,7 @@ export default function About() {
             <a href="#features" style={{ fontSize: '13.5px', fontWeight: 500, color: 'var(--text-2)' }}>Features</a>
             <a href="#efficiency" style={{ fontSize: '13.5px', fontWeight: 500, color: 'var(--text-2)' }}>Efficiency</a>
             <a href="#mission" style={{ fontSize: '13.5px', fontWeight: 500, color: 'var(--text-2)' }}>Our Mission</a>
+            <a href="#contact" style={{ fontSize: '13.5px', fontWeight: 500, color: 'var(--text-2)' }}>Contact</a>
           </nav>
 
           {/* Action Buttons */}
@@ -234,6 +236,75 @@ export default function About() {
             <p style={{ fontSize: '14.5px', color: 'var(--text-2)', lineHeight: '1.75', textAlign: 'justify' }}>
               Whether you're managing a growing client base, coordinating team activities, or monitoring business operations, CMS provides the tools needed to stay productive, organized, and connected.
             </p>
+          </div>
+        </section>
+
+        {/* Contact Us Section */}
+        <section id="contact" style={{ background: 'var(--surface-2)', borderTop: '1px solid var(--border)', padding: '80px 24px' }}>
+          <div style={{ maxWidth: '800px', margin: '0 auto' }}>
+            
+            <div className="card glass" style={{
+              padding: '40px 32px',
+              borderRadius: 'var(--radius-xl)',
+              border: '1px solid var(--border)',
+              boxShadow: 'var(--shadow-lg)',
+              textAlign: 'center',
+              background: '#fff',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: '24px'
+            }}>
+              <div style={{
+                width: '56px', height: '56px', borderRadius: '50%',
+                background: 'var(--accent-s)', color: 'var(--accent)',
+                display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                boxShadow: '0 4px 12px rgba(79,70,229,0.1)'
+              }}>
+                <FiMail size={24} />
+              </div>
+              
+              <div>
+                <h2 style={{ fontSize: '24px', fontWeight: 900, color: 'var(--text-1)', letterSpacing: '-0.04em', fontFamily: "'Outfit', sans-serif" }}>Get in Touch</h2>
+                <p style={{ fontSize: '14.5px', color: 'var(--text-2)', marginTop: '8px', lineHeight: '1.6', maxWidth: '600px', margin: '8px auto 0' }}>
+                  Have questions, feature requests, or need support? Submit our official form below or open it directly in a new window.
+                </p>
+              </div>
+
+              {/* Embedded Google Form */}
+              <div style={{ width: '100%', borderRadius: '12px', overflow: 'hidden', border: '1px solid var(--border-2)', background: '#fff', boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.02)' }}>
+                <iframe 
+                  src="https://docs.google.com/forms/d/e/1FAIpQLSeD5Rld3Mi67fIQYBu5IdaI4XdaLPLK2jvecvaKYDzBxfMHYw/viewform?embedded=true" 
+                  width="100%" 
+                  height="550" 
+                  frameBorder="0" 
+                  marginHeight="0" 
+                  marginWidth="0"
+                  style={{ border: 'none', display: 'block' }}
+                >
+                  Loading…
+                </iframe>
+              </div>
+
+              <a 
+                href="https://docs.google.com/forms/d/e/1FAIpQLSeD5Rld3Mi67fIQYBu5IdaI4XdaLPLK2jvecvaKYDzBxfMHYw/viewform" 
+                target="_blank" 
+                rel="noreferrer" 
+                className="btn btn-ghost"
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  padding: '10px 20px',
+                  fontSize: '13.5px',
+                  fontWeight: 600,
+                  textDecoration: 'none'
+                }}
+              >
+                Open Form in New Tab <FiExternalLink size={14} />
+              </a>
+            </div>
+
           </div>
         </section>
 
