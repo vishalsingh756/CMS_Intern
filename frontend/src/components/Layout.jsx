@@ -6,22 +6,26 @@ export default function Layout({ children }) {
   const [open, setOpen] = useState(false);
 
   return (
-    <div style={{ display:'flex', height:'100vh', overflow:'hidden', background:'var(--bg)' }}>
+    <div style={{ display:'flex', height:'100vh', overflow:'hidden', background:'var(--bg)', position: 'relative' }}>
+      
+      {/* Premium Aurora Glow Elements (Ambient light blur effect) */}
+      <div className="aurora-blob aurora-1"></div>
+      <div className="aurora-blob aurora-2"></div>
 
       {/* Desktop sidebar — always visible, sticky */}
-      <div style={{ width:'64px', flexShrink:0, display:'flex' }} id="desktop-sidebar">
+      <div style={{ width:'64px', flexShrink:0, display:'flex', zIndex: 10 }} id="desktop-sidebar">
         <Sidebar alwaysVisible onClose={() => {}} />
       </div>
 
       {/* Mobile sidebar — slides in over content */}
       {open && (
-        <div style={{ display:'block' }} id="mobile-sidebar">
+        <div style={{ display:'block', zIndex: 150 }} id="mobile-sidebar">
           <Sidebar isOpen={open} onClose={() => setOpen(false)} />
         </div>
       )}
 
       {/* Content area */}
-      <div style={{ flex:1, display:'flex', flexDirection:'column', overflow:'hidden', minWidth:0 }}>
+      <div style={{ flex:1, display:'flex', flexDirection:'column', overflow:'hidden', minWidth:0, position: 'relative', zIndex: 5 }}>
         <Header onMenuClick={() => setOpen(v => !v)} />
         <main style={{ flex:1, overflowY:'auto' }}>
           {children}
