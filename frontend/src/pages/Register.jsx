@@ -4,6 +4,34 @@ import { FiMail, FiLock, FiUser, FiEye, FiEyeOff, FiLayers } from 'react-icons/f
 import useAuthStore from '../utils/authStore';
 import { toast } from 'react-toastify';
 
+const Field = ({ name, type='text', placeholder, icon: Icon, req, form, errors, onChange, show, setShow }) => (
+  <div>
+    <label className="label">
+      {name.charAt(0).toUpperCase() + name.slice(1).replace(/([A-Z])/g, ' $1')}
+      {req ? ' *' : ''}
+    </label>
+    <div style={{ position: 'relative' }}>
+      {Icon && <Icon size={14} style={{ position:'absolute', left:'11px', top:'50%', transform:'translateY(-50%)', color:'var(--text-3)' }} />}
+      <input
+        name={name} value={form[name] || ''} onChange={onChange}
+        type={name === 'password' ? (show ? 'text' : 'password') : type}
+        placeholder={placeholder}
+        className={`input ${Icon ? 'input-icon-left' : ''} ${errors[name] ? 'error' : ''}`}
+        style={{ paddingRight: name === 'password' ? '38px' : undefined }}
+      />
+      {name === 'password' && (
+        <button type="button" onClick={() => setShow(!show)} style={{
+          position:'absolute', right:'10px', top:'50%', transform:'translateY(-50%)',
+          background:'none', border:'none', cursor:'pointer', color:'var(--text-3)', display:'flex',
+        }}>
+          {show ? <FiEyeOff size={14} /> : <FiEye size={14} />}
+        </button>
+      )}
+    </div>
+    {errors[name] && <p style={{ fontSize:'11.5px', color:'var(--red)', marginTop:'4px' }}>{errors[name]}</p>}
+  </div>
+);
+
 export default function Register() {
   const navigate  = useNavigate();
   const register  = useAuthStore((s) => s.register);
@@ -41,34 +69,6 @@ export default function Register() {
     }
   };
 
-  const Field = ({ name, type='text', placeholder, icon: Icon, req }) => (
-    <div>
-      <label className="label">
-        {name.charAt(0).toUpperCase() + name.slice(1).replace(/([A-Z])/g, ' $1')}
-        {req ? ' *' : ''}
-      </label>
-      <div style={{ position: 'relative' }}>
-        {Icon && <Icon size={14} style={{ position:'absolute', left:'11px', top:'50%', transform:'translateY(-50%)', color:'var(--text-3)' }} />}
-        <input
-          name={name} value={form[name]} onChange={ch}
-          type={name === 'password' ? (show ? 'text' : 'password') : type}
-          placeholder={placeholder}
-          className={`input ${Icon ? 'input-icon-left' : ''} ${errors[name] ? 'error' : ''}`}
-          style={{ paddingRight: name === 'password' ? '38px' : undefined }}
-        />
-        {name === 'password' && (
-          <button type="button" onClick={() => setShow(!show)} style={{
-            position:'absolute', right:'10px', top:'50%', transform:'translateY(-50%)',
-            background:'none', border:'none', cursor:'pointer', color:'var(--text-3)', display:'flex',
-          }}>
-            {show ? <FiEyeOff size={14} /> : <FiEye size={14} />}
-          </button>
-        )}
-      </div>
-      {errors[name] && <p style={{ fontSize:'11.5px', color:'var(--red)', marginTop:'4px' }}>{errors[name]}</p>}
-    </div>
-  );
-
   return (
     <div className="auth-wrap">
       <div style={{ position:'fixed', inset:0, overflow:'hidden', pointerEvents:'none', zIndex:0 }}>
@@ -98,12 +98,12 @@ export default function Register() {
 
         <div className="auth-card">
           <form onSubmit={submit} style={{ display:'flex', flexDirection:'column', gap:'13px' }}>
-            <Field name="username"  placeholder="johndoe"         icon={FiUser} req />
-            <Field name="email"     type="email" placeholder="john@company.com" icon={FiMail} req />
-            <Field name="password"  placeholder="••••••••"         icon={FiLock} req />
+            <Field name="username"  placeholder="johndoe"         icon={FiUser} req form={form} errors={errors} onChange={ch} />
+            <Field name="email"     type="email" placeholder="john@company.com" icon={FiMail} req form={form} errors={errors} onChange={ch} />
+            <Field name="password"  placeholder="••••••••"         icon={FiLock} req form={form} errors={errors} onChange={ch} show={show} setShow={setShow} />
             <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'10px' }}>
-              <Field name="firstName" placeholder="John" />
-              <Field name="lastName"  placeholder="Doe" />
+              <Field name="firstName" placeholder="John" form={form} errors={errors} onChange={ch} />
+              <Field name="lastName"  placeholder="Doe" form={form} errors={errors} onChange={ch} />
             </div>
 
             <button
