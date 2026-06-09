@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import useAuthStore from './utils/authStore';
 import ProtectedRoute from './utils/ProtectedRoute';
+import { authService } from './services/api';
 
 // Pages
 import Login from './pages/Login';
@@ -20,18 +21,39 @@ import Reports from './pages/Reports';
 import About from './pages/About';
 
 function App() {
-  const { user } = useAuthStore();
+  const { user, setUser, logout } = useAuthStore();
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
     const storedUser = localStorage.getItem('user');
-    if (token && storedUser) {
+    
+    const verifySession = async () => {
+      if (token && storedUser) {
+        try {
+          const response = await authService.getCurrentUser();
+          const freshUser = response.data.data;
+          setUser(freshUser);
+        } catch (err) {
+          console.error("Failed to verify user session:", err);
+          if (err.response?.status === 401 || err.response?.status === 404) {
+            logout();
+          }
+        }
+      }
+    };
+
+    const runInit = async () => {
+      await verifySession();
       setIsLoading(false);
-    } else {
-      setIsLoading(false);
-    }
-  }, []);
+    };
+
+    runInit();
+
+    // Periodically verify session (every 30 seconds) to dynamic pull admin role changes or status deactivation
+    const interval = setInterval(verifySession, 30000);
+    return () => clearInterval(interval);
+  }, [setUser, logout]);
 
   if (isLoading) {
     return (
