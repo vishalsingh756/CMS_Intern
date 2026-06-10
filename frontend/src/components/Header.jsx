@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { FiSearch, FiMenu, FiSun, FiMoon } from 'react-icons/fi';
+import { FiSearch, FiMenu, FiSun, FiMoon, FiInfo } from 'react-icons/fi';
 import useAuthStore from '../utils/authStore';
 import SearchModal from './SearchModal';
 import NotificationPanel from './NotificationPanel';
@@ -148,6 +148,33 @@ export default function Header({ onMenuClick }) {
             }}
           >
             {theme === 'light' ? <FiMoon size={14} /> : <FiSun size={14} />}
+          </button>
+
+          {/* About/Help Button */}
+          <button
+            onClick={() => navigate('/about')}
+            style={{
+              width: '30px', height: '30px',
+              borderRadius: '8px',
+              border: '1px solid var(--border)',
+              background: 'var(--surface-2)',
+              color: 'var(--text-2)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              cursor: 'pointer',
+              transition: 'all 0.2s',
+              marginRight: '2px'
+            }}
+            title="About & Help"
+            onMouseEnter={e => {
+              e.currentTarget.style.background = 'var(--surface-3)';
+              e.currentTarget.style.borderColor = 'var(--border-2)';
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.style.background = 'var(--surface-2)';
+              e.currentTarget.style.borderColor = 'var(--border)';
+            }}
+          >
+            <FiInfo size={14} />
           </button>
 
           {/* Notification bell */}
