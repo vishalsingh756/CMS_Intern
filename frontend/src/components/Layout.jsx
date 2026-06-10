@@ -13,9 +13,7 @@ export default function Layout({ children }) {
       <div className="aurora-blob aurora-2"></div>
 
       {/* Desktop sidebar — always visible, sticky */}
-      <div style={{ width:'64px', flexShrink:0, display:'flex', zIndex: 10 }} id="desktop-sidebar">
-        <Sidebar alwaysVisible onClose={() => {}} />
-      </div>
+      <Sidebar alwaysVisible onClose={() => {}} />
 
       {/* Mobile sidebar — slides in over content */}
       {open && (

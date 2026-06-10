@@ -750,8 +750,8 @@ h1, h2, h3, h4, h5, h6 {
 .badge-blue   { background: rgba(6, 182, 212, 0.15);   color: var(--badge-blue-txt);   border-color: rgba(6, 182, 212, 0.25); }
 .badge-purple { background: rgba(124, 58, 237, 0.15); color: var(--badge-purple-txt); border-color: rgba(124, 58, 237, 0.25); }
 .badge-orange { background: rgba(234, 88, 12, 0.15); color: var(--badge-orange-txt); border-color: rgba(234, 88, 12, 0.25); }
-.badge-gray   { background: rgba(255, 255, 255, 0.05); color: var(--text-secondary); border-color: rgba(255, 255, 255, 0.08); }
-.badge-accent { background: rgba(79, 70, 229, 0.15); color: #818cf8; border-color: rgba(79, 70, 229, 0.25); }
+.badge-gray   { background: var(--glass-2); color: var(--text-2); border-color: var(--glass-border); }
+.badge-accent { background: var(--accent-s); color: var(--indigo); border-color: var(--border); }
 
 /* ─── Spinner ───────────────────────────────────────────────────── */
 .spinner {
@@ -777,18 +777,18 @@ h1, h2, h3, h4, h5, h6 {
   text-align: left;
   font-size: 11px;
   font-weight: 700;
-  color: rgba(255, 255, 255, 0.4);
+  color: var(--text-3);
   text-transform: uppercase;
   letter-spacing: 0.15em;
-  background: rgba(255, 255, 255, 0.04);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--glass-2);
+  border-bottom: 1px solid var(--border);
 }
 
 .data-table thead th:first-child { border-radius: var(--radius) 0 0 0; }
 .data-table thead th:last-child  { border-radius: 0 var(--radius) 0 0; }
 
 .data-table tbody tr {
-  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  border-bottom: 1px solid var(--border-2);
   transition: all 0.2s ease;
   position: relative;
 }
@@ -797,12 +797,12 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Alternating rows: 2% opacity difference */
 .data-table tbody tr:nth-child(even) {
-  background: rgba(255, 255, 255, 0.01);
+  background: var(--glass-1);
 }
 
 /* Row Hover: sliding left border */
 .data-table tbody tr:hover {
-  background: rgba(255, 255, 255, 0.03);
+  background: var(--glass-3);
   box-shadow: inset 2px 0 0 0 var(--indigo);
 }
 
@@ -827,12 +827,12 @@ h1, h2, h3, h4, h5, h6 {
   background: var(--card-bg);
   backdrop-filter: var(--card-blur);
   -webkit-backdrop-filter: var(--card-blur);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--border);
   border-radius: var(--radius-xl);
   width: 100%;
   max-height: 85vh;
   overflow-y: auto;
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.1), var(--shadow-xl);
+  box-shadow: inset 0 1px 0 var(--glass-highlight), var(--shadow-xl);
   animation: scaleIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -854,10 +854,10 @@ h1, h2, h3, h4, h5, h6 {
 
 /* ─── Sidebar Rail & Navigation (Asymmetric Glass layout) ────────── */
 .sidebar-rail {
-  position: fixed;
-  top: 0; left: 0;
+  position: relative;
   height: 100vh;
   width: 68px;
+  flex-shrink: 0;
   background: var(--sb-bg);
   border-right: 1px solid var(--sb-border);
   display: flex;
