@@ -579,36 +579,6 @@ h1, h2, h3, h4, h5, h6 {
   box-shadow: inset 0 1px 2px rgba(0,0,0,0.1) !important;
 }
 
-[data-theme='dark'] .input {
-  border: 1px solid rgba(255, 255, 255, 0.13) !important;
-  background: rgba(255, 255, 255, 0.05) !important;
-}
-
-[data-theme='light'] .input {
-  border: 1px solid rgba(100, 90, 180, 0.14) !important;
-  background: rgba(255, 255, 255, 0.95) !important;
-}
-
-/* Premium Custom Select Arrow Chevron */
-select.input {
-  appearance: none !important;
-  -webkit-appearance: none !important;
-  -moz-appearance: none !important;
-  background-repeat: no-repeat !important;
-  background-position: right 14px center !important;
-  background-size: 14px !important;
-  padding-right: 38px !important;
-}
-
-[data-theme='dark'] select.input,
-select.input {
-  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='rgba%28255, 255, 255, 0.45%29' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e") !important;
-}
-
-[data-theme='light'] select.input {
-  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='rgba%280, 0, 0, 0.45%29' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e") !important;
-}
-
 .input::placeholder {
   color: var(--text-3) !important;
   opacity: 0.6;
@@ -617,10 +587,6 @@ select.input {
 .input:hover {
   border-color: var(--border-hover) !important;
   background: var(--input-bg) !important;
-}
-
-[data-theme='dark'] .input:hover {
-  border-color: rgba(255, 255, 255, 0.25) !important;
 }
 
 .input:focus {
@@ -1284,12 +1250,8 @@ select.input {
   -webkit-backdrop-filter: blur(16px) saturate(1.4);
   border-bottom: 1px solid var(--border);
   display: flex; align-items: center; justify-content: space-between;
-  padding: 0 48px;
+  padding: 0 32px;
   position: sticky; top: 0; z-index: 50;
-}
-
-@media (max-width: 768px) {
-  .topbar { padding: 0 20px; }
 }
 
 .topbar-title {
