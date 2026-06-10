@@ -1,13 +1,27 @@
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { 
   FiUsers, FiCheckSquare, FiBarChart2, FiLayers, FiInfo, 
   FiCheckCircle, FiShield, FiTarget, FiActivity, 
-  FiMail, FiExternalLink, FiTrendingUp, FiArrowRight
+  FiMail, FiExternalLink, FiTrendingUp, FiArrowRight,
+  FiSun, FiMoon
 } from 'react-icons/fi';
 import useAuthStore from '../utils/authStore';
 
 export default function About() {
   const { user } = useAuthStore();
+  const [theme, setTheme] = useState(() => {
+    return localStorage.getItem('theme') || 'light';
+  });
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('theme', theme);
+  }, [theme]);
+
+  const toggleTheme = () => {
+    setTheme(t => t === 'light' ? 'dark' : 'light');
+  };
 
   const keyFeatures = [
     {
@@ -101,8 +115,37 @@ export default function About() {
 
           {/* Action Buttons */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+            {/* Theme Toggle Button */}
+            <button
+              onClick={toggleTheme}
+              style={{
+                width: '38px',
+                height: '38px',
+                borderRadius: '8px',
+                border: '1px solid var(--border)',
+                background: 'var(--glass-1)',
+                color: 'var(--text-2)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                transition: 'all 0.2s',
+              }}
+              title={theme === 'light' ? 'Switch to Dark Mode' : 'Switch to Light Mode'}
+              onMouseEnter={e => {
+                e.currentTarget.style.background = 'var(--glass-2)';
+                e.currentTarget.style.borderColor = 'var(--border-hover)';
+              }}
+              onMouseLeave={e => {
+                e.currentTarget.style.background = 'var(--glass-1)';
+                e.currentTarget.style.borderColor = 'var(--border)';
+              }}
+            >
+              {theme === 'light' ? <FiMoon size={16} /> : <FiSun size={16} />}
+            </button>
+
             {user ? (
-              <Link to="/dashboard" className="btn btn-primary">
+              <Link to="/dashboard" className="btn btn-primary" style={{ padding: '10px 20px', fontSize: '13px' }}>
                 Dashboard
               </Link>
             ) : (
