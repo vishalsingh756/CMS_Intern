@@ -158,14 +158,14 @@ export default function Deals() {
             <div style={{ display: 'flex', background: 'var(--surface-2)', borderRadius: '8px', padding: '3px', border: '1px solid var(--border)' }}>
               <button
                 className="btn btn-ghost"
-                style={{ padding: '4px 10px', fontSize: '12px', background: view === 'list' ? '#fff' : 'transparent', border: view === 'list' ? '1px solid var(--border)' : 'none', boxShadow: view === 'list' ? 'var(--shadow-xs)' : 'none', color: view === 'list' ? 'var(--text-1)' : 'var(--text-3)', fontWeight: 600 }}
+                style={{ padding: '4px 10px', fontSize: '12px', background: view === 'list' ? 'var(--bg-surface)' : 'transparent', border: view === 'list' ? '1px solid var(--border)' : 'none', boxShadow: view === 'list' ? 'var(--shadow-xs)' : 'none', color: view === 'list' ? 'var(--text-1)' : 'var(--text-3)', fontWeight: 600 }}
                 onClick={() => setView('list')}
               >
                 List View
               </button>
               <button
                 className="btn btn-ghost"
-                style={{ padding: '4px 10px', fontSize: '12px', background: view === 'kanban' ? '#fff' : 'transparent', border: view === 'kanban' ? '1px solid var(--border)' : 'none', boxShadow: view === 'kanban' ? 'var(--shadow-xs)' : 'none', color: view === 'kanban' ? 'var(--text-1)' : 'var(--text-3)', fontWeight: 600 }}
+                style={{ padding: '4px 10px', fontSize: '12px', background: view === 'kanban' ? 'var(--bg-surface)' : 'transparent', border: view === 'kanban' ? '1px solid var(--border)' : 'none', boxShadow: view === 'kanban' ? 'var(--shadow-xs)' : 'none', color: view === 'kanban' ? 'var(--text-1)' : 'var(--text-3)', fontWeight: 600 }}
                 onClick={() => setView('kanban')}
               >
                 Kanban Board
@@ -186,7 +186,7 @@ export default function Deals() {
                 style={{
                   display:'flex', alignItems:'center', gap:'7px',
                   padding:'5px 13px', borderRadius:'99px',
-                  background: stage===s.key ? s.color+'18' : '#fff',
+                  background: stage===s.key ? s.color+'18' : 'var(--surface-3)',
                   border:`1px solid ${stage===s.key ? s.color+'60' : 'var(--border)'}`,
                   boxShadow:'var(--shadow-xs)', cursor:'pointer', transition:'all 0.15s',
                 }}>
@@ -245,7 +245,7 @@ export default function Deals() {
                                     userSelect: 'none',
                                     padding: '12px',
                                     borderRadius: '8px',
-                                    background: '#fff',
+                                    background: 'var(--bg-surface)',
                                     border: '1.5px solid var(--border)',
                                     boxShadow: snapshot.isDragging ? 'var(--shadow-md)' : 'var(--shadow-sm)',
                                     transition: 'box-shadow 0.15s ease',

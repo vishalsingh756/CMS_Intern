@@ -132,7 +132,7 @@ export default function Tasks() {
                 style={{
                   display:'flex', alignItems:'center', gap:'7px',
                   padding:'5px 13px', borderRadius:'99px',
-                  background: status===s.f ? s.bg : '#fff',
+                  background: status===s.f ? s.bg : 'var(--surface-3)',
                   border: `1px solid ${status===s.f ? s.color+'60' : 'var(--border)'}`,
                   cursor: s.f ? 'pointer' : 'default',
                   boxShadow: 'var(--shadow-xs)',
@@ -188,9 +188,9 @@ export default function Tasks() {
                 key={t._id}
                 style={{
                   display:'flex', alignItems:'center', gap:'12px', padding:'13px 16px',
-                  borderBottom:'1px solid #f3f4f6',
+                  borderBottom:'1px solid var(--border)',
                   borderLeft: `3px solid ${overdue(t) ? 'var(--red)' : 'transparent'}`,
-                  background: t.status==='completed' ? '#fafafa' : '#fff',
+                  background: t.status==='completed' ? 'var(--surface-2)' : 'var(--bg-surface)',
                   transition:'background 0.12s',
                 }}
               >
@@ -199,14 +199,14 @@ export default function Tasks() {
                   onClick={() => t.status!=='completed' && complete(t)}
                   style={{
                     width:'20px', height:'20px', borderRadius:'50%', flexShrink:0,
-                    border: `1.5px solid ${t.status==='completed' ? 'var(--green)' : '#d1d5db'}`,
-                    background: t.status==='completed' ? 'var(--green)' : '#fff',
+                    border: `1.5px solid ${t.status==='completed' ? 'var(--green)' : 'var(--border)'}`,
+                    background: t.status==='completed' ? 'var(--green)' : 'var(--bg-surface)',
                     display:'flex', alignItems:'center', justifyContent:'center',
                     cursor: t.status==='completed' ? 'default' : 'pointer',
                     transition:'all 0.15s',
                   }}
                 >
-                  {t.status==='completed' && <FiCheck size={11} color="#fff" />}
+                  {t.status==='completed' && <FiCheck size={11} color="var(--bg-surface)" />}
                 </button>
 
                 {/* Content */}
@@ -301,7 +301,7 @@ export default function Tasks() {
       {/* Delete Confirm */}
       <Modal open={!!delId} onClose={() => setDelId(null)} title="Delete Task" mw={360}>
         <div style={{ textAlign:'center' }}>
-          <div style={{ width:'46px', height:'46px', borderRadius:'50%', background:'var(--red-s)', border:'1px solid #fecaca', display:'flex', alignItems:'center', justifyContent:'center', margin:'0 auto 14px' }}>
+          <div style={{ width:'46px', height:'46px', borderRadius:'50%', background:'var(--red-s)', border:'1px solid var(--red)', display:'flex', alignItems:'center', justifyContent:'center', margin:'0 auto 14px' }}>
             <FiTrash2 size={20} color="var(--red)" />
           </div>
           <p style={{ fontSize:'14px', color:'var(--text-2)', marginBottom:'20px' }}>Delete this task? Cannot be undone.</p>

@@ -242,7 +242,7 @@ export default function Clients() {
                         <div style={{ display:'flex', alignItems:'center', gap:'10px' }}>
                           <div style={{
                             width:'34px', height:'34px', borderRadius:'9px', flexShrink:0,
-                            background:'var(--accent-s)', border:'1px solid #c7d2fe',
+                            background:'var(--accent-s)', border:'1px solid var(--border)',
                             display:'flex', alignItems:'center', justifyContent:'center',
                             fontSize:'13px', fontWeight:800, color:'var(--accent)',
                           }}>
@@ -300,7 +300,7 @@ export default function Clients() {
 
       <Modal open={!!delId} onClose={() => setDelId(null)} title="Delete Client" mw={380}>
         <div style={{ textAlign:'center' }}>
-          <div style={{ width:'46px', height:'46px', borderRadius:'50%', background:'var(--red-s)', border:'1px solid #fecaca', display:'flex', alignItems:'center', justifyContent:'center', margin:'0 auto 14px' }}>
+          <div style={{ width:'46px', height:'46px', borderRadius:'50%', background:'var(--red-s)', border:'1px solid var(--red)', display:'flex', alignItems:'center', justifyContent:'center', margin:'0 auto 14px' }}>
             <FiTrash2 size={20} color="var(--red)" />
           </div>
           <p style={{ fontSize:'14px', color:'var(--text-2)', marginBottom:'20px' }}>Delete this client? This action cannot be undone.</p>

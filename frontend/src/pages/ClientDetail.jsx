@@ -10,15 +10,15 @@ import { toast } from 'react-toastify';
 import useAuthStore from '../utils/authStore';
 
 const STATUS_COLORS = {
-  prospect: 'bg-yellow-500/10 text-yellow-400 border-yellow-500/30',
-  active: 'bg-green-500/10 text-green-400 border-green-500/30',
-  inactive: 'bg-gray-500/10 text-gray-400 border-gray-500/30',
-  lost: 'bg-red-500/10 text-red-400 border-red-500/30',
+  prospect: 'badge badge-yellow',
+  active: 'badge badge-green',
+  inactive: 'badge badge-gray',
+  lost: 'badge badge-red',
 };
 
 const DEAL_STAGE_COLORS = {
-  prospect: 'text-yellow-400', negotiation: 'text-blue-400', proposal: 'text-purple-400',
-  won: 'text-green-400', lost: 'text-red-400',
+  prospect: 'var(--yellow)', negotiation: 'var(--blue)', proposal: 'var(--purple)',
+  won: 'var(--green)', lost: 'var(--red)',
 };
 
 const INTERACTION_ICONS = {
@@ -28,13 +28,13 @@ const INTERACTION_ICONS = {
 const Modal = ({ open, onClose, title, children }) => {
   if (!open) return null;
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-      <div className="bg-white border border-gray-200 rounded-2xl w-full max-w-lg shadow-2xl">
-        <div className="flex items-center justify-between p-5 border-b border-gray-150">
-          <h3 className="text-base font-semibold text-gray-900">{title}</h3>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600"><FiX size={18} /></button>
+    <div className="modal-overlay" onClick={e => e.target === e.currentTarget && onClose()}>
+      <div className="modal-box" style={{ maxWidth: 512 }}>
+        <div className="modal-header">
+          <span className="modal-title">{title}</span>
+          <button className="btn-icon" onClick={onClose}><FiX size={15} /></button>
         </div>
-        <div className="p-5">{children}</div>
+        <div className="modal-body">{children}</div>
       </div>
     </div>
   );
@@ -280,34 +280,36 @@ const ClientDetail = () => {
 
   return (
     <Layout>
-      <div className="p-6 lg:p-8 space-y-6">
+      <div className="page">
         {/* Back + Header */}
-        <div className="flex items-start gap-4">
-          <button onClick={() => navigate('/clients')} className="p-2 text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded-xl transition-all">
-            <FiArrowLeft size={20} />
-          </button>
-          <div className="flex-1">
-            <div className="flex flex-wrap items-center gap-3">
-              <h1 className="text-2xl font-bold text-gray-900">{client.companyName}</h1>
-              <span className={`inline-flex px-3 py-1 rounded-lg text-xs font-medium border ${STATUS_COLORS[client.status]}`}>
-                {client.status}
-              </span>
+        <div className="page-header" style={{ alignItems: 'center', gap: '16px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+            <button onClick={() => navigate('/clients')} className="btn-icon" title="Back">
+              <FiArrowLeft size={18} />
+            </button>
+            <div>
+              <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '10px' }}>
+                <h1 className="page-title">{client.companyName}</h1>
+                <span className={STATUS_COLORS[client.status] || 'badge badge-gray'}>
+                  {client.status}
+                </span>
+              </div>
+              <p className="page-sub" style={{ marginTop: '4px' }}>{client.contactName} · {client.industry || 'No industry'}</p>
             </div>
-            <p className="text-gray-500 text-sm mt-1">{client.contactName} · {client.industry || 'No industry'}</p>
           </div>
           <button
             onClick={() => navigate('/clients')}
-            className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 text-gray-700 text-sm rounded-xl hover:bg-gray-50 transition-all"
+            className="btn btn-ghost"
           >
-            <FiEdit2 size={14} /> Edit
+            <FiEdit2 size={13} /> Edit
           </button>
         </div>
 
         {/* Info Cards */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+        <div className="form-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '20px', marginBottom: '20px' }}>
           {/* Contact Info */}
-          <div className="bg-white border border-gray-200 rounded-2xl p-5 space-y-4 shadow-sm">
-            <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wider">Contact Info</h3>
+          <div className="card" style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '14px' }}>
+            <h3 style={{ fontSize: '11px', fontWeight: 700, color: 'var(--text-3)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>Contact Info</h3>
             {[
               { icon: FiMail, label: client.email },
               { icon: FiPhone, label: client.phone },
@@ -315,49 +317,49 @@ const ClientDetail = () => {
               { icon: FiMapPin, label: [client.address?.city, client.address?.country].filter(Boolean).join(', ') || 'No address' },
               { icon: FiCalendar, label: `Added ${new Date(client.createdAt).toLocaleDateString()}` },
             ].map(({ icon: Icon, label }, i) => (
-              <div key={i} className="flex items-center gap-3 text-sm">
-                <Icon size={14} className="text-gray-400 flex-shrink-0" />
-                <span className="text-gray-700 truncate">{label}</span>
+              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '13px' }}>
+                <Icon size={14} style={{ color: 'var(--text-3)', flexShrink: 0 }} />
+                <span style={{ color: 'var(--text-2)', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>{label}</span>
               </div>
             ))}
           </div>
 
           {/* Stats */}
-          <div className="bg-white border border-gray-200 rounded-2xl p-5 shadow-sm">
-            <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">Summary</h3>
-            <div className="grid grid-cols-3 gap-3">
+          <div className="card" style={{ padding: '20px' }}>
+            <h3 style={{ fontSize: '11px', fontWeight: 700, color: 'var(--text-3)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '14px' }}>Summary</h3>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px' }}>
               {[
-                { label: 'Deals', value: deals.length, color: 'text-blue-600', icon: FiTrendingUp },
-                { label: 'Tasks', value: tasks.length, color: 'text-yellow-600', icon: FiCheckSquare },
-                { label: 'Contacts', value: (client.contacts || []).length + 1, color: 'text-purple-600', icon: FiUsers },
+                { label: 'Deals', value: deals.length, color: 'var(--blue)', bg: 'var(--blue-s)', icon: FiTrendingUp },
+                { label: 'Tasks', value: tasks.length, color: 'var(--yellow)', bg: 'var(--yellow-s)', icon: FiCheckSquare },
+                { label: 'Contacts', value: (client.contacts || []).length + 1, color: 'var(--purple)', bg: 'var(--purple-s)', icon: FiUsers },
               ].map((s, i) => (
-                <div key={i} className="text-center bg-gray-50 rounded-xl p-3 border border-gray-100">
-                  <s.icon size={18} className={`${s.color} mx-auto mb-1`} />
-                  <p className={`text-xl font-bold ${s.color}`}>{s.value}</p>
-                  <p className="text-gray-500 text-xs">{s.label}</p>
+                <div key={i} style={{ textAlign: 'center', background: 'var(--surface-2)', borderRadius: '10px', padding: '12px', border: '1px solid var(--border)' }}>
+                  <s.icon size={16} style={{ color: s.color, margin: '0 auto 6px', display: 'block' }} />
+                  <p style={{ fontSize: '18px', fontWeight: 800, color: s.color, margin: 0 }}>{s.value}</p>
+                  <p style={{ color: 'var(--text-3)', fontSize: '11px', marginTop: '2px', margin: 0 }}>{s.label}</p>
                 </div>
               ))}
             </div>
           </div>
 
           {/* Notes */}
-          <div className="bg-white border border-gray-200 rounded-2xl p-5 shadow-sm">
-            <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">Notes</h3>
-            <p className="text-gray-700 text-sm leading-relaxed">
+          <div className="card" style={{ padding: '20px' }}>
+            <h3 style={{ fontSize: '11px', fontWeight: 700, color: 'var(--text-3)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '10px' }}>Notes</h3>
+            <p style={{ color: 'var(--text-2)', fontSize: '13.5px', lineHeight: 1.5 }}>
               {client.notes || 'No notes added for this client.'}
             </p>
             {client.source && (
-              <div className="mt-4 pt-4 border-t border-gray-200">
-                <p className="text-xs text-gray-500">Lead Source</p>
-                <p className="text-sm text-gray-700 mt-1">{client.source}</p>
+              <div style={{ marginTop: '14px', paddingTop: '14px', borderTop: '1px solid var(--border)' }}>
+                <p style={{ fontSize: '11px', color: 'var(--text-3)' }}>Lead Source</p>
+                <p style={{ fontSize: '13px', color: 'var(--text-2)', marginTop: '4px', fontWeight: 600 }}>{client.source}</p>
               </div>
             )}
           </div>
         </div>
 
         {/* Tabs */}
-        <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm">
-          <div className="flex border-b border-gray-200 overflow-x-auto bg-gray-50">
+        <div className="card" style={{ overflow: 'hidden' }}>
+          <div style={{ display: 'flex', borderBottom: '1px solid var(--border)', overflowX: 'auto', background: 'var(--surface-2)' }}>
             {[
               { key: 'timeline', label: 'Timeline', count: timelineItems.length },
               { key: 'contacts', label: 'Contacts', count: (client.contacts || []).length + 1 },
@@ -369,14 +371,24 @@ const ClientDetail = () => {
               <button
                 key={tab.key}
                 onClick={() => setActiveTab(tab.key)}
-                className={`flex items-center gap-2 px-6 py-4 text-sm font-medium transition-all whitespace-nowrap ${
-                  activeTab === tab.key
-                    ? 'text-cyan-600 border-b-2 border-cyan-600 bg-cyan-50/50'
-                    : 'text-gray-500 hover:text-gray-800'
-                }`}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  padding: '14px 20px',
+                  fontSize: '13.5px',
+                  fontWeight: 600,
+                  transition: 'all 0.15s',
+                  whiteSpace: 'nowrap',
+                  cursor: 'pointer',
+                  border: 'none',
+                  background: activeTab === tab.key ? 'var(--accent-s)' : 'transparent',
+                  color: activeTab === tab.key ? 'var(--indigo)' : 'var(--text-3)',
+                  borderBottom: activeTab === tab.key ? '2px solid var(--indigo)' : 'none',
+                }}
               >
                 {tab.label}
-                <span className={`text-xs px-2 py-0.5 rounded-full ${activeTab === tab.key ? 'bg-cyan-100 text-cyan-800' : 'bg-gray-200 text-gray-600'}`}>
+                <span className={`badge ${activeTab === tab.key ? 'badge-blue' : 'badge-gray'}`} style={{ fontSize: '10.5px' }}>
                   {tab.count}
                 </span>
               </button>
@@ -389,11 +401,12 @@ const ClientDetail = () => {
               <div>
                 <div className="flex items-center justify-between mb-6 flex-wrap gap-2">
                   <div className="flex items-center gap-2">
-                    <span className="text-xs text-gray-500 uppercase font-semibold">Filter Timeline:</span>
+                    <span style={{ fontSize: '12px', color: 'var(--text-3)', fontWeight: 600 }}>Filter Timeline:</span>
                     <select
                       value={timelineFilter}
                       onChange={e => setTimelineFilter(e.target.value)}
-                      className="bg-white border border-gray-300 text-gray-800 rounded-lg px-2.5 py-1 text-xs outline-none focus:border-cyan-500"
+                      className="input"
+                      style={{ padding: '4px 10px', height: '30px', minWidth: '130px', fontSize: '12px' }}
                     >
                       <option value="all">All Activities</option>
                       <option value="creation">Creation</option>
@@ -405,19 +418,19 @@ const ClientDetail = () => {
                   </div>
                 </div>
 
-                <div className="relative border-l-2 border-gray-200 ml-4 space-y-6">
+                <div className="relative border-l-2 ml-4 space-y-6" style={{ borderLeft: '2px solid var(--border)' }}>
                   {filteredTimeline.length === 0 ? (
-                    <p className="text-gray-500 text-sm py-4 ml-4">No timeline activities match this filter</p>
+                    <p style={{ color: 'var(--text-3)', fontSize: '13.5px', padding: '16px 0', marginLeft: '16px' }}>No timeline activities match this filter</p>
                   ) : filteredTimeline.map((item, idx) => (
-                    <div key={`${item.id}-${idx}`} className="relative pl-6">
-                      <div className="absolute -left-[9px] top-1 w-4 h-4 rounded-full border-2 border-white bg-cyan-600" />
-                      <div className="bg-gray-50 border border-gray-200 rounded-xl p-4">
-                        <div className="flex justify-between items-start flex-wrap gap-2">
-                          <h4 className="font-semibold text-sm text-gray-900">{item.title}</h4>
-                          <span className="text-[11px] text-gray-500">{new Date(item.date).toLocaleString()}</span>
+                    <div key={`${item.id}-${idx}`} className="relative pl-6" style={{ paddingLeft: '24px', marginBottom: '24px' }}>
+                      <div className="absolute top-1 w-4 h-4 rounded-full border-2 bg-indigo-600" style={{ border: '2px solid var(--bg-surface)', left: '-9px', top: '4px' }} />
+                      <div className="card" style={{ padding: '16px' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '8px' }}>
+                          <h4 style={{ fontWeight: 600, fontSize: '13.5px', color: 'var(--text-1)' }}>{item.title}</h4>
+                          <span style={{ fontSize: '11px', color: 'var(--text-3)' }}>{new Date(item.date).toLocaleString()}</span>
                         </div>
-                        <p className="text-gray-700 text-xs mt-1.5 leading-relaxed">{item.description}</p>
-                        {item.meta && <p className="text-[10px] text-gray-500 mt-2 font-medium">{item.meta}</p>}
+                        <p style={{ color: 'var(--text-2)', fontSize: '12.5px', marginTop: '6px', lineHeight: 1.5 }}>{item.description}</p>
+                        {item.meta && <p style={{ fontSize: '10.5px', color: 'var(--text-3)', marginTop: '8px', fontWeight: 500 }}>{item.meta}</p>}
                         {item.actions}
                       </div>
                     </div>
@@ -429,39 +442,39 @@ const ClientDetail = () => {
             {/* Contacts Tab */}
             {activeTab === 'contacts' && (
               <div>
-                <div className="flex items-center justify-between mb-4">
-                  <p className="text-sm text-gray-500">Additional company contacts</p>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                  <p style={{ fontSize: '13.5px', color: 'var(--text-3)' }}>Additional company contacts</p>
                   <button
                     onClick={() => setContactModal(true)}
-                    className="flex items-center gap-2 bg-cyan-600 text-white px-4 py-2 rounded-xl text-sm hover:bg-cyan-700 transition-all"
+                    className="btn btn-primary"
                   >
                     <FiPlus size={14} /> Add Contact
                   </button>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '16px' }}>
                   {/* Primary Contact (from Client root) */}
-                  <div className="bg-cyan-50/50 border border-cyan-200 rounded-xl p-4 relative">
-                    <span className="absolute top-3 right-3 px-2 py-0.5 bg-cyan-100 text-cyan-800 text-[10px] font-bold rounded-full">Primary</span>
-                    <p className="font-semibold text-gray-900 text-sm">{client.contactName}</p>
-                    <p className="text-gray-500 text-xs mt-1">Role: Primary Account Contact</p>
-                    <div className="mt-3 space-y-1 text-xs text-gray-605">
+                  <div className="card" style={{ padding: '16px', position: 'relative', background: 'var(--accent-s)' }}>
+                    <span className="badge badge-blue" style={{ position: 'absolute', top: '12px', right: '12px' }}>Primary</span>
+                    <p style={{ fontWeight: 600, color: 'var(--text-1)', fontSize: '14px' }}>{client.contactName}</p>
+                    <p style={{ color: 'var(--text-3)', fontSize: '12px', marginTop: '4px' }}>Role: Primary Account Contact</p>
+                    <div style={{ marginTop: '12px', display: 'flex', flexDirection: 'column', gap: '4px', fontSize: '12.5px', color: 'var(--text-2)' }}>
                       <p>✉️ {client.email}</p>
                       <p>📞 {client.phone}</p>
                     </div>
                   </div>
                   {/* Additional Contacts */}
                   {(client.contacts || []).map((c, idx) => (
-                    <div key={idx} className="bg-white border border-gray-200 rounded-xl p-4 relative">
-                      <p className="font-semibold text-gray-900 text-sm">{c.name}</p>
-                      <p className="text-gray-500 text-xs mt-1">Role: {c.role || 'Not specified'}</p>
-                      <div className="mt-3 space-y-1 text-xs text-gray-605">
+                    <div key={idx} className="card" style={{ padding: '16px', position: 'relative' }}>
+                      <p style={{ fontWeight: 600, color: 'var(--text-1)', fontSize: '14px' }}>{c.name}</p>
+                      <p style={{ color: 'var(--text-3)', fontSize: '12px', marginTop: '4px' }}>Role: {c.role || 'Not specified'}</p>
+                      <div style={{ marginTop: '12px', display: 'flex', flexDirection: 'column', gap: '4px', fontSize: '12.5px', color: 'var(--text-2)' }}>
                         <p>✉️ {c.email}</p>
                         {c.phone && <p>📞 {c.phone}</p>}
                       </div>
                       <button
                         type="button"
                         onClick={() => handleDeleteContact(idx)}
-                        className="absolute bottom-3 right-3 text-red-500 hover:text-red-700 text-xs font-semibold"
+                        style={{ position: 'absolute', bottom: '12px', right: '12px', background: 'none', border: 'none', color: 'var(--red)', fontSize: '12px', fontWeight: 600, cursor: 'pointer' }}
                       >
                         Delete
                       </button>
@@ -474,35 +487,34 @@ const ClientDetail = () => {
             {/* Interactions Tab */}
             {activeTab === 'interactions' && (
               <div>
-                <div className="flex items-center justify-between mb-4">
-                  <p className="text-sm text-gray-500">Communication history</p>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                  <p style={{ fontSize: '13.5px', color: 'var(--text-3)' }}>Communication history</p>
                   <button
                     onClick={() => setInteractionModal(true)}
-                    className="flex items-center gap-2 bg-cyan-600 text-white px-4 py-2 rounded-xl text-sm hover:bg-cyan-750 transition-all"
+                    className="btn btn-primary"
                   >
                     <FiPlus size={14} /> Log Interaction
                   </button>
                 </div>
-                <div className="space-y-3">
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                   {interactions.length === 0 ? (
-                    <p className="text-gray-500 text-sm text-center py-8">No interactions logged yet</p>
+                    <p style={{ color: 'var(--text-3)', fontSize: '13.5px', textAlign: 'center', padding: '32px 0' }}>No interactions logged yet</p>
                   ) : interactions.map((i) => (
-                    <div key={i._id} className="bg-white border border-gray-200 rounded-xl p-4 shadow-xs">
-                      <div className="flex items-start gap-3">
-                        <span className="text-xl">{INTERACTION_ICONS[i.type] || '📌'}</span>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 flex-wrap">
-                            <p className="font-semibold text-gray-900 text-sm">{i.subject}</p>
-                            <span className={`text-xs px-2 py-0.5 rounded-full border ${
-                              i.outcome === 'positive' ? 'bg-green-50 text-green-700 border-green-200' :
-                              i.outcome === 'negative' ? 'bg-red-55/60 text-red-700 border-red-200' :
-                              'bg-gray-50 text-gray-600 border-gray-200'
-                            }`}>
+                    <div key={i._id} className="card" style={{ padding: '16px' }}>
+                      <div style={{ display: 'flex', alignItems: 'start', gap: '12px' }}>
+                        <span style={{ fontSize: '20px' }}>{INTERACTION_ICONS[i.type] || '📌'}</span>
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                            <p style={{ fontWeight: 600, color: 'var(--text-1)', fontSize: '14px' }}>{i.subject}</p>
+                            <span className={`badge ${
+                              i.outcome === 'positive' ? 'badge-green' :
+                              i.outcome === 'negative' ? 'badge-red' : 'badge-gray'
+                            }`} style={{ fontSize: '10px' }}>
                               {i.outcome}
                             </span>
                           </div>
-                          <p className="text-gray-600 text-xs mt-1 line-clamp-2">{i.description}</p>
-                          <p className="text-gray-500 text-xs mt-2">{new Date(i.date).toLocaleString()} · by {i.createdBy?.username}</p>
+                          <p style={{ color: 'var(--text-2)', fontSize: '13px', marginTop: '6px', lineHeight: 1.4 }}>{i.description}</p>
+                          <p style={{ color: 'var(--text-3)', fontSize: '11px', marginTop: '8px' }}>{new Date(i.date).toLocaleString()} · by {i.createdBy?.username}</p>
                         </div>
                       </div>
                     </div>
@@ -514,30 +526,30 @@ const ClientDetail = () => {
             {/* Notes Tab */}
             {activeTab === 'notes' && (
               <div>
-                <div className="flex items-center justify-between mb-4">
-                  <p className="text-sm text-gray-500">Collaborative team notes</p>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                  <p style={{ fontSize: '13.5px', color: 'var(--text-3)' }}>Collaborative team notes</p>
                   <button
                     onClick={() => setNoteModal(true)}
-                    className="flex items-center gap-2 bg-cyan-600 text-white px-4 py-2 rounded-xl text-sm hover:bg-cyan-750 transition-all"
+                    className="btn btn-primary"
                   >
                     <FiPlus size={14} /> Add Collaborative Note
                   </button>
                 </div>
-                <div className="space-y-3">
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                   {notes.length === 0 ? (
-                    <p className="text-gray-500 text-sm text-center py-8">No collaborative notes yet</p>
+                    <p style={{ color: 'var(--text-3)', fontSize: '13.5px', textAlign: 'center', padding: '32px 0' }}>No collaborative notes yet</p>
                   ) : notes.map((n) => (
-                    <div key={n._id} className="bg-white border border-gray-200 rounded-xl p-4 shadow-xs">
-                      <div className="flex justify-between items-start">
-                        <div className="flex-1">
-                          <p className="text-gray-700 text-sm leading-relaxed">{n.content}</p>
-                          <p className="text-gray-500 text-[11px] mt-2">Added on {new Date(n.createdAt).toLocaleString()} · by {n.createdBy?.username}</p>
+                    <div key={n._id} className="card" style={{ padding: '16px' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', gap: '12px' }}>
+                        <div style={{ flex: 1 }}>
+                          <p style={{ color: 'var(--text-2)', fontSize: '13.5px', lineHeight: 1.5 }}>{n.content}</p>
+                          <p style={{ color: 'var(--text-3)', fontSize: '11px', marginTop: '8px' }}>Added on {new Date(n.createdAt).toLocaleString()} · by {n.createdBy?.username}</p>
                         </div>
-                        <div className="flex gap-2">
-                          <button onClick={() => handleTogglePinNote(n._id)} className="text-gray-400 hover:text-cyan-600" title={n.isPinned ? 'Unpin Note' : 'Pin Note'}>
+                        <div style={{ display: 'flex', gap: '8px' }}>
+                          <button onClick={() => handleTogglePinNote(n._id)} style={{ background: 'none', border: 'none', cursor: 'pointer', opacity: 0.8 }} title={n.isPinned ? 'Unpin Note' : 'Pin Note'}>
                             <span style={{ fontSize: '13px' }}>{n.isPinned ? '📌' : '📍'}</span>
                           </button>
-                          <button onClick={() => handleDeleteNote(n._id)} className="text-gray-400 hover:text-red-600" title="Delete Note">
+                          <button onClick={() => handleDeleteNote(n._id)} style={{ background: 'none', border: 'none', cursor: 'pointer', opacity: 0.8 }} title="Delete Note">
                             <span style={{ fontSize: '13px' }}>🗑️</span>
                           </button>
                         </div>
@@ -550,18 +562,18 @@ const ClientDetail = () => {
 
             {/* Deals Tab */}
             {activeTab === 'deals' && (
-              <div className="space-y-3">
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                 {deals.length === 0 ? (
-                  <p className="text-gray-500 text-sm text-center py-8">No deals linked to this client</p>
+                  <p style={{ color: 'var(--text-3)', fontSize: '13.5px', textAlign: 'center', padding: '32px 0' }}>No deals linked to this client</p>
                 ) : deals.map((deal) => (
-                  <div key={deal._id} className="bg-white border border-gray-200 rounded-xl p-4 flex items-center justify-between shadow-xs">
+                  <div key={deal._id} className="card" style={{ padding: '16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                     <div>
-                      <p className="font-semibold text-gray-900 text-sm">{deal.title}</p>
-                      <p className={`text-xs mt-1 ${DEAL_STAGE_COLORS[deal.stage]}`}>{deal.stage} · {deal.priority} priority</p>
+                      <p style={{ fontWeight: 600, color: 'var(--text-1)', fontSize: '14px' }}>{deal.title}</p>
+                      <p style={{ fontSize: '12px', marginTop: '4px', color: DEAL_STAGE_COLORS[deal.stage] || 'var(--text-3)', fontWeight: 600 }}>{deal.stage} · {deal.priority} priority</p>
                     </div>
-                    <div className="text-right">
-                      <p className="text-gray-900 font-semibold">₹{deal.amount?.toLocaleString()}</p>
-                      <p className="text-gray-500 text-xs mt-1">{deal.probability}% probability</p>
+                    <div style={{ textAlign: 'right' }}>
+                      <p style={{ color: 'var(--text-1)', fontWeight: 700 }}>₹{deal.amount?.toLocaleString()}</p>
+                      <p style={{ color: 'var(--text-3)', fontSize: '11.5px', marginTop: '4px' }}>{deal.probability}% probability</p>
                     </div>
                   </div>
                 ))}
@@ -571,35 +583,39 @@ const ClientDetail = () => {
             {/* Tasks Tab */}
             {activeTab === 'tasks' && (
               <div>
-                <div className="flex items-center justify-between mb-4">
-                  <p className="text-sm text-gray-500">Tasks for this client</p>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                  <p style={{ fontSize: '13.5px', color: 'var(--text-3)' }}>Tasks for this client</p>
                   <button
                     onClick={() => setTaskModal(true)}
-                    className="flex items-center gap-2 bg-indigo-600 text-white px-4 py-2 rounded-xl text-sm hover:bg-indigo-750 transition-all"
+                    className="btn btn-primary"
                   >
                     <FiPlus size={14} /> Add Task
                   </button>
                 </div>
-                <div className="space-y-3">
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                   {tasks.length === 0 ? (
-                    <p className="text-gray-500 text-sm text-center py-8">No tasks for this client</p>
+                    <p style={{ color: 'var(--text-3)', fontSize: '13.5px', textAlign: 'center', padding: '32px 0' }}>No tasks for this client</p>
                   ) : tasks.map((task) => (
-                    <div key={task._id} className="bg-white border border-gray-200 rounded-xl p-4 flex items-center justify-between shadow-xs">
-                      <div className="flex items-center gap-3">
-                        <div className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${
-                          task.status === 'completed' ? 'bg-green-600' :
-                          task.status === 'in_progress' ? 'bg-blue-600' :
-                          task.status === 'cancelled' ? 'bg-red-600' : 'bg-yellow-600'
-                        }`} />
+                    <div key={task._id} className="card" style={{ padding: '16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                        <div style={{
+                          width: '10px',
+                          height: '10px',
+                          borderRadius: '50%',
+                          flexShrink: 0,
+                          background: task.status === 'completed' ? 'var(--green)' :
+                                      task.status === 'in_progress' ? 'var(--blue)' :
+                                      task.status === 'cancelled' ? 'var(--text-3)' : 'var(--yellow)'
+                        }} />
                         <div>
-                          <p className="font-semibold text-gray-900 text-sm">{task.title}</p>
-                          <p className="text-gray-500 text-xs mt-0.5">Due: {new Date(task.dueDate).toLocaleDateString()}</p>
+                          <p style={{ fontWeight: 600, color: 'var(--text-1)', fontSize: '14px' }}>{task.title}</p>
+                          <p style={{ color: 'var(--text-3)', fontSize: '11.5px', marginTop: '4px' }}>Due: {new Date(task.dueDate).toLocaleDateString()}</p>
                         </div>
                       </div>
-                      <span className={`text-xs px-2 py-1 rounded-lg border ${
-                        task.priority === 'high' ? 'bg-red-50 text-red-700 border-red-200' :
-                        task.priority === 'medium' ? 'bg-yellow-50 text-yellow-700 border-yellow-200' : 'bg-gray-50 text-gray-600 border-gray-250'
-                      }`}>
+                      <span className={`badge ${
+                        task.priority === 'high' ? 'badge-red' :
+                        task.priority === 'medium' ? 'badge-yellow' : 'badge-gray'
+                      }`} style={{ fontSize: '10.5px' }}>
                         {task.priority}
                       </span>
                     </div>
@@ -613,14 +629,14 @@ const ClientDetail = () => {
 
       {/* Log Interaction Modal */}
       <Modal open={interactionModal} onClose={() => setInteractionModal(false)} title="Log Interaction">
-        <form onSubmit={handleAddInteraction} className="space-y-4">
-          <div className="grid grid-cols-2 gap-3">
+        <form onSubmit={handleAddInteraction} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+          <div className="form-grid">
             <div>
-              <label className="block text-xs text-gray-500 mb-1.5 font-semibold">Type *</label>
+              <label className="label">Type *</label>
               <select
                 value={interactionForm.type}
                 onChange={e => setInteractionForm(f => ({ ...f, type: e.target.value }))}
-                className="w-full bg-white border border-gray-300 text-gray-900 rounded-xl px-3 py-2.5 text-sm outline-none focus:border-cyan-500"
+                className="input"
               >
                 {['email', 'phone', 'meeting', 'note', 'site_visit'].map(t => (
                   <option key={t} value={t}>{t.replace('_', ' ')}</option>
@@ -628,61 +644,62 @@ const ClientDetail = () => {
               </select>
             </div>
             <div>
-              <label className="block text-xs text-gray-500 mb-1.5 font-semibold">Outcome</label>
+              <label className="label">Outcome</label>
               <select
                 value={interactionForm.outcome}
                 onChange={e => setInteractionForm(f => ({ ...f, outcome: e.target.value }))}
-                className="w-full bg-white border border-gray-300 text-gray-900 rounded-xl px-3 py-2.5 text-sm outline-none focus:border-cyan-500"
+                className="input"
               >
                 {['positive', 'negative', 'neutral', 'pending'].map(o => <option key={o} value={o}>{o}</option>)}
               </select>
             </div>
           </div>
           <div>
-            <label className="block text-xs text-gray-500 mb-1.5 font-semibold">Subject *</label>
+            <label className="label">Subject *</label>
             <input
               value={interactionForm.subject}
               onChange={e => setInteractionForm(f => ({ ...f, subject: e.target.value }))}
               required
               placeholder="Call regarding proposal..."
-              className="w-full bg-white border border-gray-300 text-gray-900 rounded-xl px-3 py-2.5 text-sm outline-none focus:border-cyan-500"
+              className="input"
             />
           </div>
           <div>
-            <label className="block text-xs text-gray-500 mb-1.5 font-semibold">Description *</label>
+            <label className="label">Description *</label>
             <textarea
               value={interactionForm.description}
               onChange={e => setInteractionForm(f => ({ ...f, description: e.target.value }))}
               required
               rows={3}
               placeholder="Describe the interaction..."
-              className="w-full bg-white border border-gray-300 text-gray-900 rounded-xl px-3 py-2.5 text-sm outline-none resize-none focus:border-cyan-500"
+              className="input"
+              style={{ resize: 'none' }}
             />
           </div>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="form-grid">
             <div>
-              <label className="block text-xs text-gray-500 mb-1.5 font-semibold">Date *</label>
+              <label className="label">Date *</label>
               <input
                 type="datetime-local"
                 value={interactionForm.date}
                 onChange={e => setInteractionForm(f => ({ ...f, date: e.target.value }))}
                 required
-                className="w-full bg-white border border-gray-300 text-gray-900 rounded-xl px-3 py-2.5 text-sm outline-none focus:border-cyan-500"
+                className="input"
               />
             </div>
             <div>
-              <label className="block text-xs text-gray-500 mb-1.5 font-semibold">Next Follow-up</label>
+              <label className="label">Next Follow-up</label>
               <input
                 type="date"
                 value={interactionForm.nextFollowUp}
                 onChange={e => setInteractionForm(f => ({ ...f, nextFollowUp: e.target.value }))}
-                className="w-full bg-white border border-gray-300 text-gray-900 rounded-xl px-3 py-2.5 text-sm outline-none focus:border-cyan-500"
+                className="input"
               />
             </div>
           </div>
-          <div className="flex gap-3 pt-2">
-            <button type="button" onClick={() => setInteractionModal(false)} className="flex-1 px-4 py-2.5 bg-white border border-gray-300 text-gray-700 rounded-xl text-sm hover:bg-gray-50 transition-all">Cancel</button>
-            <button type="submit" disabled={submitting} className="flex-1 px-4 py-2.5 bg-cyan-600 text-white rounded-xl text-sm hover:bg-cyan-700 transition-all disabled:opacity-50 font-medium">
+          <div style={{ display: 'flex', gap: '10px', marginTop: '6px' }}>
+            <button type="button" onClick={() => setInteractionModal(false)} className="btn btn-ghost" style={{ flex: 1 }}>Cancel</button>
+            <button type="submit" disabled={submitting} className="btn btn-primary" style={{ flex: 1 }}>
               {submitting ? 'Saving...' : 'Log Interaction'}
             </button>
           </div>
@@ -691,61 +708,62 @@ const ClientDetail = () => {
 
       {/* Add Task Modal */}
       <Modal open={taskModal} onClose={() => setTaskModal(false)} title="Add Task">
-        <form onSubmit={handleAddTask} className="space-y-4">
+        <form onSubmit={handleAddTask} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
           <div>
-            <label className="block text-xs text-gray-500 mb-1.5 font-semibold">Task Title *</label>
+            <label className="label">Task Title *</label>
             <input
               value={taskForm.title}
               onChange={e => setTaskForm(f => ({ ...f, title: e.target.value }))}
               required
               placeholder="Follow up with client..."
-              className="w-full bg-white border border-gray-300 text-gray-900 rounded-xl px-3 py-2.5 text-sm outline-none focus:border-cyan-500"
+              className="input"
             />
           </div>
           <div>
-            <label className="block text-xs text-gray-500 mb-1.5 font-semibold">Description</label>
+            <label className="label">Description</label>
             <textarea
               value={taskForm.description}
               onChange={e => setTaskForm(f => ({ ...f, description: e.target.value }))}
               rows={2}
-              className="w-full bg-white border border-gray-300 text-gray-900 rounded-xl px-3 py-2.5 text-sm outline-none resize-none focus:border-cyan-500"
+              className="input"
+              style={{ resize: 'none' }}
             />
           </div>
-          <div className="grid grid-cols-3 gap-3">
+          <div className="form-grid" style={{ gridTemplateColumns: 'repeat(3, 1fr)' }}>
             <div>
-              <label className="block text-xs text-gray-500 mb-1.5 font-semibold">Priority</label>
+              <label className="label">Priority</label>
               <select
                 value={taskForm.priority}
                 onChange={e => setTaskForm(f => ({ ...f, priority: e.target.value }))}
-                className="w-full bg-white border border-gray-300 text-gray-900 rounded-xl px-3 py-2.5 text-sm outline-none focus:border-cyan-500"
+                className="input"
               >
                 {['low', 'medium', 'high'].map(p => <option key={p} value={p}>{p}</option>)}
               </select>
             </div>
             <div>
-              <label className="block text-xs text-gray-500 mb-1.5 font-semibold">Status</label>
+              <label className="label">Status</label>
               <select
                 value={taskForm.status}
                 onChange={e => setTaskForm(f => ({ ...f, status: e.target.value }))}
-                className="w-full bg-white border border-gray-300 text-gray-900 rounded-xl px-3 py-2.5 text-sm outline-none focus:border-cyan-500"
+                className="input"
               >
                 {['open', 'in_progress', 'completed', 'cancelled'].map(s => <option key={s} value={s}>{s.replace('_', ' ')}</option>)}
               </select>
             </div>
             <div>
-              <label className="block text-xs text-gray-500 mb-1.5 font-semibold">Due Date *</label>
+              <label className="label">Due Date *</label>
               <input
                 type="date"
                 value={taskForm.dueDate}
                 onChange={e => setTaskForm(f => ({ ...f, dueDate: e.target.value }))}
                 required
-                className="w-full bg-white border border-gray-300 text-gray-900 rounded-xl px-3 py-2.5 text-sm outline-none focus:border-cyan-500"
+                className="input"
               />
             </div>
           </div>
-          <div className="flex gap-3 pt-2">
-            <button type="button" onClick={() => setTaskModal(false)} className="flex-1 px-4 py-2.5 bg-white border border-gray-300 text-gray-700 rounded-xl text-sm hover:bg-gray-50">Cancel</button>
-            <button type="submit" disabled={submitting} className="flex-1 px-4 py-2.5 bg-indigo-600 text-white rounded-xl text-sm hover:bg-indigo-700 transition-all disabled:opacity-50 font-medium">
+          <div style={{ display: 'flex', gap: '10px', marginTop: '6px' }}>
+            <button type="button" onClick={() => setTaskModal(false)} className="btn btn-ghost" style={{ flex: 1 }}>Cancel</button>
+            <button type="submit" disabled={submitting} className="btn btn-primary" style={{ flex: 1 }}>
               {submitting ? 'Creating...' : 'Create Task'}
             </button>
           </div>
@@ -754,73 +772,75 @@ const ClientDetail = () => {
 
       {/* Add Collaborative Note Modal */}
       <Modal open={noteModal} onClose={() => setNoteModal(false)} title="Add Collaborative Note">
-        <form onSubmit={handleAddNote} className="space-y-4">
+        <form onSubmit={handleAddNote} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
           <div>
-            <label className="block text-xs text-gray-500 mb-1.5 font-semibold">Note Content *</label>
+            <label className="label">Note Content *</label>
             <textarea
               value={noteForm.content}
               onChange={e => setNoteForm(f => ({ ...f, content: e.target.value }))}
               required
               rows={4}
               placeholder="Type your collaborative note here... Use @username to mention or write key updates."
-              className="w-full bg-white border border-gray-300 text-gray-900 rounded-xl px-3 py-2.5 text-sm outline-none resize-none focus:border-cyan-500"
+              className="input"
+              style={{ resize: 'none' }}
             />
           </div>
-          <div className="flex gap-3 pt-2">
-            <button type="button" onClick={() => setNoteModal(false)} className="flex-1 px-4 py-2.5 bg-white border border-gray-300 text-gray-700 rounded-xl text-sm hover:bg-gray-50">Cancel</button>
-            <button type="submit" disabled={submitting} className="flex-1 px-4 py-2.5 bg-cyan-600 text-white rounded-xl text-sm hover:bg-cyan-700 transition-all disabled:opacity-50 font-medium">
+          <div style={{ display: 'flex', gap: '10px', marginTop: '6px' }}>
+            <button type="button" onClick={() => setNoteModal(false)} className="btn btn-ghost" style={{ flex: 1 }}>Cancel</button>
+            <button type="submit" disabled={submitting} className="btn btn-primary" style={{ flex: 1 }}>
               {submitting ? 'Saving...' : 'Add Note'}
             </button>
           </div>
         </form>
       </Modal>
+
       {/* Add Contact Modal */}
       <Modal open={contactModal} onClose={() => setContactModal(false)} title="Add Company Contact">
-        <form onSubmit={handleAddContact} className="space-y-4">
+        <form onSubmit={handleAddContact} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
           <div>
-            <label className="block text-xs text-gray-500 mb-1.5 font-semibold">Full Name *</label>
+            <label className="label">Full Name *</label>
             <input
               value={contactForm.name}
               onChange={e => setContactForm(f => ({ ...f, name: e.target.value }))}
               required
               placeholder="Jane Doe"
-              className="w-full bg-white border border-gray-300 text-gray-900 rounded-xl px-3 py-2.5 text-sm outline-none focus:border-cyan-500"
+              className="input"
             />
           </div>
           <div>
-            <label className="block text-xs text-gray-500 mb-1.5 font-semibold">Email Address *</label>
+            <label className="label">Email Address *</label>
             <input
               type="email"
               value={contactForm.email}
               onChange={e => setContactForm(f => ({ ...f, email: e.target.value }))}
               required
               placeholder="jane.doe@company.com"
-              className="w-full bg-white border border-gray-300 text-gray-900 rounded-xl px-3 py-2.5 text-sm outline-none focus:border-cyan-500"
+              className="input"
             />
           </div>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="form-grid">
             <div>
-              <label className="block text-xs text-gray-500 mb-1.5 font-semibold">Phone Number</label>
+              <label className="label">Phone Number</label>
               <input
                 value={contactForm.phone}
                 onChange={e => setContactForm(f => ({ ...f, phone: e.target.value }))}
                 placeholder="+1 (555) 019-2834"
-                className="w-full bg-white border border-gray-300 text-gray-900 rounded-xl px-3 py-2.5 text-sm outline-none focus:border-cyan-500"
+                className="input"
               />
             </div>
             <div>
-              <label className="block text-xs text-gray-500 mb-1.5 font-semibold">Role / Title</label>
+              <label className="label">Role / Title</label>
               <input
                 value={contactForm.role}
                 onChange={e => setContactForm(f => ({ ...f, role: e.target.value }))}
                 placeholder="Technical Lead"
-                className="w-full bg-white border border-gray-300 text-gray-900 rounded-xl px-3 py-2.5 text-sm outline-none focus:border-cyan-500"
+                className="input"
               />
             </div>
           </div>
-          <div className="flex gap-3 pt-2">
-            <button type="button" onClick={() => setContactModal(false)} className="flex-1 px-4 py-2.5 bg-white border border-gray-300 text-gray-700 rounded-xl text-sm hover:bg-gray-50 font-medium">Cancel</button>
-            <button type="submit" disabled={submitting} className="flex-1 px-4 py-2.5 bg-cyan-600 text-white rounded-xl text-sm hover:bg-cyan-700 transition-all disabled:opacity-50 font-medium">
+          <div style={{ display: 'flex', gap: '10px', marginTop: '6px' }}>
+            <button type="button" onClick={() => setContactModal(false)} className="btn btn-ghost" style={{ flex: 1 }}>Cancel</button>
+            <button type="submit" disabled={submitting} className="btn btn-primary" style={{ flex: 1 }}>
               {submitting ? 'Saving...' : 'Add Contact'}
             </button>
           </div>

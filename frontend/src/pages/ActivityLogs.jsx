@@ -69,11 +69,12 @@ export default function ActivityLogs() {
                   <div key={log._id||i} style={{
                     display:'flex', alignItems:'flex-start', gap:'13px',
                     padding:'13px 18px',
-                    borderBottom:'1px solid #f3f4f6',
+                    borderBottom:'1px solid var(--border)',
                     transition:'background 0.12s',
+                    background: 'var(--bg-surface)',
                   }}
-                    onMouseEnter={e => e.currentTarget.style.background='#fafafa'}
-                    onMouseLeave={e => e.currentTarget.style.background='#fff'}
+                    onMouseEnter={e => e.currentTarget.style.background='var(--surface-2)'}
+                    onMouseLeave={e => e.currentTarget.style.background='var(--bg-surface)'}
                   >
                     {/* Icon bubble */}
                     <div style={{

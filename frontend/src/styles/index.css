@@ -683,14 +683,14 @@ h1, h2, h3, h4, h5, h6 {
 /* Ghost Button */
 .btn-ghost {
   background: transparent;
-  color: rgba(255, 255, 255, 0.8);
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: var(--text-2);
+  border: 1px solid var(--border);
 }
 
 .btn-ghost:hover:not(:disabled) {
-  border-color: rgba(255, 255, 255, 0.4);
-  background: rgba(255, 255, 255, 0.04);
-  color: #ffffff;
+  border-color: var(--border-hover);
+  background: var(--glass-1);
+  color: var(--text-1);
   transform: translateY(-1px);
 }
 
@@ -713,15 +713,15 @@ h1, h2, h3, h4, h5, h6 {
   padding: 0;
   display: inline-flex; align-items: center; justify-content: center;
   border-radius: 8px;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  color: var(--text-secondary);
+  background: var(--glass-1);
+  border: 1px solid var(--border);
+  color: var(--text-2);
 }
 
 .btn-icon:hover {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(255, 255, 255, 0.2);
-  color: #ffffff;
+  background: var(--glass-2);
+  border-color: var(--border-hover);
+  color: var(--text-1);
 }
 
 .btn-icon.danger:hover {
