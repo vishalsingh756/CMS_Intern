@@ -316,17 +316,23 @@ export default function Login() {
                     width: '340px',
                     height: '40px',
                     borderRadius: '20px',
-                    border: '1px solid var(--border)',
-                    background: '#fff',
-                    color: '#1f2937',
+                    border: '1px solid rgba(255, 255, 255, 0.15)',
+                    background: 'rgba(255, 255, 255, 0.04)',
+                    color: '#ffffff',
                     fontWeight: 600,
                     fontSize: '14px',
                     cursor: 'pointer',
-                    boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
-                    transition: 'background-color 0.2s',
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
+                    transition: 'all 0.2s',
                   }}
-                  onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#f9fafb'}
-                  onMouseOut={(e) => e.currentTarget.style.backgroundColor = '#fff'}
+                  onMouseOver={(e) => {
+                    e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.08)';
+                    e.currentTarget.style.borderColor = 'rgba(255,255,255,0.25)';
+                  }}
+                  onMouseOut={(e) => {
+                    e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.04)';
+                    e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.15)';
+                  }}
                 >
                   <FcGoogle size={18} />
                   <span>Sign in with Google</span>
