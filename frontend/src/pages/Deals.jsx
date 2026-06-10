@@ -157,15 +157,13 @@ export default function Deals() {
           <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
             <div style={{ display: 'flex', background: 'var(--surface-2)', borderRadius: '8px', padding: '3px', border: '1px solid var(--border)' }}>
               <button
-                className="btn btn-ghost"
-                style={{ padding: '4px 10px', fontSize: '12px', background: view === 'list' ? 'var(--bg-surface)' : 'transparent', border: view === 'list' ? '1px solid var(--border)' : 'none', boxShadow: view === 'list' ? 'var(--shadow-xs)' : 'none', color: view === 'list' ? 'var(--text-1)' : 'var(--text-3)', fontWeight: 600 }}
+                className={`segmented-control-btn ${view === 'list' ? 'active' : ''}`}
                 onClick={() => setView('list')}
               >
                 List View
               </button>
               <button
-                className="btn btn-ghost"
-                style={{ padding: '4px 10px', fontSize: '12px', background: view === 'kanban' ? 'var(--bg-surface)' : 'transparent', border: view === 'kanban' ? '1px solid var(--border)' : 'none', boxShadow: view === 'kanban' ? 'var(--shadow-xs)' : 'none', color: view === 'kanban' ? 'var(--text-1)' : 'var(--text-3)', fontWeight: 600 }}
+                className={`segmented-control-btn ${view === 'kanban' ? 'active' : ''}`}
                 onClick={() => setView('kanban')}
               >
                 Kanban Board

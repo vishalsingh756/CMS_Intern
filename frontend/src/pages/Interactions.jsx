@@ -109,12 +109,12 @@ export default function Interactions() {
         {/* Filters */}
         <div className="filter-bar">
           <select value={filterClient} onChange={e => { setFC(e.target.value); setPage(1); }}
-            className="input" style={{ flex:1, minWidth:'160px', minHeight:'36px' }}>
+            className="input" style={{ width:'auto', minWidth:'160px', minHeight:'36px' }}>
             <option value="">All Clients</option>
             {clients.map(c => <option key={c._id} value={c._id}>{c.companyName}</option>)}
           </select>
           <select value={filterType} onChange={e => { setFT(e.target.value); setPage(1); }}
-            className="input" style={{ width:'auto', minWidth:'140px', minHeight:'36px' }}>
+            className="input" style={{ width:'auto', minWidth:'160px', minHeight:'36px' }}>
             <option value="">All Types</option>
             {['email','phone','meeting','note','site_visit'].map(t =>
               <option key={t} value={t}>{t.replace('_',' ')}</option>
