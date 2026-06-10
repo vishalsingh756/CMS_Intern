@@ -1021,7 +1021,7 @@ select option {
 }
 
 .sidebar-rail[data-expanded] {
-  width: 240px;
+  width: 210px;
   background: var(--sb-expanded-bg) !important;
   backdrop-filter: blur(24px) saturate(160%) !important;
   -webkit-backdrop-filter: blur(24px) saturate(160%) !important;
