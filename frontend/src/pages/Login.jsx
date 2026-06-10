@@ -49,9 +49,9 @@ export default function Login() {
           { 
             theme: "outline", 
             size: "large", 
-            width: "340",
+            width: "344",
             text: "signin_with",
-            shape: "pill"
+            shape: "rectangular"
           }
         );
       }
@@ -133,7 +133,7 @@ export default function Login() {
           }} />
         </div>
 
-        <div style={{ position: 'relative', zIndex: 1, width: '100%', maxWidth: '390px' }}>
+        <div style={{ position: 'relative', zIndex: 1, width: '100%', maxWidth: '400px' }}>
           <div style={{ textAlign: 'center', marginBottom: '24px' }}>
             <div style={{
               width: '44px', height: '44px', borderRadius: '11px',
@@ -223,7 +223,7 @@ export default function Login() {
         }} />
       </div>
 
-      <div style={{ position: 'relative', zIndex: 1, width: '100%', maxWidth: '390px' }}>
+      <div style={{ position: 'relative', zIndex: 1, width: '100%', maxWidth: '400px' }}>
         {/* Brand */}
         <div style={{ textAlign: 'center', marginBottom: '24px' }}>
           <div style={{
@@ -313,9 +313,9 @@ export default function Login() {
                     alignItems: 'center',
                     justifyContent: 'center',
                     gap: '10px',
-                    width: '340px',
+                    width: '100%',
                     height: '40px',
-                    borderRadius: '20px',
+                    borderRadius: '6px',
                     border: '1px solid rgba(255, 255, 255, 0.15)',
                     background: 'rgba(255, 255, 255, 0.04)',
                     color: '#ffffff',
