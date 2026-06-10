@@ -9,7 +9,7 @@
   /* Backgrounds — layered depth */
   --bg-base:      #07070D;
   --bg-deep:      #0A0A14;
-  --bg-surface:   #0F0F1C;
+  --bg-surface:   #1A1A2E;
   --bg-panel:     #141425;
   --bg-lift:      #1A1A30;
 
@@ -125,9 +125,9 @@
   /* Background depth (3 layers) */
   --bg-base:      #F8F7FF;
   --bg-deep:      #EEEDF9;
-  --bg-surface:   #E4E2F5;
+  --bg-surface:   #ECEAF8;
   --bg-panel:     #E4E2F5;
-  --bg-lift:      #E4E2F5;
+  --bg-lift:      #FFFFFF;
 
   /* Glass layers */
   --glass-1:  rgba(100, 90, 180, 0.02);
@@ -184,6 +184,7 @@
   --accent:        var(--indigo);
   --accent-h:      var(--violet);
   --accent-s:      rgba(67, 56, 202, 0.08);
+  --accent-rgb:    67, 56, 202;
 
   /* Semantic Colors (Legible in Light Mode) */
   --green:         #047857;
@@ -294,6 +295,7 @@
   --accent:        var(--indigo);
   --accent-h:      var(--violet);
   --accent-s:      rgba(79, 70, 229, 0.12);
+  --accent-rgb:    79, 70, 229;
 
   /* Semantic Colors */
   --green:         var(--emerald);
@@ -366,7 +368,7 @@ body::before {
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
   opacity: 0.03;
   pointer-events: none;
-  z-index: 9999;
+  z-index: 1;
 }
 
 button { font-family: inherit; cursor: pointer; }
@@ -428,7 +430,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .text-gradient-jewel {
-  background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 50%, #E11D48 100%);
+  background: linear-gradient(135deg, var(--indigo) 0%, var(--violet) 50%, var(--rose) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
@@ -460,7 +462,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .card:hover {
-  border-color: rgba(79, 70, 229, 0.35);
+  border-color: rgba(var(--accent-rgb), 0.35);
   box-shadow: inset 0 1px 0 var(--glass-highlight), var(--shadow-lg);
   transform: translateY(-4px);
 }
@@ -484,6 +486,7 @@ h1, h2, h3, h4, h5, h6 {
   width: 280px;
   min-height: 160px;
   padding: 28px;
+  padding-bottom: 52px;
   border-radius: 12px;
   background: var(--card-bg);
   backdrop-filter: var(--card-blur);
@@ -579,21 +582,7 @@ h1, h2, h3, h4, h5, h6 {
   box-shadow: inset 0 1px 2px rgba(0,0,0,0.1) !important;
 }
 
-/* Ensure dropdown options are readable in both dark and light modes */
-select option {
-  background-color: var(--bg-surface-3, var(--surface-3, #1A1A2E)) !important;
-  color: var(--text-1) !important;
-}
 
-[data-theme='dark'] select option {
-  background-color: #1F1F35 !important;
-  color: #F0EEFF !important;
-}
-
-[data-theme='light'] select option {
-  background-color: #ffffff !important;
-  color: #0F0F1C !important;
-}
 
 .input::placeholder {
   color: var(--text-3) !important;
@@ -641,7 +630,7 @@ select option {
   display: flex;
   align-items: center;
   flex: 1;
-  min-width: 240px;
+  min-width: min(240px, 100%);
 }
 
 .search-icon {
@@ -783,14 +772,15 @@ select option {
 /* Danger Button (Muted, premium rose overlay) */
 .btn-danger {
   background: rgba(225, 29, 72, 0.15);
-  color: var(--rose);
-  border: 1px solid rgba(225, 29, 72, 0.4);
+  color: var(--red);
+  border: 1px solid var(--red-s);
 }
 
 .btn-danger:hover:not(:disabled) {
   background: rgba(225, 29, 72, 0.25);
-  border-color: rgba(225, 29, 72, 0.6);
-  color: #ff4d79;
+  border-color: var(--red);
+  color: var(--red);
+  filter: brightness(1.15);
   transform: translateY(-1px);
 }
 
@@ -988,7 +978,7 @@ select option {
 .modal-header {
   display: flex; align-items: center; justify-content: space-between;
   padding: 20px 24px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid var(--border);
 }
 
 .modal-title {
@@ -1166,13 +1156,13 @@ select option {
 .rail-item.active .rail-item-icon::before {
   content: '';
   position: absolute;
-  left: 2px;
+  left: 0;
   top: 50%;
   transform: translateY(-50%);
   width: 3px;
   height: 18px;
   background: var(--indigo);
-  border-radius: 99px;
+  border-radius: 0 99px 99px 0;
 }
 
 .rail-footer {
@@ -1355,6 +1345,10 @@ select option {
   z-index: 0;
   will-change: transform;
   animation: floatAurora 24s ease-in-out infinite alternate;
+}
+
+[data-theme="light"] .aurora-blob {
+  opacity: 0.15;
 }
 
 .aurora-1 {
