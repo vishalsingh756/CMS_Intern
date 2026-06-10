@@ -62,9 +62,9 @@ export default function About() {
         top: 0, 
         zIndex: 100, 
         height: '72px',
-        background: 'rgba(10, 10, 15, 0.85)', 
+        background: 'var(--topbar-bg)', 
         backdropFilter: 'blur(16px) saturate(1.4)',
-        borderBottom: '1px solid rgba(255, 255, 255, 0.06)'
+        borderBottom: '1px solid var(--border)'
       }}>
         <div style={{ 
           maxWidth: '1300px', 
@@ -79,13 +79,13 @@ export default function About() {
           {/* Logo with Hover Glow */}
           <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '10px' }} className="rail-logo-container">
             <div className="rail-logo-mark" style={{ width: '36px', height: '36px' }}>
-              <FiLayers size={16} color="#fff" />
+              <FiLayers size={16} color="var(--indigo)" />
             </div>
             <span style={{ 
               fontFamily: "'Playfair Display', serif",
               fontSize: '20px', 
               fontWeight: 900, 
-              color: '#ffffff', 
+              color: 'var(--text-1)', 
               letterSpacing: '-0.04em'
             }}>CMS</span>
           </Link>
@@ -160,7 +160,7 @@ export default function About() {
             </div>
 
             {/* Right Column: Asymmetric, overlapping floating stat cards (Broken Grid Moment) */}
-            <div className="lg:col-span-5 relative mt-12 lg:mt-0" style={{ height: '320px' }}>
+            <div className="lg:col-span-5 relative mt-12 lg:mt-0" style={{ height: '380px' }}>
               
               {/* Card 1: Active Clients (Gold accent, rotated) */}
               <div className="stat-card absolute" style={{
@@ -205,7 +205,7 @@ export default function About() {
                 '--stat-accent': 'var(--rose)',
                 '--stat-accent-bg': 'rgba(225, 29, 72, 0.12)',
                 '--stat-shadow': 'rgba(225, 29, 72, 0.15)',
-                bottom: '-30px',
+                bottom: '10px',
                 left: '80px',
                 transform: 'rotate(-1deg) translateY(0px)',
                 zIndex: 4,
@@ -250,7 +250,7 @@ export default function About() {
               {/* Asymmetric tech stack display card */}
               <div className="lg:col-span-6 lg:pl-8">
                 <div className="card" style={{ padding: '36px' }}>
-                  <h3 style={{ fontSize: '18px', fontWeight: 800, color: '#ffffff', marginBottom: '20px', fontFamily: "'Playfair Display', serif" }}>
+                  <h3 style={{ fontSize: '18px', fontWeight: 800, color: 'var(--text-1)', marginBottom: '20px', fontFamily: "'Playfair Display', serif" }}>
                     Engineered Foundation
                   </h3>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
@@ -305,7 +305,7 @@ export default function About() {
                   }}>
                     <f.icon size={20} />
                   </div>
-                  <h3 style={{ fontSize: '17px', fontWeight: 700, color: '#ffffff', fontFamily: "'Playfair Display', serif" }}>{f.title}</h3>
+                  <h3 style={{ fontSize: '17px', fontWeight: 700, color: 'var(--text-1)', fontFamily: "'Playfair Display', serif" }}>{f.title}</h3>
                   <p style={{ fontSize: '14px', color: 'var(--text-secondary)', lineHeight: '1.7' }}>{f.desc}</p>
                 </div>
               ))}
@@ -357,7 +357,7 @@ export default function About() {
             
             <h2 className="section-heading" style={{ fontFamily: "'Playfair Display', serif" }}>Our Core Focus</h2>
             
-            <p style={{ fontSize: '18px', color: '#ffffff', lineHeight: '1.8', fontWeight: 500 }}>
+            <p style={{ fontSize: '18px', color: 'var(--text-1)', lineHeight: '1.8', fontWeight: 500 }}>
               "To deliver absolute clarity and structured organization to client-facing teams through deliberate design."
             </p>
             
@@ -393,7 +393,7 @@ export default function About() {
               </div>
               
               <div>
-                <h2 style={{ fontSize: '28px', fontWeight: 900, color: '#ffffff', letterSpacing: '-0.03em', fontFamily: "'Playfair Display', serif" }}>Get in Touch</h2>
+                <h2 style={{ fontSize: '28px', fontWeight: 900, color: 'var(--text-1)', letterSpacing: '-0.03em', fontFamily: "'Playfair Display', serif" }}>Get in Touch</h2>
                 <p style={{ fontSize: '14.5px', color: 'var(--text-secondary)', marginTop: '10px', lineHeight: '1.6' }}>
                   Have questions, feature requests, or need custom integration help? Reach out directly via our contact form.
                 </p>
@@ -437,9 +437,9 @@ export default function About() {
           
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
             <div className="rail-logo-mark" style={{ width: '28px', height: '28px' }}>
-              <FiLayers size={12} color="#fff" />
+              <FiLayers size={12} color="var(--indigo)" />
             </div>
-            <span style={{ fontSize: '16px', fontWeight: 800, color: '#ffffff', letterSpacing: '-0.04em', fontFamily: "'Playfair Display', serif" }}>CMS</span>
+            <span style={{ fontSize: '16px', fontWeight: 800, color: 'var(--text-1)', letterSpacing: '-0.04em', fontFamily: "'Playfair Display', serif" }}>CMS</span>
           </div>
 
           <p style={{ fontSize: '13px', color: 'var(--text-muted)' }}>
