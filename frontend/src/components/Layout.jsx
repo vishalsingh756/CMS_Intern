@@ -1,34 +1,48 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Sidebar from './Sidebar';
 import Header from './Header';
 
 export default function Layout({ children }) {
-  const [open, setOpen] = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(false);
+
+  // Close drawer on route change / resize
+  useEffect(() => {
+    const close = () => setDrawerOpen(false);
+    window.addEventListener('resize', close);
+    return () => window.removeEventListener('resize', close);
+  }, []);
 
   return (
-    <div style={{ display:'flex', height:'100vh', overflow:'hidden', background:'var(--bg)', position: 'relative' }}>
-      
-      {/* Premium Aurora Glow Elements (Ambient light blur effect) */}
-      <div className="aurora-blob aurora-1"></div>
-      <div className="aurora-blob aurora-2"></div>
+    <div className="app-shell">
 
-      {/* Desktop sidebar — always visible, sticky */}
-      <Sidebar alwaysVisible onClose={() => {}} />
+      {/* ── Ambient aurora glows ── */}
+      <div className="aurora-blob aurora-1" />
+      <div className="aurora-blob aurora-2" />
 
-      {/* Mobile sidebar — slides in over content */}
-      {open && (
-        <div style={{ display:'block', zIndex: 150 }} id="mobile-sidebar">
-          <Sidebar isOpen={open} onClose={() => setOpen(false)} />
-        </div>
+      {/* ── Desktop sidebar rail (hidden on mobile via CSS) ── */}
+      <Sidebar variant="rail" />
+
+      {/* ── Mobile drawer overlay ── */}
+      {drawerOpen && (
+        <div
+          className="drawer-overlay"
+          onClick={() => setDrawerOpen(false)}
+        />
       )}
+      <Sidebar
+        variant="drawer"
+        isOpen={drawerOpen}
+        onClose={() => setDrawerOpen(false)}
+      />
 
-      {/* Content area */}
-      <div style={{ flex:1, display:'flex', flexDirection:'column', overflow:'hidden', minWidth:0, position: 'relative', zIndex: 5 }}>
-        <Header onMenuClick={() => setOpen(v => !v)} />
-        <main style={{ flex:1, overflowY:'auto' }}>
+      {/* ── Main content column ── */}
+      <div className="app-content">
+        <Header onMenuClick={() => setDrawerOpen(v => !v)} />
+        <main className="app-main">
           {children}
         </main>
       </div>
+
     </div>
   );
 }
