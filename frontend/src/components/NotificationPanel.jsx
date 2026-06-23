@@ -189,6 +189,8 @@ export default function NotificationPanel() {
           style={{
             position: 'absolute', top: 'calc(100% + 8px)', right: 0,
             width: '340px',
+            minWidth: '340px',
+            maxWidth: '340px',
             background: 'var(--surface)',
             border: '1px solid var(--border)',
             borderRadius: '14px',
