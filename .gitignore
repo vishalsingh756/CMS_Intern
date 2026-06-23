@@ -48,4 +48,4 @@ Thumbs.db
 *.sw?
 
 # Temporary or local testing scripts
-backend/create_admin.js
+
