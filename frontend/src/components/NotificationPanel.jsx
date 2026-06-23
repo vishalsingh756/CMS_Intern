@@ -132,21 +132,42 @@ export default function NotificationPanel() {
       {/* Bell button */}
       <button
         ref={btnRef}
-        className="btn-icon"
         onClick={handleOpen}
         title="Notifications"
         style={{
+          width: '30px',
+          height: '30px',
+          borderRadius: '8px',
+          border: '1px solid var(--border)',
+          background: open ? 'var(--accent-s)' : 'var(--surface-2)',
+          color: open ? 'var(--accent)' : 'var(--text-2)',
+          borderColor: open ? 'var(--accent)' : 'var(--border)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          cursor: 'pointer',
+          transition: 'all 0.2s',
           position: 'relative',
-          background: open ? 'var(--accent-s)' : undefined,
-          color: open ? 'var(--accent)' : undefined,
-          borderColor: open ? 'var(--accent)' : undefined,
+          marginRight: '2px',
+        }}
+        onMouseEnter={e => {
+          if (!open) {
+            e.currentTarget.style.background = 'var(--surface-3)';
+            e.currentTarget.style.borderColor = 'var(--border-2)';
+          }
+        }}
+        onMouseLeave={e => {
+          if (!open) {
+            e.currentTarget.style.background = 'var(--surface-2)';
+            e.currentTarget.style.borderColor = 'var(--border)';
+          }
         }}
       >
-        <FiBell size={16} />
+        <FiBell size={14} />
         {unread > 0 && (
           <span style={{
-            position: 'absolute', top: '4px', right: '4px',
-            width: unread > 9 ? '14px' : '8px',
+            position: 'absolute', top: '2px', right: '2px',
+            width: '8px',
             height: '8px',
             background: 'var(--red)',
             borderRadius: '99px',
@@ -157,7 +178,6 @@ export default function NotificationPanel() {
             transition: 'all 0.2s',
             animation: 'pulse-dot 2s ease infinite',
           }}>
-            {unread > 9 ? '9+' : ''}
           </span>
         )}
       </button>
