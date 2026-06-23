@@ -20,6 +20,17 @@ export default function About() {
     localStorage.setItem('theme', theme);
   }, [theme]);
 
+  useEffect(() => {
+    if (menuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [menuOpen]);
+
   const toggleTheme = () => {
     setTheme(t => t === 'light' ? 'dark' : 'light');
   };
