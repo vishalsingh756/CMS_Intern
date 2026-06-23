@@ -2521,13 +2521,8 @@ select option {
 }
 
 /* ── Prevent horizontal overflow globally ── */
-html {
-  overflow-x: hidden;
-}
 body {
-  width: 100%;
   overflow-x: hidden;
-  position: relative;
 }
 *, *::before, *::after {
   max-width: 100%;
