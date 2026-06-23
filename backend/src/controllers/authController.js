@@ -41,24 +41,28 @@ export const register = async (req, res) => {
       firstName,
       lastName,
       role,
-      emailVerified: false,
-      verificationCode,
-      verificationCodeExpires,
+      emailVerified: true, // Automatically verified
     });
 
     await user.save();
 
-    console.log(`[AUTH DEBUG] Verification code for ${email} is: ${verificationCode}`);
-
-    // Send verification email
-    const template = emailTemplates.verificationCode(verificationCode);
-    await sendEmail(email, template.subject, template.html);
-
     // Log activity
-    await logActivity(user._id, 'create_user', 'user', user._id, { type: 'registration_pending_verification' }, req);
+    await logActivity(user._id, 'create_user', 'user', user._id, { type: 'registration_successful' }, req);
 
-    sendResponse(res, 201, true, 'Verification code sent to your email. Please verify your account.', {
-      email: user.email,
+    // Generate login token
+    const token = generateToken(user._id, user.role);
+
+    sendResponse(res, 201, true, 'Registration successful. Welcome!', {
+      token,
+      user: {
+        id: user._id,
+        username: user.username,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        role: user.role,
+        avatar: user.avatar,
+      },
     });
   } catch (error) {
     console.error('Registration error:', error);
@@ -93,27 +97,10 @@ export const login = async (req, res) => {
       return sendResponse(res, 403, false, 'Account is inactive');
     }
 
-    // Check if email is verified
+    // Automatically verify email if not already verified (removing OTP verification screen)
     if (!user.emailVerified) {
-      // Generate code if not exists or expired
-      if (!user.verificationCode || user.verificationCodeExpires < new Date()) {
-        user.verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
-        user.verificationCodeExpires = new Date(Date.now() + 24 * 60 * 60 * 1000);
-        await user.save();
-      }
-
-      console.log(`[AUTH DEBUG] Verification code for ${user.email} is: ${user.verificationCode}`);
-
-      // Send/resend verification email
-      const template = emailTemplates.verificationCode(user.verificationCode);
-      await sendEmail(user.email, template.subject, template.html);
-
-      return res.status(403).json({
-        success: false,
-        isUnverified: true,
-        email: user.email,
-        message: 'Please verify your email first. A new code has been sent.',
-      });
+      user.emailVerified = true;
+      await user.save();
     }
 
     // Update last login

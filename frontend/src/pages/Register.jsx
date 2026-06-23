@@ -110,8 +110,8 @@ export default function Register() {
     setLoading(true);
     try {
       await register(form);
-      setUnverifiedEmail(form.email);
-      toast.success('Account created! A verification code has been sent.');
+      toast.success('Account created successfully! Welcome!');
+      navigate('/dashboard');
     } catch (err) {
       toast.error(err.response?.data?.message || 'Registration failed');
     } finally {

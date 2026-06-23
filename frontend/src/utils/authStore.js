@@ -29,7 +29,13 @@ const useAuthStore = create((set) => ({
     set({ isLoading: true, error: null });
     try {
       const response = await authService.register(data);
-      set({ isLoading: false });
+      set({
+        user: response.data.data.user,
+        token: response.data.data.token,
+        isLoading: false,
+      });
+      localStorage.setItem('user', JSON.stringify(response.data.data.user));
+      localStorage.setItem('token', response.data.data.token);
       return response.data;
     } catch (error) {
       set({
