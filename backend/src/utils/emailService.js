@@ -1,38 +1,86 @@
 import nodemailer from 'nodemailer';
 
-const transporter = nodemailer.createTransport({
-  service: process.env.EMAIL_SERVICE || 'gmail',
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
-  },
-});
+// ── Transporter singleton ────────────────────────────────────────────
+let _transporter = null;
+let _fromAddress  = '"CMS Notifications" <noreply@cms.app>';
 
 /**
- * Send an email notification.
- * @param {string} to   - Recipient email
- * @param {string} subject
- * @param {string} html - HTML body
+ * Returns a ready-to-use nodemailer transporter.
+ * - If EMAIL_USER + EMAIL_PASS are set in .env  → uses those (Gmail / SMTP).
+ * - Otherwise                                   → auto-creates an Ethereal
+ *   test account (unique per server start) and prints the preview URL to console.
+ */
+const getTransporter = async () => {
+  if (_transporter) return _transporter;
+
+  if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
+    // ── Production / real SMTP ─────────────────────────────────────
+    _transporter = nodemailer.createTransport({
+      service: process.env.EMAIL_SERVICE || 'gmail',
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+      },
+    });
+    _fromAddress = `"CMS Notifications" <${process.env.EMAIL_USER}>`;
+    console.log('[Email] Using configured SMTP account:', process.env.EMAIL_USER);
+  } else {
+    // ── Auto-generated Ethereal test account ───────────────────────
+    const testAccount = await nodemailer.createTestAccount();
+    _transporter = nodemailer.createTransport({
+      host: 'smtp.ethereal.email',
+      port: 587,
+      secure: false,
+      auth: {
+        user: testAccount.user,
+        pass: testAccount.pass,
+      },
+    });
+    _fromAddress = `"CMS Notifications" <${testAccount.user}>`;
+    console.log('');
+    console.log('╔══════════════════════════════════════════════════════════╗');
+    console.log('║  [Email] Auto-generated Ethereal test account            ║');
+    console.log(`║  User : ${testAccount.user.padEnd(49)}║`);
+    console.log(`║  Pass : ${testAccount.pass.padEnd(49)}║`);
+    console.log('║  Preview emails at: https://ethereal.email/messages      ║');
+    console.log('╚══════════════════════════════════════════════════════════╝');
+    console.log('');
+  }
+
+  return _transporter;
+};
+
+// ── Core send function ───────────────────────────────────────────────
+
+/**
+ * Send an email. Automatically resolves the transporter on first call.
+ * @param {string|string[]} to      - Recipient(s)
+ * @param {string}          subject
+ * @param {string}          html    - HTML body
  */
 export const sendEmail = async (to, subject, html) => {
-  if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
-    console.warn('[Email] Skipped — EMAIL_USER / EMAIL_PASS not set in .env');
-    return;
-  }
   try {
-    await transporter.sendMail({
-      from: `"CMS Notifications" <${process.env.EMAIL_USER}>`,
-      to,
+    const transporter = await getTransporter();
+    const info = await transporter.sendMail({
+      from: _fromAddress,
+      to: Array.isArray(to) ? to.join(', ') : to,
       subject,
       html,
     });
-    console.log(`[Email] Sent to ${to}: ${subject}`);
+
+    // Print Ethereal preview URL when using the test account
+    const previewUrl = nodemailer.getTestMessageUrl(info);
+    if (previewUrl) {
+      console.log(`[Email] Preview → ${previewUrl}`);
+    } else {
+      console.log(`[Email] Sent to ${to}: ${subject}`);
+    }
   } catch (err) {
     console.error('[Email] Failed to send:', err.message);
   }
 };
 
-// ── Email Templates ─────────────────────────────────────────────────
+// ── Email Templates ──────────────────────────────────────────────────
 
 export const emailTemplates = {
   dealWon: (dealTitle, amount, clientName) => ({
@@ -116,13 +164,13 @@ export const emailTemplates = {
         <div style="background:linear-gradient(135deg,#007AFF,#00C7BE);border-radius:10px;padding:20px 24px;margin-bottom:24px;">
           <h1 style="color:#fff;margin:0;font-size:22px;font-weight:800;">🔔 Follow-up Reminder</h1>
         </div>
-        <p style="color:#1D1D1F;font-size:15px;margin-bottom:8px;">This is a reminder for your scheduled follow-up today with <strong>${clientName}</strong>.</p>
+        <p style="color:#1D1D1F;font-size:15px;margin-bottom:8px;">This is a reminder for your scheduled follow-up with <strong>${clientName}</strong>.</p>
         <div style="background:#F5F5F7;border-radius:8px;padding:16px 20px;margin:20px 0;">
           <p style="margin:0 0 6px;color:#6E6E73;font-size:13px;">Subject</p>
           <p style="margin:0 0 12px;font-weight:700;font-size:15px;color:#1D1D1F;">${subject}</p>
           <p style="margin:0 0 6px;color:#6E6E73;font-size:13px;">Type</p>
           <p style="margin:0 0 12px;font-weight:600;font-size:14px;color:#1D1D1F;text-transform:capitalize;">${type.replace('_', ' ')}</p>
-          <p style="margin:0 0 6px;color:#6E6E73;font-size:13px;">Description</p>
+          <p style="margin:0 0 6px;color:#6E6E73;font-size:13px;">Notes</p>
           <p style="margin:0;color:#333;font-size:14px;line-height:1.5;">${description || 'No description provided.'}</p>
         </div>
         <p style="color:#6E6E73;font-size:13px;margin-top:24px;">Please update this interaction outcome in the CMS after your follow-up.</p>
