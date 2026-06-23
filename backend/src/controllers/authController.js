@@ -31,7 +31,7 @@ export const register = async (req, res) => {
     const verificationCodeExpires = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
 
     // Set role to admin for the specific email address
-    const role = email === 'vishalsinghsonigarayou@gmail.com' ? 'admin' : 'author';
+    const role = email === (process.env.ADMIN_EMAIL || 'admin@example.com') ? 'admin' : 'author';
 
     // Create new user
     user = new User({
@@ -330,7 +330,7 @@ export const googleLogin = async (req, res) => {
       const randomPassword = Math.random().toString(36).slice(-10) + Math.random().toString(36).slice(-10);
 
       // Set role to admin for the specific email address
-      const role = email === 'vishalsinghsonigarayou@gmail.com' ? 'admin' : 'author';
+      const role = email === (process.env.ADMIN_EMAIL || 'admin@example.com') ? 'admin' : 'author';
 
       user = new User({
         username,
