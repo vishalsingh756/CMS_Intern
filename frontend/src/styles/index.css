@@ -1001,11 +1001,10 @@ select option {
 
 .modal-body { padding: 24px; }
 
-/* ─── Sidebar Rail & Navigation (Asymmetric Glass layout) ────────── */
 .sidebar-rail {
   position: relative;
   height: 100vh;
-  width: 68px;
+  width: 62px;
   flex-shrink: 0;
   background: var(--sb-bg);
   border-right: 1px solid var(--sb-border);
@@ -1020,8 +1019,15 @@ select option {
   will-change: width;
 }
 
+/* Hide desktop rail on mobile — mobile drawer takes over */
+@media (max-width: 768px) {
+  .sidebar-rail {
+    display: none;
+  }
+}
+
 .sidebar-rail[data-expanded] {
-  width: 210px;
+  width: 200px;
   background: var(--sb-expanded-bg) !important;
   backdrop-filter: blur(24px) saturate(160%) !important;
   -webkit-backdrop-filter: blur(24px) saturate(160%) !important;
@@ -1258,24 +1264,35 @@ select option {
 .rail-logout:hover { background: rgba(225, 29, 72, 0.1); color: var(--rose); }
 .rail-logout > svg { flex-shrink: 0; margin-left: 15px; }
 
-/* ─── Sticky Navbar (Height 72px) ───────────────────────────────── */
+/* ─── Sticky Topbar ─────────────────────────────────────────────── */
 .topbar {
-  height: 72px;
+  height: 56px;
   background: var(--topbar-bg);
   backdrop-filter: blur(16px) saturate(1.4);
   -webkit-backdrop-filter: blur(16px) saturate(1.4);
   border-bottom: 1px solid var(--border);
   display: flex; align-items: center; justify-content: space-between;
-  padding: 0 32px;
+  padding: 0 24px;
   position: sticky; top: 0; z-index: 50;
+  flex-shrink: 0;
 }
 
 .topbar-title {
   font-family: 'Playfair Display', serif;
-  font-size: 20px;
+  font-size: 16px;
   font-weight: 800;
   color: var(--text-1);
   letter-spacing: -0.02em;
+}
+
+/* Show hamburger on mobile */
+@media (max-width: 768px) {
+  #mobile-menu-btn {
+    display: flex !important;
+  }
+  .topbar {
+    padding: 0 16px;
+  }
 }
 
 /* Nav links inside about page header */
@@ -1309,38 +1326,42 @@ select option {
   100% { transform: scaleX(1); }
 }
 
-/* ─── Page wrappers & Generous Spacing ──────────────────────────── */
+/* ─── Page wrappers & Spacing ────────────────────────────────── */
 .page {
-  padding: 80px 48px; /* Generous breathing gaps */
+  padding: 28px 32px;
   max-width: 1400px;
   margin: 0 auto;
   animation: fadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
+@media (max-width: 1024px) {
+  .page { padding: 24px 24px; }
+}
+
 @media (max-width: 768px) {
-  .page { padding: 48px 20px; }
+  .page { padding: 16px 16px; }
 }
 
 .page-header {
   display: flex; align-items: flex-start; justify-content: space-between;
-  flex-wrap: wrap; gap: 24px;
-  margin-bottom: 56px; /* High contrast spacing */
+  flex-wrap: wrap; gap: 12px;
+  margin-bottom: 20px;
 }
 
 .page-title {
   font-family: 'Playfair Display', serif;
-  font-size: clamp(32px, 4.5vw, 52px);
-  font-weight: 900;
+  font-size: clamp(20px, 2.5vw, 28px);
+  font-weight: 800;
   color: var(--text-1);
-  letter-spacing: -0.03em;
-  line-height: 1.05;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
 }
 
 .page-sub {
-  font-size: 15px;
+  font-size: 13px;
   color: var(--text-2);
-  margin-top: 10px;
-  line-height: 1.6;
+  margin-top: 4px;
+  line-height: 1.5;
 }
 
 /* ─── Premium Aurora Ambient Glows ──────────────────────────────── */
@@ -1420,8 +1441,54 @@ select option {
 
 @media (max-width: 992px) {
   .grid-2-1 { grid-template-columns: 1fr; }
-  .grid-3 { grid-template-columns: 1fr; }
+  .grid-3   { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
   .form-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 768px) {
+  .grid-3 { grid-template-columns: 1fr; }
+
+  /* Tighten table cells on mobile */
+  .data-table thead th,
+  .data-table td {
+    padding: 10px 12px;
+    font-size: 12px;
+  }
+
+  /* Stack filter bar vertically */
+  .filter-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .filter-bar .input,
+  .search-wrap {
+    width: 100%;
+    min-width: 0;
+  }
+
+  /* Modal full-width on small screens */
+  .modal-overlay {
+    padding: 12px;
+    align-items: flex-end;
+  }
+  .modal-box {
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    max-height: 90vh;
+  }
+
+  /* Section cards tighter padding */
+  .section-card .section-header,
+  .section-card > div:first-child {
+    padding: 12px 14px;
+  }
+
+  /* Stat cards full width */
+  .stat-card {
+    width: 100%;
+  }
+  .stat-card-container {
+    gap: 12px;
+  }
 }
 
 /* ─── Toast overrides ───────────────────────────────────────────── */
