@@ -1,6 +1,43 @@
 import Interaction from '../models/Interaction.js';
 import { paginate, sendResponse } from '../utils/helpers.js';
 import { logActivity } from '../utils/activityLogger.js';
+import { sendEmail, emailTemplates } from '../utils/emailService.js';
+
+/**
+ * Send follow-up reminder emails to both the client and the account owner.
+ * Fires-and-forgets — errors are logged but never bubble up to the HTTP response.
+ */
+const sendFollowUpEmails = async (interaction) => {
+  try {
+    const client   = interaction.client;      // already populated
+    const owner    = interaction.createdBy;   // already populated
+    const followUp = interaction.nextFollowUp;
+
+    if (!followUp) return;
+
+    const clientName  = client?.contactName  || client?.companyName || 'Client';
+    const clientEmail = client?.email;
+    const ownerEmail  = owner?.email;
+    const followUpStr = new Date(followUp).toLocaleDateString('en-IN', {
+      weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
+    });
+
+    const { subject, html } = emailTemplates.followUpReminder(
+      clientName,
+      interaction.subject,
+      interaction.type,
+      interaction.description,
+    );
+
+    // Append the scheduled date to the subject for clarity
+    const fullSubject = `${subject} — ${followUpStr}`;
+
+    const targets = [clientEmail, ownerEmail].filter(Boolean);
+    await Promise.allSettled(targets.map(email => sendEmail(email, fullSubject, html)));
+  } catch (err) {
+    console.error('[FollowUp Email] Error:', err.message);
+  }
+};
 
 export const createInteraction = async (req, res) => {
   try {
@@ -18,8 +55,11 @@ export const createInteraction = async (req, res) => {
     });
 
     await interaction.save();
-    await interaction.populate('client', 'companyName contactName');
+    await interaction.populate('client', 'companyName contactName email');
     await interaction.populate('createdBy', 'username email');
+
+    // Send follow-up reminder emails if a follow-up date was set
+    if (nextFollowUp) await sendFollowUpEmails(interaction);
 
     // Log activity
     await logActivity(req.user._id, 'create_interaction', 'interaction', interaction._id, { type, subject }, req);
@@ -56,8 +96,11 @@ export const updateInteraction = async (req, res) => {
     if (nextFollowUp) interaction.nextFollowUp = nextFollowUp;
 
     await interaction.save();
-    await interaction.populate('client', 'companyName contactName');
+    await interaction.populate('client', 'companyName contactName email');
     await interaction.populate('createdBy', 'username email');
+
+    // Send follow-up reminder emails if a follow-up date was set/changed
+    if (nextFollowUp) await sendFollowUpEmails(interaction);
 
     // Log activity
     await logActivity(req.user._id, 'edit_interaction', 'interaction', interaction._id, { type, subject }, req);
