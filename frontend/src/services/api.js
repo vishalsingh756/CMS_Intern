@@ -89,13 +89,7 @@ export const userService = {
 };
 
 export const reportService = {
-  createReport:  (data)         => apiClient.post('/reports', data),
-  getReports:    ()             => apiClient.get('/reports'),
-  getReport:     (id)           => apiClient.get(`/reports/${id}`),
-  updateReport:  (id, data)     => apiClient.put(`/reports/${id}`, data),
-  deleteReport:  (id)           => apiClient.delete(`/reports/${id}`),
-  runAdHoc:      (config, params) => apiClient.post('/reports/run', config, { params }),
-  runSaved:      (id, params)   => apiClient.post(`/reports/${id}/run`, {}, { params }),
+  getReportData: (type, params) => apiClient.get(`/reports/${type}`, { params }),
 };
 
 export const activityService = {
