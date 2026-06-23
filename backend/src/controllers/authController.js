@@ -90,7 +90,7 @@ export const login = async (req, res) => {
     const isMatch = await user.comparePassword(password);
 
     if (!isMatch) {
-      return sendResponse(res, 401, false, 'Invalid credentials');
+      return sendResponse(res, 401, false, 'Wrong password');
     }
 
     if (!user.isActive) {
