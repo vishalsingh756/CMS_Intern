@@ -4,7 +4,7 @@ import {
   FiUsers, FiCheckSquare, FiBarChart2, FiLayers, FiInfo, 
   FiCheckCircle, FiShield, FiTarget, FiActivity, 
   FiMail, FiExternalLink, FiTrendingUp, FiArrowRight,
-  FiSun, FiMoon
+  FiSun, FiMoon, FiMenu, FiX
 } from 'react-icons/fi';
 import useAuthStore from '../utils/authStore';
 
@@ -13,6 +13,7 @@ export default function About() {
   const [theme, setTheme] = useState(() => {
     return localStorage.getItem('theme') || 'light';
   });
+  const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
@@ -83,12 +84,11 @@ export default function About() {
         <div style={{ 
           maxWidth: '1300px', 
           margin: '0 auto', 
-          padding: '0 32px', 
           height: '100%', 
           display: 'flex', 
           alignItems: 'center', 
           justifyContent: 'space-between' 
-        }}>
+        }} className="about-header-inner px-4 md:px-8">
           
           {/* Logo with Hover Glow */}
           <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '10px' }} className="rail-logo-container">
@@ -105,7 +105,7 @@ export default function About() {
           </Link>
 
           {/* Nav Links */}
-          <nav style={{ display: 'flex', alignItems: 'center', gap: '32px' }} className="hidden md:flex">
+          <nav className="hidden md:flex items-center gap-8">
             <a href="#why-cms" className="navbar-link">Why CMS</a>
             <a href="#features" className="navbar-link">Features</a>
             <a href="#efficiency" className="navbar-link">Efficiency</a>
@@ -114,7 +114,7 @@ export default function About() {
           </nav>
 
           {/* Action Buttons */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+          <div className="flex items-center gap-4">
             {/* Theme Toggle Button */}
             <button
               onClick={toggleTheme}
@@ -144,34 +144,72 @@ export default function About() {
               {theme === 'light' ? <FiMoon size={16} /> : <FiSun size={16} />}
             </button>
 
-            {user ? (
-              <Link to="/dashboard" className="btn btn-primary" style={{ padding: '10px 20px', fontSize: '13px' }}>
-                Dashboard
-              </Link>
-            ) : (
-              <>
-                <Link to="/login" className="btn btn-ghost" style={{ padding: '10px 20px', fontSize: '13px' }}>
-                  Sign In
+            <div className="hidden md:flex items-center gap-4">
+              {user ? (
+                <Link to="/dashboard" className="btn btn-primary" style={{ padding: '10px 20px', fontSize: '13px' }}>
+                  Dashboard
                 </Link>
-                <Link to="/register" className="btn btn-primary" style={{ padding: '10px 20px', fontSize: '13px' }}>
-                  Get Started
-                </Link>
-              </>
-            )}
+              ) : (
+                <>
+                  <Link to="/login" className="btn btn-ghost" style={{ padding: '10px 20px', fontSize: '13px' }}>
+                    Sign In
+                  </Link>
+                  <Link to="/register" className="btn btn-primary" style={{ padding: '10px 20px', fontSize: '13px' }}>
+                    Get Started
+                  </Link>
+                </>
+              )}
+            </div>
+
+            {/* Hamburger Button */}
+            <button
+              onClick={() => setMenuOpen(!menuOpen)}
+              className="md:hidden flex items-center justify-center w-10 h-10 rounded-lg border border-[var(--border)] bg-[var(--glass-1)] text-[var(--text-1)] hover:bg-[var(--glass-2)] transition-colors"
+            >
+              {menuOpen ? <FiX size={20} /> : <FiMenu size={20} />}
+            </button>
           </div>
 
         </div>
       </header>
 
+      {/* Mobile Drawer Menu */}
+      {menuOpen && (
+        <div 
+          className="fixed inset-x-0 bottom-0 top-[72px] z-50 bg-[var(--bg-base)] md:hidden flex flex-col p-6 gap-6 anim-fade-in border-t border-[var(--border)]"
+          style={{ height: 'calc(100vh - 72px)' }}
+        >
+          <nav className="flex flex-col gap-6 text-center mt-8">
+            <a href="#why-cms" onClick={() => setMenuOpen(false)} className="text-xl font-semibold text-[var(--text-1)] hover:text-[var(--indigo)] transition-colors">Why CMS</a>
+            <a href="#features" onClick={() => setMenuOpen(false)} className="text-xl font-semibold text-[var(--text-1)] hover:text-[var(--indigo)] transition-colors">Features</a>
+            <a href="#efficiency" onClick={() => setMenuOpen(false)} className="text-xl font-semibold text-[var(--text-1)] hover:text-[var(--indigo)] transition-colors">Efficiency</a>
+            <a href="#mission" onClick={() => setMenuOpen(false)} className="text-xl font-semibold text-[var(--text-1)] hover:text-[var(--indigo)] transition-colors">Mission</a>
+            <a href="#contact" onClick={() => setMenuOpen(false)} className="text-xl font-semibold text-[var(--text-1)] hover:text-[var(--indigo)] transition-colors">Contact</a>
+          </nav>
+          <div className="flex flex-col gap-4 mt-auto mb-12">
+            {user ? (
+              <Link to="/dashboard" onClick={() => setMenuOpen(false)} className="btn btn-primary w-full py-3 text-center justify-center flex">
+                Dashboard
+              </Link>
+            ) : (
+              <>
+                <Link to="/login" onClick={() => setMenuOpen(false)} className="btn btn-ghost w-full py-3 text-center justify-center flex">
+                  Sign In
+                </Link>
+                <Link to="/register" onClick={() => setMenuOpen(false)} className="btn btn-primary w-full py-3 text-center justify-center flex">
+                  Get Started
+                </Link>
+              </>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* Main Content */}
       <main style={{ flex: 1, zIndex: 1 }}>
 
         {/* Hero Section - Asymmetric Layout with Staggered floating cards */}
-        <section style={{ 
-          maxWidth: '1300px', 
-          margin: '0 auto', 
-          padding: '100px 32px 80px',
-        }}>
+        <section className="max-w-[1300px] mx-auto px-4 md:px-8 py-12 md:py-24">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
             
             {/* Left Column: Typography & CTAs */}
@@ -186,24 +224,24 @@ export default function About() {
               <p style={{ fontSize: '16px', lineHeight: '1.7', color: 'var(--text-secondary)', marginBottom: '32px', maxWidth: '600px' }}>
                 The Client Management System (CMS) is a premium workspace built for businesses that value relationship details, structured coordination, and beautiful design.
               </p>
-              <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
+              <div className="flex flex-col sm:flex-row gap-4">
                 {user ? (
-                  <Link to="/dashboard" className="btn btn-primary">
+                  <Link to="/dashboard" className="btn btn-primary w-full sm:w-auto text-center justify-center flex">
                     Open Workspace <FiArrowRight size={14} style={{ marginLeft: '4px' }} />
                   </Link>
                 ) : (
-                  <Link to="/register" className="btn btn-primary">
+                  <Link to="/register" className="btn btn-primary w-full sm:w-auto text-center justify-center flex">
                     Create Workspace <FiArrowRight size={14} style={{ marginLeft: '4px' }} />
                   </Link>
                 )}
-                <a href="#features" className="btn btn-ghost">
+                <a href="#features" className="btn btn-ghost w-full sm:w-auto text-center justify-center flex">
                   Explore Features
                 </a>
               </div>
             </div>
 
             {/* Right Column: Asymmetric, overlapping floating stat cards (Broken Grid Moment) */}
-            <div className="lg:col-span-5 relative mt-12 lg:mt-0" style={{ height: '380px' }}>
+            <div className="lg:col-span-5 relative mt-12 lg:mt-0 about-hero-cards">
               
               {/* Card 1: Active Clients (Gold accent, rotated) */}
               <div className="stat-card absolute" style={{
@@ -268,13 +306,12 @@ export default function About() {
         </section>
 
         {/* Why CMS Section - Alternating Spacing & Background */}
-        <section id="why-cms" style={{ 
+        <section id="why-cms" className="py-12 md:py-28" style={{ 
           background: 'var(--bg-deep)', 
           borderTop: '1px solid rgba(255, 255, 255, 0.05)', 
-          borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
-          padding: '110px 0' 
+          borderBottom: '1px solid rgba(255, 255, 255, 0.05)'
         }}>
-          <div style={{ maxWidth: '1300px', margin: '0 auto', padding: '0 32px' }}>
+          <div className="max-w-[1300px] mx-auto px-4 md:px-8">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
               
               <div className="lg:col-span-6">
@@ -292,7 +329,7 @@ export default function About() {
 
               {/* Asymmetric tech stack display card */}
               <div className="lg:col-span-6 lg:pl-8">
-                <div className="card" style={{ padding: '36px' }}>
+                <div className="card p-6 md:p-9">
                   <h3 style={{ fontSize: '18px', fontWeight: 800, color: 'var(--text-1)', marginBottom: '20px', fontFamily: "'Playfair Display', serif" }}>
                     Engineered Foundation
                   </h3>
@@ -303,7 +340,7 @@ export default function About() {
                       { label: "React Client", desc: "State coordination with Zustand modules" },
                       { label: "Node.js Platform", desc: "High performance runtime and services" }
                     ].map((t, idx) => (
-                      <div key={idx} className="card-inset" style={{ padding: '14px 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <div key={idx} className="card-inset tech-stack-item flex justify-between items-center px-5 py-3.5">
                         <strong style={{ color: 'var(--indigo)' }}>{t.label}</strong>
                         <span style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>{t.desc}</span>
                       </div>
@@ -317,8 +354,8 @@ export default function About() {
         </section>
 
         {/* Key Features Section - Generous spacing (120px) */}
-        <section id="features" style={{ padding: '120px 0' }}>
-          <div style={{ maxWidth: '1300px', margin: '0 auto', padding: '0 32px' }}>
+        <section id="features" className="py-12 md:py-28">
+          <div className="max-w-[1300px] mx-auto px-4 md:px-8">
             
             <div style={{ textAlign: 'center', marginBottom: '72px' }}>
               <span className="eyebrow">Architecture</span>
@@ -358,13 +395,12 @@ export default function About() {
         </section>
 
         {/* Built for Efficiency Section */}
-        <section id="efficiency" style={{ 
+        <section id="efficiency" className="py-12 md:py-28" style={{ 
           background: 'var(--bg-deep)', 
           borderTop: '1px solid rgba(255, 255, 255, 0.05)', 
-          borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
-          padding: '110px 0' 
+          borderBottom: '1px solid rgba(255, 255, 255, 0.05)'
         }}>
-          <div style={{ maxWidth: '1300px', margin: '0 auto', padding: '0 32px' }}>
+          <div className="max-w-[1300px] mx-auto px-4 md:px-8">
             <div style={{ textAlign: 'center', marginBottom: '64px' }}>
               <span className="eyebrow">Design Standard</span>
               <h2 className="section-heading" style={{ marginTop: '12px' }}>Built for Operational Speed</h2>
@@ -372,7 +408,7 @@ export default function About() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {efficiencyPoints.map((p, idx) => (
-                <div key={idx} className="card-inset" style={{ padding: '24px 28px', display: 'flex', alignItems: 'center', gap: '16px' }}>
+                <div key={idx} className="card-inset flex items-center gap-4 p-5 md:p-6">
                   <FiCheckCircle size={20} style={{ color: 'var(--emerald)', flexShrink: 0 }} />
                   <span style={{ fontSize: '14.5px', fontWeight: 500, color: 'var(--text-secondary)' }}>{p}</span>
                 </div>
@@ -382,8 +418,8 @@ export default function About() {
         </section>
 
         {/* Our Mission Section - Centered premium block */}
-        <section id="mission" style={{ padding: '120px 32px', maxWidth: '960px', margin: '0 auto' }}>
-          <div className="card" style={{ padding: '60px 48px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '28px', textAlign: 'center' }}>
+        <section id="mission" className="max-w-[960px] mx-auto px-4 md:px-8 py-12 md:py-28">
+          <div className="card px-6 py-10 md:px-12 md:py-14 flex flex-col items-center gap-7 text-center">
             <div style={{ 
               width: '56px', 
               height: '56px', 
@@ -411,21 +447,13 @@ export default function About() {
         </section>
 
         {/* Contact Section */}
-        <section id="contact" style={{ 
+        <section id="contact" className="py-12 md:py-28" style={{ 
           background: 'var(--bg-deep)', 
-          borderTop: '1px solid rgba(255, 255, 255, 0.05)', 
-          padding: '110px 0' 
+          borderTop: '1px solid rgba(255, 255, 255, 0.05)'
         }}>
-          <div style={{ maxWidth: '600px', margin: '0 auto', padding: '0 24px' }}>
+          <div className="max-w-[600px] mx-auto px-4 md:px-8">
             
-            <div className="card" style={{
-              padding: '48px 36px',
-              textAlign: 'center',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              gap: '28px'
-            }}>
+            <div className="card px-6 py-10 md:px-9 md:py-12 text-center flex flex-col items-center gap-7">
               <div style={{
                 width: '56px', height: '56px', borderRadius: '50%',
                 background: 'rgba(225, 29, 72, 0.12)', color: 'var(--rose)',
@@ -446,12 +474,7 @@ export default function About() {
                 href="https://docs.google.com/forms/d/e/1FAIpQLSeD5Rld3Mi67fIQYBu5IdaI4XdaLPLK2jvecvaKYDzBxfMHYw/viewform" 
                 target="_blank" 
                 rel="noreferrer" 
-                className="btn btn-primary"
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '8px'
-                }}
+                className="btn btn-primary flex items-center gap-2"
               >
                 Open Form <FiExternalLink size={14} />
               </a>
@@ -463,20 +486,11 @@ export default function About() {
       </main>
 
       {/* Footer */}
-      <footer style={{ 
+      <footer className="px-4 md:px-8 py-8" style={{ 
         background: 'var(--bg-base)', 
-        borderTop: '1px solid rgba(255, 255, 255, 0.05)', 
-        padding: '36px 32px' 
+        borderTop: '1px solid rgba(255, 255, 255, 0.05)'
       }}>
-        <div style={{ 
-          maxWidth: '1300px', 
-          margin: '0 auto', 
-          display: 'flex', 
-          flexWrap: 'wrap', 
-          justifyContent: 'space-between', 
-          alignItems: 'center', 
-          gap: '20px' 
-        }}>
+        <div className="max-w-[1300px] mx-auto flex flex-col md:flex-row justify-between items-center gap-6 text-center md:text-left">
           
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
             <div className="rail-logo-mark" style={{ width: '28px', height: '28px' }}>
@@ -502,7 +516,6 @@ export default function About() {
 
         </div>
       </footer>
-
     </div>
   );
 }
