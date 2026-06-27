@@ -9,8 +9,7 @@ const col2 = ["Blog", "Pricing", "Use Cases"];
 export default function AntigravityFooter() {
   return (
     <section id="footer" className="relative bg-[#FFFFFF] text-black pt-[120px] overflow-hidden select-none border-t border-black/[0.05]">
-      {/* Top transition area with stardust dark band */}
-      <div className="absolute top-0 inset-x-0 h-24 bg-gradient-to-b from-black to-white opacity-95 pointer-events-none" />
+
 
       <div className="max-w-[1280px] mx-auto px-8 relative z-10">
         
