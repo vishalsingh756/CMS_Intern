@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+﻿import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   FiPlus, FiEdit2, FiTrash2, FiSearch, FiX,
@@ -15,7 +15,7 @@ import { toast } from 'react-toastify';
 const initials = (name = '') => name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2) || '?';
 
 // Deterministic colour from string
-const CLIENT_COLORS = ['#6366f1','#0ea5e9','#10b981','#f59e0b','#ef4444','#8b5cf6','#ec4899','#14b8a6'];
+const CLIENT_COLORS = ['#5B5BD6','#0ea5e9','#10b981','#f59e0b','#ef4444','#8b5cf6','#ec4899','#14b8a6'];
 const clientColor = (name = '') => CLIENT_COLORS[name.charCodeAt(0) % CLIENT_COLORS.length];
 
 const STAGE_BADGE = {
@@ -513,3 +513,4 @@ export default function Deals() {
     </Layout>
   );
 }
+

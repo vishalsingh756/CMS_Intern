@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom';
+﻿import { useNavigate } from 'react-router-dom';
 import { FiArrowLeft, FiHome } from 'react-icons/fi';
 
 export default function NotFound() {
@@ -10,7 +10,7 @@ export default function NotFound() {
     }}>
       {/* Blobs */}
       <div style={{ position:'fixed', inset:0, overflow:'hidden', pointerEvents:'none' }}>
-        <div style={{ position:'absolute', top:'-10%', right:'-5%', width:'400px', height:'400px', borderRadius:'50%', background:'radial-gradient(circle, rgba(79,70,229,0.06) 0%, transparent 70%)' }} />
+        <div style={{ position:'absolute', top:'-10%', right:'-5%', width:'400px', height:'400px', borderRadius:'50%', background:'radial-gradient(circle, rgba(50,121,249,0.06) 0%, transparent 70%)' }} />
         <div style={{ position:'absolute', bottom:'-10%', left:'-5%',  width:'300px', height:'300px', borderRadius:'50%', background:'radial-gradient(circle, rgba(5,150,105,0.05) 0%, transparent 70%)' }} />
       </div>
 
@@ -50,3 +50,4 @@ export default function NotFound() {
     </div>
   );
 }
+

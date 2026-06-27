@@ -188,7 +188,7 @@ export default function Header({ onMenuClick }) {
               background: 'var(--accent)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               fontSize: '11px', fontWeight: 700, color: '#fff',
-              boxShadow: '0 2px 6px rgba(79,70,229,0.3)',
+              boxShadow: '0 2px 6px rgba(50,121,249,0.30)',
               cursor: 'pointer',
               flexShrink: 0,
               transition: 'transform 0.15s, box-shadow 0.15s',
@@ -197,11 +197,11 @@ export default function Header({ onMenuClick }) {
             onClick={() => navigate('/profile')}
             onMouseEnter={e => {
               e.currentTarget.style.transform = 'scale(1.08)';
-              e.currentTarget.style.boxShadow = '0 4px 12px rgba(79,70,229,0.4)';
+              e.currentTarget.style.boxShadow = '0 4px 12px rgba(50,121,249,0.40)';
             }}
             onMouseLeave={e => {
               e.currentTarget.style.transform = 'scale(1)';
-              e.currentTarget.style.boxShadow = '0 2px 6px rgba(79,70,229,0.3)';
+              e.currentTarget.style.boxShadow = '0 2px 6px rgba(50,121,249,0.30)';
             }}
           >
             {(user?.firstName?.[0] || user?.username?.[0] || 'U').toUpperCase()}

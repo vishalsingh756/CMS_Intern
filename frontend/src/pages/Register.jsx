@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { FiMail, FiLock, FiUser, FiEye, FiEyeOff, FiLayers } from 'react-icons/fi';
 import { FcGoogle } from 'react-icons/fc';
@@ -153,7 +153,7 @@ export default function Register() {
           <div style={{
             position: 'absolute', top: '-10%', right: '-5%',
             width: '420px', height: '420px', borderRadius: '50%',
-            background: 'radial-gradient(circle, rgba(79,70,229,0.08) 0%, transparent 70%)',
+            background: 'radial-gradient(circle, rgba(50,121,249,0.08) 0%, transparent 70%)',
           }} />
         </div>
 
@@ -164,7 +164,7 @@ export default function Register() {
               background: 'var(--accent)',
               display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
               marginBottom: '14px',
-              boxShadow: '0 4px 14px rgba(79,70,229,0.4)',
+              boxShadow: '0 4px 14px rgba(50,121,249,0.4)',
             }}>
               <FiMail size={20} color="#fff" />
             </div>
@@ -237,7 +237,7 @@ export default function Register() {
         <div style={{
           position:'absolute', top:'-10%', right:'-5%',
           width:'400px', height:'400px', borderRadius:'50%',
-          background:'radial-gradient(circle, rgba(79,70,229,0.07) 0%, transparent 70%)',
+          background:'radial-gradient(circle, rgba(50,121,249,0.07) 0%, transparent 70%)',
         }} />
       </div>
 
@@ -246,7 +246,7 @@ export default function Register() {
           <div style={{
             width:'44px', height:'44px', borderRadius:'11px', background:'var(--accent)',
             display:'inline-flex', alignItems:'center', justifyContent:'center',
-            marginBottom:'14px', boxShadow:'0 4px 14px rgba(79,70,229,0.4)',
+            marginBottom:'14px', boxShadow:'0 4px 14px rgba(50,121,249,0.4)',
           }}>
             <FiLayers size={20} color="#fff" />
           </div>
@@ -359,3 +359,4 @@ export default function Register() {
     </div>
   );
 }
+

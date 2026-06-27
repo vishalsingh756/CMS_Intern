@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+﻿import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   FiBell, FiX, FiUsers, FiTrendingUp, FiCheckSquare,
@@ -263,14 +263,14 @@ export default function NotificationPanel() {
                     style={{
                       display: 'flex', alignItems: 'flex-start', gap: '10px',
                       padding: '11px 14px',
-                      background: isNew ? 'rgba(79,70,229,0.03)' : 'transparent',
+                      background: isNew ? 'rgba(50,121,249,0.03)' : 'transparent',
                       borderBottom: '1px solid var(--border)',
                       cursor: hasLink ? 'pointer' : 'default',
                       transition: 'background 0.12s',
                       position: 'relative',
                     }}
                     onMouseEnter={e => { if (hasLink) e.currentTarget.style.background = 'var(--surface-2)'; }}
-                    onMouseLeave={e => { e.currentTarget.style.background = isNew ? 'rgba(79,70,229,0.03)' : 'transparent'; }}
+                    onMouseLeave={e => { e.currentTarget.style.background = isNew ? 'rgba(50,121,249,0.03)' : 'transparent'; }}
                   >
                     {/* Unread dot */}
                     {isNew && (
@@ -351,3 +351,4 @@ export default function NotificationPanel() {
     </div>
   );
 }
+

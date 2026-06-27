@@ -1,4 +1,4 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import { FiUser, FiSave, FiMail, FiLock, FiShield } from 'react-icons/fi';
 import Layout from '../components/Layout';
 import { authService } from '../services/api';
@@ -47,7 +47,7 @@ export default function Profile() {
             background:'linear-gradient(135deg, var(--accent) 0%, #818cf8 100%)',
             display:'flex', alignItems:'center', justifyContent:'center',
             fontSize:'26px', fontWeight:900, color:'#fff',
-            boxShadow:'0 4px 16px rgba(79,70,229,0.3)',
+            boxShadow:'0 4px 16px rgba(50,121,249,0.3)',
           }}>
             {(user?.firstName?.[0] || user?.username?.[0] || 'U').toUpperCase()}
           </div>
@@ -141,3 +141,4 @@ export default function Profile() {
     </Layout>
   );
 }
+

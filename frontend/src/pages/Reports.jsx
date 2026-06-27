@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import Layout from '../components/Layout';
 import { reportService } from '../services/api';
 import {
@@ -13,7 +13,7 @@ import {
 /* ── Config ──────────────────────────────────────────────── */
 const REPORT_TYPES = [
   { type: 'deals_by_stage',       label: 'Deals by Stage',       Icon: FiTrendingUp,    color: '#10b981', bg: '#ecfdf5' },
-  { type: 'clients_by_status',    label: 'Clients by Status',    Icon: FiUsers,          color: '#6366f1', bg: '#eef2ff' },
+  { type: 'clients_by_status',    label: 'Clients by Status',    Icon: FiUsers,          color: '#5B5BD6', bg: '#eef2ff' },
   { type: 'tasks_by_status',      label: 'Tasks by Status',      Icon: FiCheckSquare,   color: '#a855f7', bg: '#faf5ff' },
   { type: 'interactions_by_type', label: 'Interactions by Type', Icon: FiMessageCircle, color: '#f59e0b', bg: '#fffbeb' },
 ];
@@ -25,7 +25,7 @@ const COLUMNS = {
   interactions_by_type: [{ key: 'subject', label: 'Subject' }, { key: 'type', label: 'Type' }, { key: 'outcome', label: 'Outcome' }, { key: 'date', label: 'Date' }, { key: 'createdAt', label: 'Created' }],
 };
 
-const COLORS = ['#6366f1', '#10b981', '#f59e0b', '#ef4444', '#a855f7', '#3b82f6', '#f97316'];
+const COLORS = ['#5B5BD6', '#10b981', '#f59e0b', '#ef4444', '#a855f7', '#3b82f6', '#f97316'];
 
 const TT_STYLE = {
   contentStyle: {
@@ -267,3 +267,4 @@ export default function Reports() {
     </Layout>
   );
 }
+

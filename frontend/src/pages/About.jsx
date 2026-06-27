@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { 
   FiUsers, FiCheckSquare, FiBarChart2, FiLayers, FiInfo, 
@@ -41,7 +41,7 @@ export default function About() {
       title: "Client Intelligence",
       desc: "Maintain rich client profiles, logs, and communication history in a refined centralized vault.",
       color: "var(--indigo)",
-      shadow: "rgba(79, 70, 229, 0.15)"
+      shadow: "rgba(50,121,249,0.15)"
     },
     {
       icon: FiActivity,
@@ -276,8 +276,8 @@ export default function About() {
               {/* Card 2: Deal Flow (Indigo accent, offset, rotated) */}
               <div className="stat-card absolute" style={{
                 '--stat-accent': 'var(--indigo)',
-                '--stat-accent-bg': 'rgba(79, 70, 229, 0.12)',
-                '--stat-shadow': 'rgba(79, 70, 229, 0.15)',
+                '--stat-accent-bg': 'rgba(50,121,249,0.12)',
+                '--stat-shadow': 'rgba(50,121,249,0.15)',
                 top: '50px',
                 right: '10px',
                 transform: 'rotate(2deg) translateY(0px)',
@@ -435,12 +435,12 @@ export default function About() {
               width: '56px', 
               height: '56px', 
               borderRadius: '50%', 
-              background: 'rgba(79, 70, 229, 0.12)', 
+              background: 'rgba(50,121,249,0.12)', 
               color: 'var(--indigo)', 
               display: 'flex', 
               alignItems: 'center', 
               justifyContent: 'center', 
-              boxShadow: '0 4px 15px rgba(79, 70, 229, 0.15)' 
+              boxShadow: '0 4px 15px rgba(50,121,249,0.15)' 
             }}>
               <FiTarget size={24} />
             </div>
@@ -530,3 +530,4 @@ export default function About() {
     </div>
   );
 }
+
