@@ -4,46 +4,64 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ─── Senior Designer Midnight & Jewel System ───────────────────── */
+/* ─── Google Antigravity Color System ───────────────────────────── */
+/* Reference: https://antigravity.google — Neutral Grey Scale + Blue #3279F9 */
 :root {
-  /* Backgrounds — layered depth */
-  --bg-base:      #07070D;
-  --bg-deep:      #0A0A14;
-  --bg-surface:   #0F0F1C;
-  --bg-panel:     #141425;
-  --bg-lift:      #1A1A30;
+  /* ── Antigravity Grey Palette ── */
+  --ag-grey-0:    #FFFFFF;
+  --ag-grey-10:   #F8F9FC;
+  --ag-grey-15:   #F0F1F5;
+  --ag-grey-20:   #EFF2F7;
+  --ag-grey-50:   #E6EAF0;
+  --ag-grey-100:  #E1E6EC;
+  --ag-grey-200:  #CDD4DC;
+  --ag-grey-300:  #B2BBC5;
+  --ag-grey-800:  #45474D;
+  --ag-grey-900:  #2F3034;
+  --ag-grey-1000: #212226;
+  --ag-grey-1100: #18191D;
+  --ag-grey-1200: #121317;
+  --ag-blue-600:  #3279F9;
+
+  /* Backgrounds — Antigravity dark neutral layers */
+  --bg-base:      #121317;
+  --bg-deep:      #18191D;
+  --bg-surface:   #212226;
+  --bg-panel:     #2A2B30;
+  --bg-lift:      #2F3034;
 
   /* Glass layers */
-  --glass-1:  rgba(255, 255, 255, 0.03);
-  --glass-2:  rgba(255, 255, 255, 0.06);
-  --glass-3:  rgba(255, 255, 255, 0.09);
-  --glass-border: rgba(255, 255, 255, 0.08);
-  --glass-highlight: rgba(255, 255, 255, 0.12);
+  --glass-1:  rgba(230, 234, 240, 0.03);
+  --glass-2:  rgba(230, 234, 240, 0.06);
+  --glass-3:  rgba(230, 234, 240, 0.09);
+  --glass-border: rgba(230, 234, 240, 0.10);
+  --glass-highlight: rgba(255, 255, 255, 0.08);
 
-  /* Accent palette */
-  --indigo:   #4F46E5;
-  --violet:   #7C3AED;
-  --rose:     #E11D48;
-  --amber:    #F59E0B;
-  --emerald:  #10B981;
-  --cyan:     #06B6D4;
+  /* Accent palette — Antigravity Blue primary */
+  --indigo:   #3279F9;
+  --violet:   #5B5BD6;
+  --rose:     #E5484D;
+  --amber:    #F5A623;
+  --emerald:  #30A46C;
+  --cyan:     #00A2C7;
 
-  /* Text hierarchy */
-  --text-primary:   rgba(255, 255, 255, 0.92);
-  --text-secondary: rgba(255, 255, 255, 0.62);
-  --text-muted:     rgba(255, 255, 255, 0.38);
-  --text-dim:       rgba(255, 255, 255, 0.18);
+  /* Text hierarchy — Antigravity on-dark */
+  --text-primary:   #E6EAF0;
+  --text-secondary: rgba(230, 234, 240, 0.65);
+  --text-muted:     rgba(230, 234, 240, 0.40);
+  --text-dim:       rgba(230, 234, 240, 0.20);
 
-  --text-gradient-start: #ffffff;
-  --text-gradient-end:   rgba(255, 255, 255, 0.6);
+  --text-gradient-start: #E6EAF0;
+  --text-gradient-end:   rgba(230, 234, 240, 0.55);
 
-  --card-inset-bg:     rgba(0, 0, 0, 0.25);
-  --card-inset-border: rgba(255, 255, 255, 0.06);
-  --card-inset-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.4);
+  --card-inset-bg:     rgba(0, 0, 0, 0.20);
+  --card-inset-border: rgba(230, 234, 240, 0.06);
+  --card-inset-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.35);
 
-  /* Borders */
-  --border:       rgba(255, 255, 255, 0.08);
-  --border-hover: rgba(255, 255, 255, 0.18);
+  /* Borders — Antigravity neutral outline */
+  --border:       rgba(33, 34, 38, 0.12);
+  --border:       rgba(230, 234, 240, 0.10);
+  --border-hover: rgba(230, 234, 240, 0.22);
   --border-focus: var(--indigo);
 
   /* Mapping to existing app theme architecture */
@@ -53,11 +71,11 @@
   --surface-2:     var(--bg-panel);
   --surface-3:     var(--bg-lift);
 
-  --border-2:      rgba(255, 255, 255, 0.06);
+  --border-2:      rgba(230, 234, 240, 0.06);
 
-  /* Premium Glassmorphic Colors */
+  /* Glassmorphic Cards — Antigravity style (blur 8px) */
   --card-bg:       linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 100%);
-  --card-blur:     blur(20px) saturate(140%);
+  --card-blur:     blur(8px) saturate(120%);
   --input-bg:      rgba(255, 255, 255, 0.04);
 
   /* Typography */
@@ -65,282 +83,271 @@
   --text-2:        var(--text-secondary);
   --text-3:        var(--text-muted);
 
-  /* Accent - Purple-Indigo */
+  /* Accent — Antigravity Blue */
   --accent:        var(--indigo);
-  --accent-h:      var(--violet);
-  --accent-s:      rgba(79, 70, 229, 0.12);
-  --accent-rgb:    79, 70, 229;
-
-  /* Semantic Colors (Desaturated/Muted) */
-  --green:         var(--emerald);
-  --green-s:       rgba(16, 185, 129, 0.12);
-  --yellow:        var(--amber);
-  --yellow-s:      rgba(245, 158, 11, 0.12);
-  --red:           var(--rose);
-  --red-s:         rgba(225, 29, 72, 0.12);
-  --blue:          var(--cyan);
-  --blue-s:        rgba(6, 182, 212, 0.12);
-  --purple:        var(--violet);
-  --purple-s:      rgba(124, 58, 237, 0.12);
-  --orange:        #EA580C;
-  --orange-s:      rgba(234, 88, 12, 0.12);
-
-  /* Badge Text Colors (Legible) */
-  --badge-green-txt: #34D399;
-  --badge-yellow-txt: #FBBF24;
-  --badge-red-txt: #FCA5A5;
-  --badge-blue-txt: #67E8F9;
-  --badge-purple-txt: #C084FC;
-  --badge-orange-txt: #FF9F55;
-
-  /* Sidebar Theme variables */
-  --sb-bg:         var(--bg-deep);
-  --sb-border:     var(--glass-border);
-  --sb-text-1:     var(--text-primary);
-  --sb-text-2:     var(--text-secondary);
-  --sb-text-3:     var(--text-muted);
-  --sb-hover:      rgba(255, 255, 255, 0.04);
-  --sb-active-bg:  linear-gradient(135deg, rgba(79, 70, 229, 0.25) 0%, rgba(79, 70, 229, 0.1) 100%);
-  --sb-active-txt: #ffffff;
-
-  /* Custom components */
-  --topbar-bg:     rgba(10, 10, 15, 0.85);
-  --auth-bg:       radial-gradient(circle at 10% 20%, rgba(79, 70, 229, 0.08) 0%, #07070D 90%);
-
-  /* Border Radii */
-  --radius:        8px;
-  --radius-lg:     12px;
-  --radius-xl:     20px;
-  --radius-2xl:    28px;
-
-  /* Multi-layered Colored Shadows */
-  --shadow-xs:     0 0 0 1px rgba(79,70,229,0.05), 0 2px 4px rgba(0,0,0,0.3);
-  --shadow-sm:     0 0 0 1px rgba(79,70,229,0.08), 0 8px 20px rgba(0,0,0,0.4);
-  --shadow:        0 0 0 1px rgba(79,70,229,0.1), 0 20px 60px rgba(0,0,0,0.6), 0 0 40px rgba(79,70,229,0.08);
-  --shadow-lg:     0 0 0 1px rgba(79,70,229,0.12), 0 32px 80px rgba(0,0,0,0.7), 0 0 50px rgba(79,70,229,0.12);
-  --shadow-xl:     0 0 0 1px rgba(79,70,229,0.15), 0 40px 100px rgba(0,0,0,0.8), 0 0 60px rgba(79,70,229,0.18);
-}
-
-[data-theme="light"] {
-  /* Background depth (3 layers) */
-  --bg-base:      #F8F7FF;
-  --bg-deep:      #EEEDF9;
-  --bg-surface:   #E4E2F5;
-  --bg-panel:     #E4E2F5;
-  --bg-lift:      #E4E2F5;
-
-  /* Glass layers */
-  --glass-1:  rgba(100, 90, 180, 0.02);
-  --glass-2:  rgba(100, 90, 180, 0.04);
-  --glass-3:  rgba(100, 90, 180, 0.06);
-  --glass-border: rgba(100, 90, 180, 0.10);
-  --glass-highlight: rgba(255, 255, 255, 0.90);
-
-  /* Text hierarchy */
-  --text-primary:   #13111F;
-  --text-secondary: rgba(19, 17, 31, 0.62);
-  --text-muted:     rgba(19, 17, 31, 0.38);
-  --text-dim:       rgba(19, 17, 31, 0.18);
-
-  --text-gradient-start: #13111F;
-  --text-gradient-end:   rgba(19, 17, 31, 0.62);
-
-  --card-inset-bg:     rgba(100, 90, 180, 0.03);
-  --card-inset-border: rgba(100, 90, 180, 0.08);
-  --card-inset-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
-
-  /* Borders */
-  --border:       rgba(100, 90, 180, 0.10);
-  --border-hover: rgba(100, 90, 180, 0.20);
-  --border-focus: var(--indigo);
-  --border-2:      rgba(100, 90, 180, 0.05);
-
-  /* Mapping to existing app theme architecture */
-  --bg:            var(--bg-base);
-  --bg-secondary:  var(--bg-deep);
-  --surface:       var(--bg-surface);
-  --surface-2:     var(--bg-panel);
-  --surface-3:     var(--bg-lift);
-
-  /* Premium Glassmorphic Colors - Light Edition */
-  --card-bg:       linear-gradient(135deg, rgba(255, 255, 255, 0.75) 0%, rgba(255, 255, 255, 0.45) 100%);
-  --card-blur:     blur(16px);
-  --input-bg:      rgba(255, 255, 255, 0.8);
-
-  /* Typography */
-  --text-1:        var(--text-primary);
-  --text-2:        var(--text-secondary);
-  --text-3:        var(--text-muted);
-
-  /* Accents */
-  --indigo:   #4338CA;
-  --rose:     #BE123C;
-  --amber:    #D97706;
-  --violet:   #6366F1;
-  --emerald:  #047857;
-  --cyan:     #0891B2;
-
-  /* Accent - Purple-Indigo */
-  --accent:        var(--indigo);
-  --accent-h:      var(--violet);
-  --accent-s:      rgba(67, 56, 202, 0.08);
-
-  /* Semantic Colors (Legible in Light Mode) */
-  --green:         #047857;
-  --green-s:       rgba(4, 120, 87, 0.08);
-  --yellow:        #D97706;
-  --yellow-s:      rgba(217, 119, 6, 0.08);
-  --red:           #BE123C;
-  --red-s:         rgba(190, 18, 60, 0.08);
-  --blue:          #0891B2;
-  --blue-s:        rgba(8, 145, 178, 0.08);
-  --purple:        #6D28D9;
-  --purple-s:      rgba(109, 40, 217, 0.08);
-  --orange:        #C2410C;
-  --orange-s:      rgba(194, 65, 12, 0.08);
-
-  /* Badge Text Colors (High Contrast in Light Mode) */
-  --badge-green-txt: #064E3B;
-  --badge-yellow-txt: #78350F;
-  --badge-red-txt: #991B1B;
-  --badge-blue-txt: #164E63;
-  --badge-purple-txt: #4C1D95;
-  --badge-orange-txt: #7C2D12;
-
-  /* Sidebar Theme variables (Light Elegant Rail) */
-  --sb-bg:         #FFFFFF;
-  --sb-border:     rgba(100, 90, 180, 0.10);
-  --sb-text-1:     var(--text-primary);
-  --sb-text-2:     var(--text-secondary);
-  --sb-text-3:     var(--text-muted);
-  --sb-hover:      rgba(100, 90, 180, 0.04);
-  --sb-active-bg:  linear-gradient(135deg, rgba(67, 56, 202, 0.1) 0%, rgba(67, 56, 202, 0.03) 100%);
-  --sb-active-txt: var(--indigo);
-  --sb-expanded-bg: rgba(255, 255, 255, 0.95);
-  --sb-expanded-shadow: 0 8px 32px rgba(67, 56, 202, 0.06);
-
-  /* Custom components */
-  --topbar-bg:     rgba(248, 247, 255, 0.85);
-  --auth-bg:       radial-gradient(circle at 10% 20%, rgba(67, 56, 202, 0.05) 0%, #F8F7FF 90%);
-
-  /* Light Shadow System (soft warm shadows) */
-  --shadow-xs:     0 2px 4px rgba(0,0,0,0.02);
-  --shadow-sm:     0 2px 8px rgba(0,0,0,0.06);
-  --shadow:        0 8px 32px rgba(67,56,202,0.10), 0 2px 8px rgba(0,0,0,0.06);
-  --shadow-lg:     0 12px 40px rgba(67,56,202,0.12), 0 4px 12px rgba(0,0,0,0.07);
-  --shadow-xl:     0 20px 50px rgba(67,56,202,0.14), 0 6px 16px rgba(0,0,0,0.08);
-}
-
-[data-theme="dark"] {
-  /* Background depth (3 layers) */
-  --bg-base:      #07070D;
-  --bg-deep:      #0F0F1C;
-  --bg-surface:   #1A1A2E;
-  --bg-panel:     #1A1A2E;
-  --bg-lift:      #1A1A2E;
-
-  /* Glass layers & elements */
-  --glass-1:  rgba(255, 255, 255, 0.03);
-  --glass-2:  rgba(255, 255, 255, 0.06);
-  --glass-3:  rgba(255, 255, 255, 0.09);
-  --glass-border: rgba(255, 255, 255, 0.08);
-  --glass-highlight: rgba(255, 255, 255, 0.10);
-
-  /* Accents */
-  --indigo:   #4F46E5;
-  --rose:     #E11D48;
-  --amber:    #F59E0B;
-  --violet:   #7C3AED;
-  --emerald:  #10B981;
-  --cyan:     #06B6D4;
-
-  /* Text hierarchy */
-  --text-primary:   #F0EEFF;
-  --text-secondary: rgba(255, 255, 255, 0.58);
-  --text-muted:     rgba(255, 255, 255, 0.32);
-  --text-dim:       rgba(255, 255, 255, 0.18);
-
-  --text-gradient-start: #F0EEFF;
-  --text-gradient-end:   rgba(255, 255, 255, 0.58);
-
-  --card-inset-bg:     rgba(0, 0, 0, 0.25);
-  --card-inset-border: rgba(255, 255, 255, 0.06);
-  --card-inset-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.4);
-
-  /* Borders */
-  --border:       rgba(255, 255, 255, 0.08);
-  --border-hover: rgba(255, 255, 255, 0.18);
-  --border-focus: var(--indigo);
-  --border-2:      rgba(255, 255, 255, 0.06);
-
-  /* Mapping to existing app theme architecture */
-  --bg:            var(--bg-base);
-  --bg-secondary:  var(--bg-deep);
-  --surface:       var(--bg-surface);
-  --surface-2:     var(--bg-panel);
-  --surface-3:     var(--bg-lift);
-
-  /* Premium Glassmorphic Colors */
-  --card-bg:       linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
-  --card-blur:     blur(20px) saturate(140%);
-  --input-bg:      rgba(255, 255, 255, 0.04);
-
-  /* Typography */
-  --text-1:        var(--text-primary);
-  --text-2:        var(--text-secondary);
-  --text-3:        var(--text-muted);
-
-  /* Accent - Purple-Indigo */
-  --accent:        var(--indigo);
-  --accent-h:      var(--violet);
-  --accent-s:      rgba(79, 70, 229, 0.12);
+  --accent-h:      #5B9EFF;
+  --accent-s:      rgba(50, 121, 249, 0.14);
+  --accent-rgb:    50, 121, 249;
 
   /* Semantic Colors */
   --green:         var(--emerald);
-  --green-s:       rgba(16, 185, 129, 0.12);
+  --green-s:       rgba(48, 164, 108, 0.12);
   --yellow:        var(--amber);
-  --yellow-s:      rgba(245, 158, 11, 0.12);
+  --yellow-s:      rgba(245, 166, 35, 0.12);
   --red:           var(--rose);
-  --red-s:         rgba(225, 29, 72, 0.12);
+  --red-s:         rgba(229, 72, 77, 0.12);
   --blue:          var(--cyan);
-  --blue-s:        rgba(6, 182, 212, 0.12);
+  --blue-s:        rgba(0, 162, 199, 0.12);
   --purple:        var(--violet);
-  --purple-s:      rgba(124, 58, 237, 0.12);
-  --orange:        #EA580C;
-  --orange-s:      rgba(234, 88, 12, 0.12);
+  --purple-s:      rgba(91, 91, 214, 0.12);
+  --orange:        #F76808;
+  --orange-s:      rgba(247, 104, 8, 0.12);
 
-  /* Badge Text Colors (Legible) */
-  --badge-green-txt: #34D399;
-  --badge-yellow-txt: #FBBF24;
-  --badge-red-txt: #FCA5A5;
-  --badge-blue-txt: #67E8F9;
-  --badge-purple-txt: #C084FC;
-  --badge-orange-txt: #FF9F55;
+  /* Badge Text Colors */
+  --badge-green-txt:  #46A758;
+  --badge-yellow-txt: #F5A623;
+  --badge-red-txt:    #E5484D;
+  --badge-blue-txt:   #3279F9;
+  --badge-purple-txt: #8E8EF7;
+  --badge-orange-txt: #F76808;
 
-  /* Sidebar Theme variables */
+  /* Sidebar */
   --sb-bg:         var(--bg-deep);
   --sb-border:     var(--glass-border);
   --sb-text-1:     var(--text-primary);
   --sb-text-2:     var(--text-secondary);
   --sb-text-3:     var(--text-muted);
-  --sb-hover:      rgba(255, 255, 255, 0.04);
-  --sb-active-bg:  linear-gradient(135deg, rgba(79, 70, 229, 0.25) 0%, rgba(79, 70, 229, 0.1) 100%);
-  --sb-active-txt: #ffffff;
-  --sb-expanded-bg: rgba(10, 10, 20, 0.88);
-  --sb-expanded-shadow: 15px 0 45px rgba(0, 0, 0, 0.6);
+  --sb-hover:      rgba(230, 234, 240, 0.04);
+  --sb-active-bg:  linear-gradient(135deg, rgba(50,121,249,0.20) 0%, rgba(50,121,249,0.08) 100%);
+  --sb-active-txt: #E6EAF0;
 
   /* Custom components */
-  --topbar-bg:     rgba(10, 10, 15, 0.85);
-  --auth-bg:       radial-gradient(circle at 10% 20%, rgba(79, 70, 229, 0.08) 0%, #07070D 90%);
+  --topbar-bg:     rgba(18, 19, 23, 0.88);
+  --auth-bg:       radial-gradient(ellipse at 20% 10%, rgba(50,121,249,0.10) 0%, #121317 70%);
 
-  /* Dark shadows (colored - matching rgba of nearest accent) */
-  --shadow-xs:     0 0 0 1px rgba(79,70,229,0.05), 0 2px 4px rgba(0,0,0,0.3);
-  --shadow-sm:     0 0 0 1px rgba(79,70,229,0.08), 0 8px 20px rgba(79,70,229,0.15);
-  --shadow:        0 0 0 1px rgba(79,70,229,0.1), 0 20px 60px rgba(0,0,0,0.5), 0 0 30px rgba(79,70,229,0.20);
-  --shadow-lg:     0 0 0 1px rgba(79,70,229,0.12), 0 32px 80px rgba(0,0,0,0.6), 0 0 40px rgba(79,70,229,0.25);
-  --shadow-xl:     0 0 0 1px rgba(79,70,229,0.15), 0 40px 100px rgba(0,0,0,0.7), 0 0 50px rgba(79,70,229,0.30);
+  /* Border Radii — Antigravity shape corners */
+  --radius:        8px;
+  --radius-lg:     16px;
+  --radius-xl:     24px;
+  --radius-2xl:    36px;
+
+  /* Shadows — neutral, no purple tint */
+  --shadow-xs:     0 1px 2px rgba(0,0,0,0.24), 0 0 0 1px rgba(230,234,240,0.06);
+  --shadow-sm:     0 2px 8px rgba(0,0,0,0.30), 0 0 0 1px rgba(230,234,240,0.08);
+  --shadow:        0 4px 20px rgba(0,0,0,0.40), 0 0 0 1px rgba(230,234,240,0.08), 0 0 30px rgba(50,121,249,0.06);
+  --shadow-lg:     0 8px 40px rgba(0,0,0,0.50), 0 0 0 1px rgba(230,234,240,0.10), 0 0 40px rgba(50,121,249,0.10);
+  --shadow-xl:     0 16px 60px rgba(0,0,0,0.60), 0 0 0 1px rgba(230,234,240,0.12), 0 0 50px rgba(50,121,249,0.14);
 }
 
+[data-theme="light"] {
+  /* ── Antigravity Light — clean white surface ── */
+  --bg-base:      #F8F9FC;
+  --bg-deep:      #EFF2F7;
+  --bg-surface:   #FFFFFF;
+  --bg-panel:     #F0F1F5;
+  --bg-lift:      #E6EAF0;
+
+  /* Glass layers */
+  --glass-1:  rgba(33, 34, 38, 0.02);
+  --glass-2:  rgba(33, 34, 38, 0.04);
+  --glass-3:  rgba(33, 34, 38, 0.06);
+  --glass-border: rgba(33, 34, 38, 0.10);
+  --glass-highlight: rgba(255, 255, 255, 0.95);
+
+  /* Text hierarchy — Antigravity on-light */
+  --text-primary:   #121317;
+  --text-secondary: rgba(18, 19, 23, 0.65);
+  --text-muted:     rgba(18, 19, 23, 0.40);
+  --text-dim:       rgba(18, 19, 23, 0.20);
+
+  --text-gradient-start: #121317;
+  --text-gradient-end:   rgba(18, 19, 23, 0.60);
+
+  --card-inset-bg:     rgba(33, 34, 38, 0.03);
+  --card-inset-border: rgba(33, 34, 38, 0.08);
+  --card-inset-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.04);
+
+  /* Borders */
+  --border:       rgba(33, 34, 38, 0.12);
+  --border-hover: rgba(33, 34, 38, 0.22);
+  --border-focus: var(--indigo);
+  --border-2:     rgba(33, 34, 38, 0.06);
+
+  /* Mapping */
+  --bg:            var(--bg-base);
+  --bg-secondary:  var(--bg-deep);
+  --surface:       var(--bg-surface);
+  --surface-2:     var(--bg-panel);
+  --surface-3:     var(--bg-lift);
+
+  /* Glassmorphic Cards */
+  --card-bg:       linear-gradient(135deg, rgba(255,255,255,0.90) 0%, rgba(255,255,255,0.70) 100%);
+  --card-blur:     blur(8px) saturate(110%);
+  --input-bg:      rgba(255, 255, 255, 0.95);
+
+  /* Typography */
+  --text-1:        var(--text-primary);
+  --text-2:        var(--text-secondary);
+  --text-3:        var(--text-muted);
+
+  /* Accents */
+  --indigo:   #3279F9;
+  --violet:   #5B5BD6;
+  --rose:     #CE2C31;
+  --amber:    #AD5700;
+  --emerald:  #218358;
+  --cyan:     #006E8C;
+
+  /* Accent */
+  --accent:        var(--indigo);
+  --accent-h:      #1D5BD4;
+  --accent-s:      rgba(50, 121, 249, 0.10);
+  --accent-rgb:    50, 121, 249;
+
+  /* Semantic Colors */
+  --green:         var(--emerald);
+  --green-s:       rgba(33, 131, 88, 0.09);
+  --yellow:        var(--amber);
+  --yellow-s:      rgba(173, 87, 0, 0.09);
+  --red:           var(--rose);
+  --red-s:         rgba(206, 44, 49, 0.09);
+  --blue:          var(--cyan);
+  --blue-s:        rgba(0, 110, 140, 0.09);
+  --purple:        var(--violet);
+  --purple-s:      rgba(91, 91, 214, 0.09);
+  --orange:        #BD4B00;
+  --orange-s:      rgba(189, 75, 0, 0.09);
+
+  /* Badge Text Colors — high contrast light */
+  --badge-green-txt:  #196342;
+  --badge-yellow-txt: #7D4400;
+  --badge-red-txt:    #961B1E;
+  --badge-blue-txt:   #1D5BD4;
+  --badge-purple-txt: #3D3D9E;
+  --badge-orange-txt: #8A3800;
+
+  /* Sidebar */
+  --sb-bg:         #FFFFFF;
+  --sb-border:     rgba(33, 34, 38, 0.10);
+  --sb-text-1:     var(--text-primary);
+  --sb-text-2:     var(--text-secondary);
+  --sb-text-3:     var(--text-muted);
+  --sb-hover:      rgba(33, 34, 38, 0.04);
+  --sb-active-bg:  linear-gradient(135deg, rgba(50,121,249,0.10) 0%, rgba(50,121,249,0.03) 100%);
+  --sb-active-txt: #3279F9;
+  --sb-expanded-bg: rgba(255, 255, 255, 0.98);
+  --sb-expanded-shadow: 0 8px 32px rgba(33,34,38,0.08);
+
+  /* Custom components */
+  --topbar-bg:     rgba(248, 249, 252, 0.90);
+  --auth-bg:       radial-gradient(ellipse at 20% 10%, rgba(50,121,249,0.06) 0%, #F8F9FC 70%);
+
+  /* Light Shadows — Antigravity neutral */
+  --shadow-xs:     0 1px 3px rgba(0,0,0,0.04), 0 0 0 1px rgba(33,34,38,0.06);
+  --shadow-sm:     0 2px 8px rgba(0,0,0,0.06), 0 0 0 1px rgba(33,34,38,0.08);
+  --shadow:        0 4px 20px rgba(0,0,0,0.08), 0 0 0 1px rgba(33,34,38,0.08), 0 0 20px rgba(50,121,249,0.06);
+  --shadow-lg:     0 8px 32px rgba(0,0,0,0.10), 0 0 0 1px rgba(33,34,38,0.08), 0 0 30px rgba(50,121,249,0.08);
+  --shadow-xl:     0 12px 48px rgba(0,0,0,0.12), 0 0 0 1px rgba(33,34,38,0.08), 0 0 40px rgba(50,121,249,0.10);
+}
+
+[data-theme="dark"] {
+  /* ── Antigravity Dark — same as :root defaults ── */
+  --bg-base:      #121317;
+  --bg-deep:      #18191D;
+  --bg-surface:   #212226;
+  --bg-panel:     #2A2B30;
+  --bg-lift:      #2F3034;
+
+  --glass-1:  rgba(230, 234, 240, 0.03);
+  --glass-2:  rgba(230, 234, 240, 0.06);
+  --glass-3:  rgba(230, 234, 240, 0.09);
+  --glass-border: rgba(230, 234, 240, 0.10);
+  --glass-highlight: rgba(255, 255, 255, 0.08);
+
+  /* Accents */
+  --indigo:   #3279F9;
+  --violet:   #5B5BD6;
+  --rose:     #E5484D;
+  --amber:    #F5A623;
+  --emerald:  #30A46C;
+  --cyan:     #00A2C7;
+
+  --text-primary:   #E6EAF0;
+  --text-secondary: rgba(230, 234, 240, 0.65);
+  --text-muted:     rgba(230, 234, 240, 0.40);
+  --text-dim:       rgba(230, 234, 240, 0.20);
+
+  --text-gradient-start: #E6EAF0;
+  --text-gradient-end:   rgba(230, 234, 240, 0.55);
+
+  --card-inset-bg:     rgba(0, 0, 0, 0.20);
+  --card-inset-border: rgba(230, 234, 240, 0.06);
+  --card-inset-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.35);
+
+  --border:       rgba(230, 234, 240, 0.10);
+  --border-hover: rgba(230, 234, 240, 0.22);
+  --border-focus: var(--indigo);
+  --border-2:     rgba(230, 234, 240, 0.06);
+
+  --bg:            var(--bg-base);
+  --bg-secondary:  var(--bg-deep);
+  --surface:       var(--bg-surface);
+  --surface-2:     var(--bg-panel);
+  --surface-3:     var(--bg-lift);
+
+  --card-bg:       linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 100%);
+  --card-blur:     blur(8px) saturate(120%);
+  --input-bg:      rgba(255, 255, 255, 0.04);
+
+  --text-1:        var(--text-primary);
+  --text-2:        var(--text-secondary);
+  --text-3:        var(--text-muted);
+
+  --accent:        var(--indigo);
+  --accent-h:      #5B9EFF;
+  --accent-s:      rgba(50, 121, 249, 0.14);
+  --accent-rgb:    50, 121, 249;
+
+  --green:         var(--emerald);
+  --green-s:       rgba(48, 164, 108, 0.12);
+  --yellow:        var(--amber);
+  --yellow-s:      rgba(245, 166, 35, 0.12);
+  --red:           var(--rose);
+  --red-s:         rgba(229, 72, 77, 0.12);
+  --blue:          var(--cyan);
+  --blue-s:        rgba(0, 162, 199, 0.12);
+  --purple:        var(--violet);
+  --purple-s:      rgba(91, 91, 214, 0.12);
+  --orange:        #F76808;
+  --orange-s:      rgba(247, 104, 8, 0.12);
+
+  --badge-green-txt:  #46A758;
+  --badge-yellow-txt: #F5A623;
+  --badge-red-txt:    #E5484D;
+  --badge-blue-txt:   #5B9EFF;
+  --badge-purple-txt: #8E8EF7;
+  --badge-orange-txt: #F76808;
+
+  --sb-bg:         var(--bg-deep);
+  --sb-border:     var(--glass-border);
+  --sb-text-1:     var(--text-primary);
+  --sb-text-2:     var(--text-secondary);
+  --sb-text-3:     var(--text-muted);
+  --sb-hover:      rgba(230, 234, 240, 0.04);
+  --sb-active-bg:  linear-gradient(135deg, rgba(50,121,249,0.20) 0%, rgba(50,121,249,0.08) 100%);
+  --sb-active-txt: #E6EAF0;
+  --sb-expanded-bg: rgba(18, 19, 23, 0.92);
+  --sb-expanded-shadow: 15px 0 45px rgba(0, 0, 0, 0.55);
+
+  --topbar-bg:     rgba(18, 19, 23, 0.88);
+  --auth-bg:       radial-gradient(ellipse at 20% 10%, rgba(50,121,249,0.10) 0%, #121317 70%);
+
+  --shadow-xs:     0 1px 2px rgba(0,0,0,0.24), 0 0 0 1px rgba(230,234,240,0.06);
+  --shadow-sm:     0 2px 8px rgba(0,0,0,0.30), 0 0 0 1px rgba(230,234,240,0.08);
+  --shadow:        0 4px 20px rgba(0,0,0,0.40), 0 0 0 1px rgba(230,234,240,0.08), 0 0 30px rgba(50,121,249,0.06);
+  --shadow-lg:     0 8px 40px rgba(0,0,0,0.50), 0 0 0 1px rgba(230,234,240,0.10), 0 0 40px rgba(50,121,249,0.10);
+  --shadow-xl:     0 16px 60px rgba(0,0,0,0.60), 0 0 0 1px rgba(230,234,240,0.12), 0 0 50px rgba(50,121,249,0.14);
+}
 /* ─── Global Reset & Noise Overlay ────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; background-color: var(--bg-base); }
